@@ -414,7 +414,8 @@ export default function PlanCreate() {
   const hasProfileBar = profile && (profile.exam_name || profile.exam_date || profile.daily_hours != null) && !planGenerated
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-8rem)] landscape:h-[calc(100dvh-7rem)] landscape:max-w-4xl landscape:mx-auto landscape:w-full">
+    <div className="flex h-[calc(100dvh-8rem)] flex-col lg:h-[calc(100dvh-4rem)] lg:grid lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-6">
+      <section className="flex min-h-0 flex-1 flex-col lg:rounded-[2rem] lg:border lg:border-slate-200 lg:bg-white lg:p-5 lg:shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0 mb-2">
         <h1 className="text-lg font-bold text-gray-800">创建备考计划</h1>
@@ -430,7 +431,7 @@ export default function PlanCreate() {
 
       {/* Profile status bar */}
       {hasProfileBar && (
-        <div className="flex-shrink-0 mb-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-xl">
+        <div className="flex-shrink-0 mb-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-xl lg:hidden">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs text-blue-500 font-medium">已收集：</span>
             {Boolean(profile.exam_name) && (
@@ -712,6 +713,20 @@ export default function PlanCreate() {
           </button>
         </div>
       )}
+      </section>
+
+      <PlannerInsightsPanel
+        profile={profile}
+        materials={materials}
+        searchResults={searchResults}
+        generatedTasks={generatedTasks}
+        generating={generating}
+        planGenerated={planGenerated}
+        materialUploading={materialUploading}
+        materialError={materialError}
+        onConfirm={confirmProfile && !planGenerated ? handleConfirmGenerate : undefined}
+        confirmLoading={generating}
+      />
     </div>
   )
 }
@@ -964,4 +979,170 @@ function ConfirmCard({
       </div>
     </div>
   )
+}
+
+function PlannerInsightsPanel({
+  profile,
+  materials,
+  searchResults,
+  generatedTasks,
+  generating,
+  planGenerated,
+  materialUploading,
+  materialError,
+  onConfirm,
+  confirmLoading,
+}: {
+  profile: Record<string, unknown> | null | undefined
+  materials: PlannerMaterial[]
+  searchResults: SearchResultItem[]
+  generatedTasks: GeneratedTask[]
+  generating: boolean
+  planGenerated: boolean
+  materialUploading: boolean
+  materialError: string | null
+  onConfirm?: () => void
+  confirmLoading: boolean
+}) {
+  return (
+    <aside className="hidden lg:block min-h-0 space-y-4 overflow-y-auto rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+      <div>
+        <p className="text-xs font-medium uppercase tracking-[0.2em] text-blue-400">Plan Context</p>
+        <h2 className="mt-1 text-lg font-bold text-slate-900">备考信息面板</h2>
+        <p className="mt-1 text-xs leading-5 text-slate-500">
+          宽屏下常驻展示已收集的信息、参考资料和生成状态。
+        </p>
+      </div>
+
+      <ProfileSummaryCard profile={profile} />
+      <ReferenceSummaryCard
+        materials={materials}
+        searchResults={searchResults}
+        materialUploading={materialUploading}
+        materialError={materialError}
+      />
+      <GenerationStatusCard
+        generatedTasks={generatedTasks}
+        generating={generating}
+        planGenerated={planGenerated}
+      />
+
+      {onConfirm && (
+        <button
+          onClick={onConfirm}
+          disabled={confirmLoading}
+          className="w-full rounded-2xl bg-blue-500 py-3 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:bg-blue-300"
+        >
+          {confirmLoading ? '正在生成计划...' : '确认信息并生成计划'}
+        </button>
+      )}
+    </aside>
+  )
+}
+
+function ProfileSummaryCard({ profile }: { profile: Record<string, unknown> | null | undefined }) {
+  const weakSubjects = toStringList(profile?.weak_subjects)
+  const missingFields = toStringList(profile?.missing_fields)
+
+  return (
+    <section className="rounded-3xl bg-slate-50 p-4">
+      <h3 className="text-sm font-semibold text-slate-800">已收集信息</h3>
+      <div className="mt-3 space-y-2 text-xs text-slate-600">
+        <InfoLine label="考试" value={toDisplayValue(profile?.exam_name, '等待输入')} />
+        <InfoLine label="日期" value={toDisplayValue(profile?.exam_date, '待确认')} />
+        <InfoLine
+          label="每日学习"
+          value={profile?.daily_hours != null ? `${String(profile.daily_hours)} 小时` : '待确认'}
+        />
+        <InfoLine label="薄弱项" value={weakSubjects.length > 0 ? weakSubjects.join('、') : '待确认'} />
+      </div>
+      {missingFields.length > 0 && (
+        <p className="mt-3 rounded-2xl bg-amber-50 px-3 py-2 text-xs text-amber-600">
+          还需补充：{missingFields.join('、')}
+        </p>
+      )}
+    </section>
+  )
+}
+
+function ReferenceSummaryCard({
+  materials,
+  searchResults,
+  materialUploading,
+  materialError,
+}: {
+  materials: PlannerMaterial[]
+  searchResults: SearchResultItem[]
+  materialUploading: boolean
+  materialError: string | null
+}) {
+  const adoptedMaterials = materials.filter((material) => material.selected)
+  const adoptedResults = searchResults.filter((result) => result.relevant)
+  const references = [
+    ...adoptedMaterials.map((material) => material.name),
+    ...adoptedResults.map((result) => result.title || result.url),
+  ].slice(0, 5)
+
+  return (
+    <section className="rounded-3xl border border-slate-100 p-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-slate-800">参考资料</h3>
+        <span className="text-xs text-slate-400">{adoptedMaterials.length + adoptedResults.length} 条采用</span>
+      </div>
+      <div className="mt-3 space-y-2">
+        {references.map((name) => (
+          <p key={name} className="line-clamp-2 rounded-2xl bg-slate-50 px-3 py-2 text-xs text-slate-600">
+            {name}
+          </p>
+        ))}
+        {references.length === 0 && (
+          <p className="rounded-2xl bg-slate-50 px-3 py-3 text-xs text-slate-400">
+            上传资料、添加链接或完成搜索后，这里会展示采用的依据。
+          </p>
+        )}
+      </div>
+      {materialUploading && <p className="mt-3 text-xs text-blue-500">资料解析中...</p>}
+      {materialError && <p className="mt-3 text-xs text-red-500">{materialError}</p>}
+    </section>
+  )
+}
+
+function GenerationStatusCard({
+  generatedTasks,
+  generating,
+  planGenerated,
+}: {
+  generatedTasks: GeneratedTask[]
+  generating: boolean
+  planGenerated: boolean
+}) {
+  return (
+    <section className="rounded-3xl bg-blue-50 p-4">
+      <h3 className="text-sm font-semibold text-slate-800">生成状态</h3>
+      <p className="mt-2 text-xs leading-5 text-slate-500">
+        {planGenerated
+          ? `已生成 ${generatedTasks.length} 个学习任务。`
+          : generating
+          ? '小搭正在整理阶段、任务和复习节奏。'
+          : '确认信息后会开始生成专属计划。'}
+      </p>
+    </section>
+  )
+}
+
+function InfoLine({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-3">
+      <span className="shrink-0 text-slate-400">{label}</span>
+      <span className="text-right font-medium text-slate-700">{value}</span>
+    </div>
+  )
+}
+
+function toStringList(value: unknown): string[] {
+  return Array.isArray(value) ? value.map(String).filter(Boolean) : []
+}
+
+function toDisplayValue(value: unknown, fallback: string): string {
+  return value == null || value === '' ? fallback : String(value)
 }
