@@ -111,7 +111,8 @@ export default function PlanDetail() {
   }, {})
 
   return (
-    <div className="pb-4">
+    <div className="pb-4 lg:grid lg:grid-cols-[minmax(18rem,0.8fr)_minmax(0,1.2fr)] lg:items-start lg:gap-6">
+      <section className="space-y-4 lg:sticky lg:top-8">
       {/* Plan header */}
       <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl p-5 mb-4">
         <div className="flex items-start justify-between">
@@ -141,7 +142,7 @@ export default function PlanDetail() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-4">
+      <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mb-4 lg:hidden">
         {(['overview', 'tasks'] as const).map((tab) => (
           <button
             key={tab}
@@ -155,8 +156,7 @@ export default function PlanDetail() {
         ))}
       </div>
 
-      {activeTab === 'overview' && (
-        <div className="space-y-3">
+      <div className={`${activeTab === 'overview' ? 'block' : 'hidden'} space-y-3 lg:block`}>
           <InfoCard label="考试日期" value={dayjs(plan.examDate).format('YYYY年M月D日')} />
           <InfoCard label="每日学习" value={`${plan.dailyHours} 小时`} />
           <InfoCard label="基础水平" value={FOUNDATION_LABELS[plan.foundationLevel]} />
@@ -196,10 +196,10 @@ export default function PlanDetail() {
           >
             删除计划
           </button>
-        </div>
-      )}
+      </div>
+      </section>
 
-      {activeTab === 'tasks' && (
+      <section className={`${activeTab === 'tasks' ? 'block' : 'hidden'} min-w-0 lg:block`}>
         <div className="space-y-4">
           {Object.keys(tasksByDate).sort().map((date) => (
             <div key={date}>
@@ -214,7 +214,7 @@ export default function PlanDetail() {
             </div>
           ))}
         </div>
-      )}
+      </section>
 
       {/* Mode modal */}
       {showModeModal && (

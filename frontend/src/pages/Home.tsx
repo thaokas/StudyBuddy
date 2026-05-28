@@ -64,9 +64,9 @@ export default function Home() {
   if (loading) return <Loading />
 
   return (
-    <div className="space-y-4 pb-4 landscape:grid landscape:grid-cols-2 landscape:items-start landscape:gap-4 landscape:space-y-0">
+    <div className="space-y-4 pb-4 lg:grid lg:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)] lg:items-start lg:gap-6 lg:space-y-0">
       {/* Header greeting */}
-      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl p-5 flex items-center justify-between">
+      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl p-5 flex items-center justify-between lg:col-span-2">
         <div>
           <p className="text-blue-100 text-sm">你好，{user?.nickname ?? '同学'} 👋</p>
           <h2 className="text-xl font-bold mt-1">

@@ -88,7 +88,7 @@ export default function Report() {
   const totalForBar = entries.reduce((sum, [, v]) => sum + v, 0)
 
   return (
-    <div className="space-y-4 pb-6">
+    <div className="space-y-4 pb-6 lg:grid lg:grid-cols-[20rem_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
       <h2 className="text-lg font-bold text-gray-800">学习报告</h2>
 
       {/* ── 日期选择区 ──────────────────────────────────────────────────── */}
@@ -157,7 +157,7 @@ export default function Report() {
 
       {/* ── 报告结果 ────────────────────────────────────────────────────── */}
       {report && !loading && (
-        <div className="space-y-4">
+        <div className="space-y-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4 lg:space-y-0">
           {/* 等级 + 标题 */}
           <div className="bg-white rounded-2xl p-5 shadow-sm">
             <div className="flex items-center gap-4">
@@ -318,7 +318,7 @@ export default function Report() {
 
           {/* HTML 报告渲染（如有） */}
           {report.htmlContent && (
-            <div className="bg-white rounded-2xl p-4 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl p-4 shadow-sm overflow-hidden lg:col-span-2">
               <div
                 dangerouslySetInnerHTML={{ __html: report.htmlContent }}
                 className="report-html-content"
@@ -328,7 +328,7 @@ export default function Report() {
 
           {/* 无数据提示 */}
           {totalTasks === 0 && (
-            <div className="bg-white rounded-2xl p-8 shadow-sm text-center">
+            <div className="bg-white rounded-2xl p-8 shadow-sm text-center lg:col-span-2">
               <p className="text-gray-400 text-sm">该时间段暂无学习数据</p>
               <p className="text-gray-300 text-xs mt-1">请选择有打卡记录的日期范围</p>
             </div>

@@ -115,7 +115,7 @@ export default function Checkin() {
   // Success state
   if (result) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+      <div className="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center space-y-4">
         <div className="text-6xl">🎉</div>
         <h2 className="text-xl font-bold text-gray-800">打卡成功！</h2>
         <div className="bg-blue-50 rounded-2xl p-5 w-full text-center">
@@ -152,7 +152,7 @@ export default function Checkin() {
   // Already checked in
   if (todayCheckin) {
     return (
-      <div className="space-y-4 pb-4">
+      <div className="space-y-4 pb-4 lg:grid lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start lg:gap-6 lg:space-y-0">
         <h2 className="text-lg font-bold text-gray-800">每日打卡</h2>
         <div className="bg-green-50 border border-green-200 rounded-2xl p-5 text-center">
           <div className="text-4xl mb-2">✅</div>
@@ -173,7 +173,7 @@ export default function Checkin() {
   }
 
   return (
-    <div className="space-y-4 pb-4">
+    <div className="space-y-4 pb-4 lg:grid lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start lg:gap-6 lg:space-y-0">
       <h2 className="text-lg font-bold text-gray-800">今日打卡</h2>
       <p className="text-sm text-gray-400">{dayjs().format('YYYY年M月D日')}</p>
 

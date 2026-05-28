@@ -46,7 +46,8 @@ export default function Tasks() {
   const completedCount = tasks.filter((t) => t.status === 2).length
 
   return (
-    <div className="space-y-4 pb-4">
+    <div className="space-y-4 pb-4 lg:grid lg:grid-cols-[18rem_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
+      <aside className="space-y-4 lg:sticky lg:top-8">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-bold text-gray-800">今日任务</h2>
         {tasks.length > 0 && (
@@ -56,7 +57,7 @@ export default function Tasks() {
 
       {/* Plan selector */}
       {plans.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0">
           {plans.map((plan) => (
             <button
               key={plan.planId}
@@ -93,6 +94,9 @@ export default function Tasks() {
         </button>
       </div>
 
+      </aside>
+
+      <section className="min-w-0">
       {loading ? (
         <Loading />
       ) : plans.length === 0 ? (
@@ -100,7 +104,7 @@ export default function Tasks() {
       ) : tasks.length === 0 ? (
         <Empty text={filter === 'today' ? '今天没有安排任务，休息一下~' : '暂无任务'} />
       ) : (
-        <div className="space-y-2 landscape:grid landscape:grid-cols-2 landscape:gap-3 landscape:space-y-0">
+        <div className="space-y-2 xl:grid xl:grid-cols-2 xl:gap-3 xl:space-y-0">
           {tasks.map((task) => (
             <div
               key={task.taskId}
@@ -140,6 +144,7 @@ export default function Tasks() {
           ))}
         </div>
       )}
+      </section>
     </div>
   )
 }

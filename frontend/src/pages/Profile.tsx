@@ -54,7 +54,8 @@ export default function Profile() {
   const checkinSet = new Set(history.map((h) => h.checkinDate))
 
   return (
-    <div className="space-y-4 pb-4">
+    <div className="space-y-4 pb-4 lg:grid lg:grid-cols-[minmax(18rem,0.8fr)_minmax(0,1.2fr)] lg:items-start lg:gap-6 lg:space-y-0">
+      <section className="space-y-4">
       {/* Avatar & name */}
       <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl p-5">
         <div className="flex items-center gap-4">
@@ -105,8 +106,10 @@ export default function Profile() {
           </div>
         ))}
       </div>
+      </section>
 
       {/* 30-day calendar */}
+      <section className="space-y-4">
       <div className="bg-white rounded-2xl p-4 shadow-sm">
         <p className="font-medium text-gray-700 mb-3">最近30天打卡记录</p>
         <div className="grid grid-cols-10 gap-1.5">
@@ -154,6 +157,7 @@ export default function Profile() {
       </div>
 
       <p className="text-center text-xs text-gray-300">小搭 · PrepKeeper</p>
+      </section>
     </div>
   )
 }

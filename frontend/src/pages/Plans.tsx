@@ -51,7 +51,7 @@ export default function Plans() {
       {plans.length === 0 ? (
         <Empty text="还没有备考计划，快去创建吧~" />
       ) : (
-        <div className="space-y-4 landscape:grid landscape:grid-cols-2 landscape:gap-4 landscape:space-y-0">
+        <div className="space-y-4 lg:grid lg:grid-cols-2 xl:grid-cols-3 lg:gap-4 lg:space-y-0">
           {plans.map((plan) => (
             <PlanCard
               key={plan.planId}

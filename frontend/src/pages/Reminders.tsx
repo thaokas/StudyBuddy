@@ -158,7 +158,7 @@ function ReminderSettings({ onLoaded }: { onLoaded: () => void }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(18rem,0.7fr)] lg:items-start lg:gap-4 lg:space-y-0">
       {/* Plan selector */}
       {plans.length > 1 && (
         <div>
@@ -449,7 +449,7 @@ function CustomReminders({ onLoaded }: { onLoaded: () => void }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(18rem,0.7fr)] lg:items-start lg:gap-4 lg:space-y-0">
       {/* Create form */}
       <div className="bg-white rounded-xl p-4 shadow-sm space-y-3">
         <h3 className="font-medium text-sm text-gray-700">创建新提醒</h3>
@@ -688,7 +688,7 @@ function ReminderHistory({ onLoaded }: { onLoaded: () => void }) {
   if (history.length === 0) return <Empty text="暂无提醒记录" />
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(18rem,0.7fr)] lg:items-start lg:gap-3 lg:space-y-0">
       {history.map((r) => {
         const isExpanded = expandedReminderIds.has(r.reminderId)
 
