@@ -53,46 +53,18 @@ export default function Layout() {
   }, [setUnreadCount])
 
   return (
-    <div className="min-h-screen min-h-[100dvh] w-full bg-gray-50 flex flex-col max-w-md landscape:max-w-6xl mx-auto">
-      {/* Main content */}
-      <main className="flex-1 overflow-y-auto px-4 pt-4 pb-24 landscape:px-6 landscape:pt-6">
-        <Outlet />
-      </main>
+    <div className="min-h-screen min-h-[100dvh] w-full bg-slate-100 lg:bg-slate-50">
+      <DesktopSidebar />
 
-      {/* Bottom navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 max-w-md landscape:max-w-6xl mx-auto bg-white border-t border-gray-100 safe-bottom">
-        <div className="flex items-end h-16 px-2 landscape:max-w-2xl landscape:mx-auto">
-          {NAV_ITEMS.map(({ to, label, icon: Icon, primary }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={to === '/'}
-              className={({ isActive }) =>
-                `flex-1 flex flex-col items-center justify-center gap-0.5 py-2 transition ${
-                  primary
-                    ? ''
-                    : isActive
-                    ? 'text-blue-500'
-                    : 'text-gray-400 hover:text-gray-600'
-                }`
-              }
-            >
-              {({ isActive }) =>
-                primary ? (
-                  <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200 -mt-4">
-                    <Icon active={isActive} className="w-6 h-6 text-white" />
-                  </div>
-                ) : (
-                  <>
-                    <Icon active={isActive} className="w-6 h-6" />
-                    <span className="text-xs">{label}</span>
-                  </>
-                )
-              }
-            </NavLink>
-          ))}
-        </div>
-      </nav>
+      <div className="min-h-screen min-h-[100dvh] max-w-md lg:max-w-none mx-auto lg:mx-0 lg:pl-64">
+        <main className="min-h-screen min-h-[100dvh] px-4 pt-4 pb-24 lg:px-8 lg:py-8">
+          <div className="w-full lg:max-w-7xl lg:mx-auto">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+
+      <MobileBottomNav />
 
       <ReminderPopup
         popup={popupQueue[0]}
@@ -102,6 +74,91 @@ export default function Layout() {
         onEnableNotifications={handleEnableNotifications}
       />
     </div>
+  )
+}
+
+function MobileBottomNav() {
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-30 max-w-md mx-auto bg-white border-t border-gray-100 safe-bottom lg:hidden">
+      <div className="flex items-end h-16 px-2">
+        {NAV_ITEMS.map(({ to, label, icon: Icon, primary }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={to === '/'}
+            className={({ isActive }) =>
+              `flex-1 flex flex-col items-center justify-center gap-0.5 py-2 transition ${
+                primary
+                  ? ''
+                  : isActive
+                  ? 'text-blue-500'
+                  : 'text-gray-400 hover:text-gray-600'
+              }`
+            }
+          >
+            {({ isActive }) =>
+              primary ? (
+                <div className="w-12 h-12 bg-blue-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200 -mt-4">
+                  <Icon active={isActive} className="w-6 h-6 text-white" />
+                </div>
+              ) : (
+                <>
+                  <Icon active={isActive} className="w-6 h-6" />
+                  <span className="text-xs">{label}</span>
+                </>
+              )
+            }
+          </NavLink>
+        ))}
+      </div>
+    </nav>
+  )
+}
+
+function DesktopSidebar() {
+  return (
+    <aside className="fixed inset-y-0 left-0 z-30 hidden lg:flex w-64 flex-col border-r border-slate-200 bg-white/95 px-4 py-6 shadow-sm">
+      <div className="flex items-center gap-3 px-2">
+        <img src="/logo.png" alt="小搭" className="h-11 w-11 rounded-2xl object-cover" />
+        <div>
+          <p className="text-base font-bold text-slate-900">小搭</p>
+          <p className="text-xs text-slate-400">PrepKeeper</p>
+        </div>
+      </div>
+
+      <nav className="mt-8 flex flex-1 flex-col gap-2">
+        {NAV_ITEMS.map(({ to, label, icon: Icon, primary }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={to === '/'}
+            className={({ isActive }) =>
+              `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                isActive
+                  ? 'bg-blue-50 text-blue-600 shadow-sm shadow-blue-100'
+                  : primary
+                  ? 'text-slate-600 hover:bg-slate-50 hover:text-blue-500'
+                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <Icon active={isActive} className="h-5 w-5" />
+                <span>{label}</span>
+              </>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className="rounded-3xl bg-gradient-to-br from-blue-50 to-cyan-50 p-4">
+        <p className="text-sm font-semibold text-slate-800">今天也稳稳推进</p>
+        <p className="mt-1 text-xs leading-5 text-slate-500">
+          宽屏工作台会保留学习上下文，窄屏继续保持手机体验。
+        </p>
+      </div>
+    </aside>
   )
 }
 
