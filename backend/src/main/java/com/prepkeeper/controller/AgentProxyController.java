@@ -8,15 +8,21 @@ import com.prepkeeper.service.AgentClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Tag(name = "Agent代理接口", description = "与AI Agent服务交互")
 @RestController
 @RequestMapping("/agent")
@@ -26,48 +32,96 @@ public class AgentProxyController {
     private final AgentClientService agentClient;
     private final TaskRepository taskRepository;
 
-    @Operation(summary = "对话式计划生成代理")
-    @PostMapping("/plan/chat")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> planChat(
+    @Operation(summary = "计划生成SSE流式接口")
+    @PostMapping(value = "/planner/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter plannerChat(
             @RequestBody Map<String, Object> request,
             @AuthenticationPrincipal UserPrincipal principal) {
 
+        String userId = principal.getUserId();
         String message = (String) request.get("message");
-        String threadId = (String) request.get("threadId");
+        String threadId = (String) request.get("thread_id");
 
         @SuppressWarnings("unchecked")
-        List<String> urls = (List<String>) request.get("urls");
-        @SuppressWarnings("unchecked")
-        List<String> pdfUrls = (List<String>) request.get("pdfUrls");
-        @SuppressWarnings("unchecked")
-        List<String> imageUrls = (List<String>) request.get("imageUrls");
+        Map<String, Object> state = (Map<String, Object>) request.get("state");
 
-        Map<String, Object> response = agentClient.planChat(
-                principal.getUserId(), message, threadId, urls, pdfUrls, imageUrls);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        SseEmitter emitter = new SseEmitter(300000L); // 5 min timeout
+
+        agentClient.plannerChatStream(userId, message, threadId, state,
+                event -> {
+                    try {
+                        emitter.send(SseEmitter.event()
+                                .name(event.event())
+                                .data(event.data(), MediaType.APPLICATION_JSON));
+                    } catch (IOException e) {
+                        log.error("SSE send error for user {}: {}", userId, e.getMessage());
+                        emitter.completeWithError(e);
+                    }
+                },
+                error -> {
+                    log.error("Planner chat error for user {}: {}", userId, error.getMessage());
+                    try {
+                        emitter.send(SseEmitter.event()
+                                .name("error")
+                                .data(Map.of("message", error.getMessage())));
+                        emitter.send(SseEmitter.event()
+                                .name("done")
+                                .data(Map.of()));
+                    } catch (IOException ex) {
+                        // ignore
+                    }
+                    emitter.complete();
+                },
+                () -> {
+                    try {
+                        emitter.send(SseEmitter.event()
+                                .name("done")
+                                .data(Map.of()));
+                    } catch (IOException e) {
+                        // ignore
+                    }
+                    emitter.complete();
+                });
+
+        emitter.onTimeout(() -> {
+            log.warn("SSE timeout for user {}", userId);
+            agentClient.cancelPlannerChat(threadId);
+        });
+
+        emitter.onError(throwable -> {
+            log.error("SSE error for user {}: {}", userId, throwable.getMessage());
+            agentClient.cancelPlannerChat(threadId);
+        });
+
+        return emitter;
     }
 
-    @Operation(summary = "LLM对话代理")
-    @PostMapping("/llm/chat")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> llmChat(
-            @RequestBody Map<String, Object> request) {
-
-        @SuppressWarnings("unchecked")
-        List<Map<String, String>> messages = (List<Map<String, String>>) request.get("messages");
-        String systemPrompt = (String) request.get("system_prompt");
-
-        Map<String, Object> response = agentClient.llmChat(messages, systemPrompt);
-        return ResponseEntity.ok(ApiResponse.success(response));
+    @Operation(summary = "取消计划生成")
+    @PostMapping("/planner/chat/cancel")
+    public ResponseEntity<Map<String, Object>> cancelPlannerChat(
+            @RequestBody Map<String, Object> request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        String threadId = (String) request.get("thread_id");
+        agentClient.cancelPlannerChat(threadId);
+        return ResponseEntity.ok(Map.of("status", "cancelled"));
     }
 
-    @Operation(summary = "网络搜索代理")
-    @PostMapping("/search")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> search(
-            @RequestBody Map<String, Object> request) {
+    @Operation(summary = "解析计划生成附件资料")
+    @PostMapping(value = "/planner/materials/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, Object>> parsePlannerFile(
+            @RequestPart("file") MultipartFile file,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        Map<String, Object> response = agentClient.parsePlannerFile(file);
+        return ResponseEntity.ok(response);
+    }
 
-        String query = (String) request.get("query");
-        Map<String, Object> response = agentClient.search(query);
-        return ResponseEntity.ok(ApiResponse.success(response));
+    @Operation(summary = "解析计划生成网页资料")
+    @PostMapping("/planner/materials/link")
+    public ResponseEntity<Map<String, Object>> parsePlannerLink(
+            @RequestBody Map<String, String> request,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        Map<String, Object> response = agentClient.parsePlannerLink(request.get("url"));
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "生成周报代理")
@@ -83,7 +137,6 @@ public class AgentProxyController {
         LocalDate startDate = LocalDate.parse(weekStart);
         LocalDate endDate = weekEnd != null ? LocalDate.parse(weekEnd) : startDate.plusDays(6);
 
-        // 查询用户在日期范围内的所有任务（跨计划）
         List<Task> weekTasks = taskRepository.findByUserIdAndTaskDateBetween(userId, startDate, endDate);
 
         List<Map<String, Object>> totalPlan = weekTasks.stream()
@@ -99,7 +152,6 @@ public class AgentProxyController {
                 userId, weekStart, weekEnd != null ? weekEnd : endDate.toString(),
                 totalPlan, weeklyCompleted);
 
-        // 将 agent 返回的字段映射为前端期望的字段名
         Map<String, Object> response = new HashMap<>(agentResponse);
         response.put("weekStart", weekStart);
         response.put("weekEnd", weekEnd != null ? weekEnd : endDate.toString());

@@ -13,8 +13,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Tag(name = "打卡接口", description = "每日打卡管理")
 @RestController
@@ -69,5 +77,30 @@ public class CheckinController {
 
         int streak = checkinService.getCurrentStreak(principal.getUserId());
         return ResponseEntity.ok(ApiResponse.success(streak));
+    }
+
+    @Operation(summary = "上传打卡图片")
+    @PostMapping("/upload-image")
+    public ResponseEntity<ApiResponse<Map<String, String>>> uploadCheckinImage(
+            @RequestParam("file") MultipartFile file,
+            @AuthenticationPrincipal UserPrincipal principal) throws IOException {
+
+        String uploadDir = "uploads/checkin";
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        String originalName = file.getOriginalFilename();
+        String ext = "";
+        if (originalName != null && originalName.contains(".")) {
+            ext = originalName.substring(originalName.lastIndexOf("."));
+        }
+        String filename = UUID.randomUUID().toString() + ext;
+        Path filePath = uploadPath.resolve(filename);
+        file.transferTo(filePath.toFile());
+
+        String imagePath = "/" + uploadDir + "/" + filename;
+        return ResponseEntity.ok(ApiResponse.success(Map.of("imageUrl", imagePath)));
     }
 }

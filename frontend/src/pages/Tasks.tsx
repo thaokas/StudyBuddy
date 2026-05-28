@@ -100,7 +100,7 @@ export default function Tasks() {
       ) : tasks.length === 0 ? (
         <Empty text={filter === 'today' ? '今天没有安排任务，休息一下~' : '暂无任务'} />
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 landscape:grid landscape:grid-cols-2 landscape:gap-3 landscape:space-y-0">
           {tasks.map((task) => (
             <div
               key={task.taskId}

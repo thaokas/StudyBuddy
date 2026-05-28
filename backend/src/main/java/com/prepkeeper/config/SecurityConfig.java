@@ -2,6 +2,7 @@ package com.prepkeeper.config;
 
 import com.prepkeeper.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,8 +35,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
                         .requestMatchers(
                                 "/auth/**",
+                                "/ws/**",
                                 "/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",

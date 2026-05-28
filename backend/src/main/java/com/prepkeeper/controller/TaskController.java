@@ -31,6 +31,15 @@ public class TaskController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "获取用户所有计划的今日任务")
+    @GetMapping("/today/all")
+    public ResponseEntity<ApiResponse<List<TaskResponse>>> getTodayAllTasks(
+            @AuthenticationPrincipal UserPrincipal principal) {
+
+        List<TaskResponse> response = taskService.getTodayTasksForUser(principal.getUserId());
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
     @Operation(summary = "获取计划下所有任务")
     @GetMapping("/plan/{planId}")
     public ResponseEntity<ApiResponse<List<TaskResponse>>> getTasksByPlan(

@@ -12,6 +12,15 @@ from app.agents.reminder.prompts import get_reminder_prompt
 logger = logging.getLogger(__name__)
 
 
+def format_task_label(task: dict) -> str:
+    """Format an associated task without dropping its specific content."""
+    subject = task.get("subject")
+    name = task.get("name") or task.get("title")
+    if subject and name:
+        return f"{subject} - {name}"
+    return subject or name or "未知任务"
+
+
 @tool
 def get_current_time() -> str:
     """获取当前的日期和时间。"""
@@ -71,7 +80,7 @@ async def generate_reminder_node(state: ReminderState) -> Dict:
         # 未完成任务名称，最多展示 5 个
         incomplete_tasks = state.get("today_incomplete_tasks") or []
         incomplete_names = "、".join(
-            t.get("subject") or t.get("name") or t.get("title") or "未知任务"
+            format_task_label(t)
             for t in incomplete_tasks[:5]
         ) or "无"
 

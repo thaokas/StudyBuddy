@@ -138,6 +138,9 @@ public class CheckinService {
             return null;
         }
 
+        int currentStreak = userService.getUserById(userId).getCurrentStreak();
+        String encouragement = getDefaultEncouragement(checkin.getCompletionRate());
+
         return CheckinResponse.builder()
                 .checkinId(checkin.getCheckinId())
                 .planId(checkin.getPlanId())
@@ -145,6 +148,8 @@ public class CheckinService {
                 .completedTasks(checkin.getCompletedTasks())
                 .totalTasks(checkin.getTotalTasks())
                 .completionRate(checkin.getCompletionRate())
+                .currentStreak(currentStreak)
+                .encouragement(encouragement)
                 .build();
     }
 

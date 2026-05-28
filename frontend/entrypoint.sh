@@ -2,7 +2,7 @@
 set -e
 
 PORT="${PORT:-80}"
-BACKEND_URL="${BACKEND_URL:-http://backend:8080}"
+BACKEND_URL="${BACKEND_URL:-http://backend.railway.internal:8080}"
 echo "Listening on port: $PORT"
 echo "Using backend: $BACKEND_URL"
 

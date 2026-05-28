@@ -25,3 +25,5 @@ target/
 
 # Docker
 .env.deploy
+docs/
+.superpowers/

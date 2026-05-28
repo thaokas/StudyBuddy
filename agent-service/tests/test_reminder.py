@@ -1,6 +1,12 @@
 """测试 Reminder Agent —— 监督提醒生成"""
 import pytest
 from app.agents.reminder import reminder_graph
+from app.agents.reminder.nodes import format_task_label
+
+
+def test_task_label_includes_specific_content_for_same_subject_tasks():
+    assert format_task_label({"subject": "数学", "name": "专项练习"}) == "数学 - 专项练习"
+    assert format_task_label({"subject": "数学", "name": "错题复盘"}) == "数学 - 错题复盘"
 
 
 @pytest.mark.asyncio

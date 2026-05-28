@@ -1,7 +1,14 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
-import { authApi } from '@/api'
+import { useEffect, useState } from 'react'
+import { authApi, reminderApi } from '@/api'
 import { useAuthStore } from '@/store/authStore'
+import { useReminderWebSocket } from '@/hooks/useReminderWebSocket'
+import {
+  requestNotificationPermission,
+  type ReminderNotificationPermission,
+} from '@/hooks/reminderPresentation'
+import { useReminderStore } from '@/store/reminderStore'
+import ReminderPopup from '@/components/ReminderPopup'
 
 const NAV_ITEMS = [
   { to: '/', label: '首页', icon: HomeIcon },
@@ -14,6 +21,19 @@ const NAV_ITEMS = [
 export default function Layout() {
   const { setUser, user } = useAuthStore()
   const navigate = useNavigate()
+  const popupQueue = useReminderStore((s) => s.popupQueue)
+  const dismissPopup = useReminderStore((s) => s.dismissPopup)
+  const setUnreadCount = useReminderStore((s) => s.setUnreadCount)
+  const [notificationPermission, setNotificationPermission] = useState<ReminderNotificationPermission>(
+    () => getNotificationPermission()
+  )
+
+  // WebSocket 连接（登录后自动建立）
+  useReminderWebSocket()
+
+  const handleEnableNotifications = async () => {
+    setNotificationPermission(await requestNotificationPermission())
+  }
 
   useEffect(() => {
     if (!user) {
@@ -26,16 +46,22 @@ export default function Layout() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    reminderApi.getUnread()
+      .then((res) => setUnreadCount(res.data.data.length))
+      .catch(() => {})
+  }, [setUnreadCount])
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col max-w-md mx-auto">
+    <div className="min-h-screen min-h-[100dvh] w-full bg-gray-50 flex flex-col max-w-md landscape:max-w-6xl mx-auto">
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto px-4 pt-4 pb-24">
+      <main className="flex-1 overflow-y-auto px-4 pt-4 pb-24 landscape:px-6 landscape:pt-6">
         <Outlet />
       </main>
 
       {/* Bottom navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-100 safe-bottom">
-        <div className="flex items-end h-16 px-2">
+      <nav className="fixed bottom-0 left-0 right-0 max-w-md landscape:max-w-6xl mx-auto bg-white border-t border-gray-100 safe-bottom">
+        <div className="flex items-end h-16 px-2 landscape:max-w-2xl landscape:mx-auto">
           {NAV_ITEMS.map(({ to, label, icon: Icon, primary }) => (
             <NavLink
               key={to}
@@ -67,8 +93,21 @@ export default function Layout() {
           ))}
         </div>
       </nav>
+
+      <ReminderPopup
+        popup={popupQueue[0]}
+        pendingCount={popupQueue.length}
+        notificationPermission={notificationPermission}
+        onDismiss={dismissPopup}
+        onEnableNotifications={handleEnableNotifications}
+      />
     </div>
   )
+}
+
+function getNotificationPermission(): ReminderNotificationPermission {
+  if (!('Notification' in window)) return 'unsupported'
+  return Notification.permission
 }
 
 // Icon components

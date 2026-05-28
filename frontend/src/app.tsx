@@ -11,7 +11,6 @@ import PlanDetail from '@/pages/PlanDetail'
 import Tasks from '@/pages/Tasks'
 import Checkin from '@/pages/Checkin'
 import Profile from '@/pages/Profile'
-import Chat from '@/pages/Chat'
 import Reminders from '@/pages/Reminders'
 import Report from '@/pages/Report'
 
@@ -39,7 +38,6 @@ export default function App() {
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/checkin" element={<Checkin />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/chat" element={<Chat />} />
           <Route path="/reminders" element={<Reminders />} />
           <Route path="/report" element={<Report />} />
         </Route>

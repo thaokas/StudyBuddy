@@ -70,6 +70,15 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
+    public List<TaskResponse> getTodayTasksForUser(String userId) {
+        LocalDate today = LocalDate.now();
+        List<Task> tasks = taskRepository.findByUserIdAndTaskDateBetween(userId, today, today);
+        return tasks.stream()
+                .map(this::toTaskResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public long countTodayCompleted(String planId) {
         return taskRepository.countTodayCompleted(planId, LocalDate.now());
     }

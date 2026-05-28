@@ -15,8 +15,8 @@ public class ReminderConfigRequest {
     /**
      * 监督模式: 0-静默 1-温柔 2-强化 3-唐僧
      */
-    @Min(value = 0, message = "监督模式值为0-3")
-    @Max(value = 3, message = "监督模式值为0-3")
+    @Min(value = 0, message = "监督模式值为0-4")
+    @Max(value = 4, message = "监督模式值为0-4")
     private Integer mode;
 
     /** 自定义提醒时间列表 ["09:00","14:00","20:00"] */
@@ -25,5 +25,13 @@ public class ReminderConfigRequest {
     /** 唐僧模式间隔（分钟，5-120） */
     @Min(value = 5, message = "唐僧模式间隔最少5分钟")
     @Max(value = 120, message = "唐僧模式间隔最多120分钟")
-    private Integer monkingInterval = 30;
+    private Integer monkingInterval;
+
+    /** 地狱模式间隔（分钟，5-60） */
+    @Min(value = 5, message = "地狱模式间隔最少5分钟")
+    @Max(value = 60, message = "地狱模式间隔最多60分钟")
+    private Integer hellInterval;
+
+    /** 是否启用提醒 */
+    private Boolean isActive;
 }

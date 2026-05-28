@@ -21,6 +21,6 @@ COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
-ENV BACKEND_URL=http://backend:8080
+ENV BACKEND_URL=http://backend.railway.internal:8080
 
 ENTRYPOINT ["/entrypoint.sh"]

@@ -100,6 +100,8 @@ INSERT INTO reminders (reminder_id, user_id, plan_id, reminder_type, trigger_tim
 ('reminder_008', 'user_005', 'plan_005', 2, '2024-03-28 20:00:00', '你的申论练习还没开始呢~', 1, '2024-03-28 20:00:00');
 
 -- 插入彩蛋触发记录数据
+UPDATE reminders SET status = CASE WHEN is_sent = 1 THEN 'TRIGGERED' ELSE 'PENDING' END;
+
 INSERT INTO easter_eggs (record_id, user_id, egg_type, trigger_date, content, is_triggered) VALUES
 ('egg_001', 'user_001', 'late_night', '2024-03-24', '夜深了还在努力学习，注意休息哦~已经连续学习7天啦！', 1),
 ('egg_002', 'user_001', 'early_bird', '2024-03-26', '早起鸟儿有虫吃！你今天6点就开始学习啦', 1),

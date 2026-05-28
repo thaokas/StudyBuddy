@@ -11,5 +11,6 @@ public class ReminderSettingsResponse {
     private Integer mode;
     private List<String> customTimes;
     private Integer monkingInterval;
+    private Integer hellInterval;
     private Boolean isActive;
 }

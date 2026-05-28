@@ -30,7 +30,7 @@ export interface LoginRequest {
 }
 
 // ==================== Plan Types ====================
-export type SupervisionMode = 0 | 1 | 2 | 3
+export type SupervisionMode = 0 | 1 | 2 | 3 | 4
 export type PlanStatus = 0 | 1 | 2
 export type Phase = 1 | 2 | 3
 export type FoundationLevel = 0 | 1 | 2
@@ -86,6 +86,7 @@ export interface TaskResponse {
 export interface CheckinRequest {
   planId: string
   content: string
+  imageUrl?: string
   checkinType: CheckinType
   taskIds?: string[]
 }
@@ -119,22 +120,34 @@ export interface CheckinHistoryItem {
 
 // ==================== Reminder Types ====================
 export type ReminderType = 1 | 2 | 3
+export type ScheduleType = 'MODE' | 'INTERVAL' | 'ABSOLUTE' | 'REPEATING'
+export type ReminderStatus = 'PENDING' | 'PROCESSING' | 'TRIGGERED' | 'CANCELLED'
 
 export interface Reminder {
   reminderId: string
   userId: string
   planId: string
   reminderType: ReminderType
+  scheduleType: ScheduleType
   triggerTime: string
+  intervalMinutes?: number
+  repeatDaily: boolean
+  timezone: string
   content: string
   isSent: number
   sentAt?: string
+  status: ReminderStatus
+  isRead: number
+  taskIds?: string
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface ReminderSettingsResponse {
   mode: number
   customTimes: string[]
   monkingInterval: number
+  hellInterval: number
   isActive: boolean
 }
 
@@ -143,46 +156,101 @@ export interface ReminderConfigRequest {
   mode: number
   customTimes: string[]
   monkingInterval: number
+  hellInterval: number
+  isActive: boolean
 }
 
-// ==================== Chat Types ====================
+export interface CreateReminderRequest {
+  planId: string
+  scheduleType: ScheduleType
+  taskIds?: string[]
+  intervalMinutes?: number
+  triggerTime?: string
+  timezone?: string
+  repeatDaily?: boolean
+}
+
+// ==================== Chat / Planner Types ====================
 
 export interface ChatMessageItem {
   role: 'user' | 'assistant'
   content: string
 }
 
-export interface PlanChatRequest {
-  user_id?: string
-  message: string
-  profile: ProfileSummary | null
-  search_results: string[]
-  messages: ChatMessageItem[]
+export interface SearchResultItem {
+  title: string
+  snippet: string
+  url: string
+  relevant: boolean
+  query_purpose?: 'syllabus' | 'schedule' | 'resources'
+  source_quality?: 'official' | 'reputable' | 'general'
+  reason?: string
 }
 
-export type PlanChatStatus = 'waiting_for_input' | 'completed' | 'error'
-
-export interface ProfileSummary {
-  exam_name?: string
-  exam_type?: string
-  exam_date?: string
-  daily_hours?: number
-  foundation_level?: number
-  weak_subjects: string[]
-  rest_days_per_week: number
-  missing_fields: string[]
-  is_ready: boolean
+export interface PlannerMaterial {
+  id: string
+  kind: 'file' | 'image' | 'document' | 'link'
+  name: string
+  source?: string
+  mime_type?: string
+  summary: string
+  selected: boolean
 }
 
-export interface PlanChatResponse {
-  status: PlanChatStatus
-  action: string  // "search" | "ask_user" | "generate_plan"
-  message: string
-  profile: ProfileSummary
-  search_results: string[]
+/** SSE event types from the planner agent */
+export type SseEventType =
+  | 'message'
+  | 'search_start'
+  | 'search_results'
+  | 'confirm'
+  | 'plan_generating'
+  | 'plan_generated'
+  | 'state'
+  | 'done'
+  | 'error'
+
+export interface SseMessageData { content: string }
+export interface SseSearchResultsData { results: SearchResultItem[] }
+export interface SseConfirmData {
+  profile: {
+    exam_name?: string
+    exam_type?: string
+    exam_date?: string
+    daily_hours?: number
+    foundation_level?: number
+    exam_subjects?: string[]
+    weak_subjects: string[]
+    rest_days_per_week: number | null
+    missing_fields: string[]
+    is_ready: boolean
+  }
+  materials?: PlannerMaterial[]
+  search_results?: SearchResultItem[]
+}
+export interface SsePlanGeneratedData {
+  tasks: GeneratedTask[]
+  summary: string
+  profile: Record<string, unknown>
+}
+export interface SseStateData {
+  stage: string
+  profile: Record<string, unknown>
+  search_results: SearchResultItem[]
+  materials?: PlannerMaterial[]
+  search_signature?: string
+  search_done: boolean
+  plan_tasks: GeneratedTask[]
   messages: ChatMessageItem[]
-  plan_id?: string
-  tasks?: TaskResponse[]
+}
+export interface SseErrorData { message: string }
+
+export interface GeneratedTask {
+  taskDate: string
+  subject: string
+  taskContent: string
+  estimatedMinutes: number
+  taskType: number
+  phase: number
 }
 
 // ==================== Report Types ====================
@@ -241,6 +309,7 @@ export const SUPERVISION_MODE_LABELS: Record<SupervisionMode, string> = {
   1: '温柔模式',
   2: '强化模式',
   3: '唐僧模式',
+  4: '地狱模式',
 }
 
 export const SUPERVISION_MODE_DESC: Record<SupervisionMode, string> = {
@@ -248,6 +317,7 @@ export const SUPERVISION_MODE_DESC: Record<SupervisionMode, string> = {
   1: '每晚22:00温柔提醒',
   2: '21:00和22:00双提醒',
   3: '每30分钟督促，直到完成',
+  4: '每15分钟毒舌督促，直到完成',
 }
 
 export const PLAN_STATUS_LABELS: Record<PlanStatus, string> = {
@@ -286,4 +356,11 @@ export const REMINDER_TYPE_LABELS: Record<ReminderType, string> = {
   1: '每日提醒',
   2: '督促提醒',
   3: '每周报告',
+}
+
+export const SCHEDULE_TYPE_LABELS: Record<ScheduleType, string> = {
+  MODE: '预设模式',
+  INTERVAL: '间隔提醒',
+  ABSOLUTE: '定时提醒',
+  REPEATING: '周期提醒',
 }

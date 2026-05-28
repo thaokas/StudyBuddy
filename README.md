@@ -9,6 +9,7 @@ prepKeeper/
 ├── agent-service/     # AI Agent 服务 (Python / FastAPI + LangGraph)
 ├── backend/           # 后端服务 (Java / Spring Boot)
 ├── frontend/          # 前端 (React + TypeScript + Vite)
+├── docs/              # 设计文档与性能报告
 └── logs/              # 日志文件
 ```
 
@@ -19,22 +20,23 @@ prepKeeper/
      ▲                       │
      └────── JSON ───────────┘
                              │
-                        PostgreSQL
+                        PostgreSQL  Redis
 ```
 
 - **Agent 服务** 提供 AI 驱动的核心智能：多轮对话生成备考计划、打卡鼓励、个性化提醒、周报生成。Agent 不直接访问数据库。
-- **后端** 负责用户认证（JWT）、业务数据管理、定时任务调度，并将需要 AI 能力的请求代理转发给 Agent 服务。
-- **前端** 为用户提供 Web 交互界面，涵盖登录注册、计划管理、任务打卡、学习统计等功能。
+- **后端** 负责用户认证（JWT）、业务数据管理、定时任务调度、WebSocket 实时推送，并将需要 AI 能力的请求代理转发给 Agent 服务。
+- **前端** 为用户提供 Web 交互界面，涵盖登录注册、计划管理、任务打卡、提醒管理、学习统计等功能。
 
 ## 功能模块
 
 | 模块 | 说明 |
 |------|------|
 | 用户认证 | 注册、登录、JWT Token 管理 |
-| 备考计划 | 多轮对话式生成个性化备考计划，支持追问补全信息 |
+| 备考计划 | 多轮对话式生成个性化备考计划，支持上传资料、链接解析、证据搜索 |
 | 任务管理 | 每日学习任务查看与状态跟踪 |
 | 打卡鼓励 | 提交学习内容后，AI 生成个性化鼓励文案 |
-| 智能提醒 | 根据严格度模式（静默/温柔/强化/唐僧）生成催促提醒 |
+| 智能提醒 | 支持五种监督模式（静默/温柔/强化/唐僧/地狱）及自定义间隔/绝对/重复提醒 |
+| WebSocket 推送 | 提醒实时推送到浏览器，支持弹窗通知与系统通知 |
 | 周报分析 | 按周汇总完成情况，生成 HTML 周报含数据分析与建议 |
 | 定时任务 | 每日提醒、每周周报、连续打卡天数检查 |
 
@@ -49,7 +51,6 @@ prepKeeper/
 | LangGraph | Agent 工作流编排 |
 | LangChain | LLM 调用与工具链 |
 | ChromaDB + sentence-transformers | RAG 向量检索 |
-| APScheduler | 定时任务 |
 
 ### 后端
 
@@ -59,6 +60,8 @@ prepKeeper/
 | Spring Security + JWT | 认证授权 |
 | Spring Data JPA + Hibernate | ORM |
 | PostgreSQL | 数据库 |
+| Redis | 缓存与延迟队列 |
+| WebSocket (Spring) | 实时推送 |
 | SpringDoc OpenAPI | API 文档 (Swagger) |
 | Spring Scheduler | 定时任务 |
 
@@ -81,6 +84,7 @@ prepKeeper/
 - Java 17+ & Maven
 - Node.js 18+
 - PostgreSQL
+- Redis
 
 ### 1. Agent 服务
 
@@ -97,7 +101,7 @@ API 文档：启动后访问 `http://127.0.0.1:8000/docs`
 
 ```bash
 cd backend
-# 编辑 src/main/resources/application.yml 配置数据库和 Agent 服务地址
+# 编辑 src/main/resources/application.yml 配置数据库、Redis 和 Agent 服务地址
 mvn spring-boot:run
 ```
 
@@ -118,3 +122,12 @@ npm run dev
 - **Agent 不直接与数据库交互**——数据库的读写均由后端通过 JPA 完成，Agent 专注于 LLM 推理与知识检索。
 - **前后端通过 HTTP 通信**——前端的所有请求先到达后端，需要 AI 能力时后端再转发给 Agent 服务，前端不直接调用 Agent。
 - **定时任务由后端调度**——每日提醒、周报生成、连续打卡检查等周期性任务均在后端通过 Spring Scheduler 触发。
+- **实时推送通过 WebSocket**——提醒触发后通过 WebSocket 实时推送到在线用户，离线用户的提醒标记为未读，下次登录可查看。
+- **提醒调度基于 Redis ZSET**——自定义提醒和预设模式提醒通过 Redis 有序集合实现延迟队列调度，支持秒级精度触发。
+
+## 相关文档
+
+- [backend/README.md](backend/README.md) — 后端详细说明
+- [docs/design-docs/reminder-refactored.md](docs/design-docs/reminder-refactored.md) — 提醒系统设计文档
+- [docs/design-docs/planner.md](docs/design-docs/planner.md) — Planner Agent 设计说明
+- [docs/performance-report.md](docs/performance-report.md) — 性能测试报告

@@ -51,14 +51,16 @@ export default function Plans() {
       {plans.length === 0 ? (
         <Empty text="还没有备考计划，快去创建吧~" />
       ) : (
-        plans.map((plan) => (
-          <PlanCard
-            key={plan.planId}
-            plan={plan}
-            onView={() => navigate(`/plans/${plan.planId}`)}
-            onDelete={() => handleDelete(plan.planId)}
-          />
-        ))
+        <div className="space-y-4 landscape:grid landscape:grid-cols-2 landscape:gap-4 landscape:space-y-0">
+          {plans.map((plan) => (
+            <PlanCard
+              key={plan.planId}
+              plan={plan}
+              onView={() => navigate(`/plans/${plan.planId}`)}
+              onDelete={() => handleDelete(plan.planId)}
+            />
+          ))}
+        </div>
       )}
     </div>
   )

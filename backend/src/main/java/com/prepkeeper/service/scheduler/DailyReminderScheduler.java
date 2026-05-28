@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * 每日提醒定时任务
+ * 每日提醒定时任务 —— 按预设模式创建 PENDING 状态提醒记录并加入 Redis 延迟队列。
+ * 实际触发和推送由 RedisReminderScheduler 统一处理。
  */
 @Slf4j
 @Component
@@ -21,81 +22,49 @@ public class DailyReminderScheduler {
     private final StudyPlanRepository planRepository;
     private final ReminderService reminderService;
 
-    /**
-     * 温柔模式提醒 - 每天22:00
-     */
     @Scheduled(cron = "0 0 22 * * ?")
     public void gentleReminder() {
-        log.info("开始执行温柔模式提醒任务...");
-
-        List<StudyPlan> plans = planRepository.findAllActivePlansWithReminder().stream()
-                .filter(p -> p.getCurrentMode() == 1)
-                .toList();
-
-        for (StudyPlan plan : plans) {
-            try {
-                String content = reminderService.generateAndSendReminder(
-                        plan.getUserId(), plan.getPlanId(), plan.getCurrentMode());
-                if (content != null) {
-                    log.info("温柔提醒已发送: userId={}, planId={}", plan.getUserId(), plan.getPlanId());
-                }
-            } catch (Exception e) {
-                log.error("温柔提醒发送失败: planId={}, error={}", plan.getPlanId(), e.getMessage());
-            }
-        }
-
-        log.info("温柔模式提醒任务完成，处理{}个计划", plans.size());
+        log.info("开始创建温柔模式提醒...");
+        createModeReminders(1);
     }
 
-    /**
-     * 强化模式提醒 - 每天21:00和22:00
-     */
     @Scheduled(cron = "0 0 21,22 * * ?")
     public void enhancedReminder() {
-        log.info("开始执行强化模式提醒任务...");
-
-        List<StudyPlan> plans = planRepository.findAllActivePlansWithReminder().stream()
-                .filter(p -> p.getCurrentMode() == 2)
-                .toList();
-
-        for (StudyPlan plan : plans) {
-            try {
-                String content = reminderService.generateAndSendReminder(
-                        plan.getUserId(), plan.getPlanId(), plan.getCurrentMode());
-                if (content != null) {
-                    log.info("强化提醒已发送: userId={}, planId={}", plan.getUserId(), plan.getPlanId());
-                }
-            } catch (Exception e) {
-                log.error("强化提醒发送失败: planId={}, error={}", plan.getPlanId(), e.getMessage());
-            }
-        }
-
-        log.info("强化模式提醒任务完成，处理{}个计划", plans.size());
+        log.info("开始创建强化模式提醒...");
+        createModeReminders(2);
     }
 
-    /**
-     * 唐僧模式提醒 - 21:00起每30分钟
-     */
     @Scheduled(cron = "0 0/30 21-23 * * ?")
     public void monkReminder() {
-        log.info("开始执行唐僧模式提醒任务...");
+        log.info("开始创建唐僧模式提醒...");
+        createModeReminders(3);
+    }
 
+    @Scheduled(cron = "0 0/15 20-23 * * ?")
+    public void hellReminder() {
+        log.info("开始创建地狱模式提醒...");
+        createModeReminders(4);
+    }
+
+    private void createModeReminders(int mode) {
         List<StudyPlan> plans = planRepository.findAllActivePlansWithReminder().stream()
-                .filter(p -> p.getCurrentMode() == 3)
+                .filter(p -> p.getCurrentMode() == mode)
                 .toList();
+
+        if (plans.isEmpty()) {
+            log.debug("模式 {} 无活跃计划", mode);
+            return;
+        }
 
         for (StudyPlan plan : plans) {
             try {
-                String content = reminderService.generateAndSendReminder(
-                        plan.getUserId(), plan.getPlanId(), plan.getCurrentMode());
-                if (content != null) {
-                    log.info("唐僧提醒已发送: userId={}, planId={}", plan.getUserId(), plan.getPlanId());
-                }
+                reminderService.createModeReminder(plan.getUserId(), plan.getPlanId(), mode);
             } catch (Exception e) {
-                log.error("唐僧提醒发送失败: planId={}, error={}", plan.getPlanId(), e.getMessage());
+                log.error("创建模式提醒失败: userId={}, planId={}, error={}",
+                        plan.getUserId(), plan.getPlanId(), e.getMessage());
             }
         }
 
-        log.info("唐僧模式提醒任务完成，处理{}个计划", plans.size());
+        log.info("模式 {} 创建了 {} 条 PENDING 提醒", mode, plans.size());
     }
 }

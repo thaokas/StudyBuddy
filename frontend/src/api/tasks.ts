@@ -5,6 +5,9 @@ export const taskApi = {
   getToday: (planId: string) =>
     client.get<ApiResponse<TaskResponse[]>>('/tasks/today', { params: { planId } }),
 
+  getTodayAll: () =>
+    client.get<ApiResponse<TaskResponse[]>>('/tasks/today/all'),
+
   getByPlan: (planId: string) =>
     client.get<ApiResponse<TaskResponse[]>>(`/tasks/plan/${planId}`),
 

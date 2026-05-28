@@ -2,6 +2,7 @@
 import logging
 import os
 import base64
+import httpx
 from typing import Dict
 
 from langchain_core.messages import HumanMessage
@@ -12,9 +13,32 @@ from app.agents.checkin.prompts import CHECKIN_ENCOURAGEMENT_PROMPT, IMAGE_SUMMA
 logger = logging.getLogger(__name__)
 
 
-def encode_image_to_base64(filepath):
-    ext = os.path.splitext(filepath)[1].lower()
+def encode_image_to_base64(image_url):
+    """将图片路径/URL/base64字符串统一转为base64 data URI。
 
+    支持三种输入格式：
+    - data: URIs (data:image/...;base64,...) → 直接返回
+    - HTTP(S) URLs → 下载后编码
+    - 本地文件路径 → 读取后编码
+    """
+    # 已经是完整的 data URI，直接使用
+    if image_url.startswith("data:"):
+        return image_url
+
+    # 网络图片：下载后编码
+    if image_url.startswith("http://") or image_url.startswith("https://"):
+        try:
+            resp = httpx.get(image_url, timeout=30.0)
+            resp.raise_for_status()
+            content_type = resp.headers.get("content-type", "image/jpeg")
+            b64 = base64.b64encode(resp.content).decode("utf-8")
+            return f"data:{content_type};base64,{b64}"
+        except Exception as e:
+            logger.error(f"下载图片失败: {e}")
+            return None
+
+    # 本地文件：读取后编码
+    ext = os.path.splitext(image_url)[1].lower()
     mime_map = {
         ".jpg": "image/jpeg",
         ".jpeg": "image/jpeg",
@@ -22,12 +46,16 @@ def encode_image_to_base64(filepath):
         ".gif": "image/gif",
         ".webp": "image/webp",
     }
-
     mime_type = mime_map.get(ext, "application/octet-stream")
 
-    # 以二进制模式读取图片文件
-    with open(os.getcwd() + filepath, "rb") as f:
-        return f"data:{mime_type};base64,{base64.b64encode(f.read()).decode('utf-8')}"
+    try:
+        filepath = image_url if os.path.isabs(image_url) else os.path.join(os.getcwd(), image_url.lstrip("/"))
+        with open(filepath, "rb") as f:
+            b64 = base64.b64encode(f.read()).decode("utf-8")
+        return f"data:{mime_type};base64,{b64}"
+    except Exception as e:
+        logger.error(f"读取本地图片失败: {e}")
+        return None
 
 
 async def summarize_image_node(state: CheckinState) -> Dict:
@@ -40,6 +68,9 @@ async def summarize_image_node(state: CheckinState) -> Dict:
         from app.llm import get_vision_model
         llm = get_vision_model()
         image_data = encode_image_to_base64(image_url)
+        if image_data is None:
+            return {"image_summary": None, "error": "图片处理失败，无法读取或下载"}
+
         message = HumanMessage(content=[
             {"type": "text", "text": IMAGE_SUMMARIZE_PROMPT},
             {"type": "image_url", "image_url": image_data},

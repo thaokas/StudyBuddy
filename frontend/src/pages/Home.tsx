@@ -20,6 +20,8 @@ export default function Home() {
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   )
   const activePlan = sortedPlans.find((p) => p.planStatus === 0)
+  const activePlans = plans.filter((p) => p.planStatus === 0)
+  const planNameMap = Object.fromEntries(plans.map((p) => [p.planId, p.examName]))
 
   useEffect(() => {
     const init = async () => {
@@ -39,13 +41,13 @@ export default function Home() {
         setPlans(fetchedPlans)
         setStreak(streakRes.data.data)
 
-        const newest = [...fetchedPlans].sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        )
-        const running = newest.find((p) => p.planStatus === 0)
-        if (running) {
-          const tasksRes = await taskApi.getToday(running.planId)
-          setTodayTasks(tasksRes.data.data)
+        const runningPlans = fetchedPlans.filter((p: PlanResponse) => p.planStatus === 0)
+        if (runningPlans.length > 0) {
+          const tasksResults = await Promise.all(
+            runningPlans.map((p: PlanResponse) => taskApi.getToday(p.planId)),
+          )
+          const allTasks = tasksResults.flatMap((res) => res.data.data)
+          setTodayTasks(allTasks)
         }
       } catch (_) {
         // noop
@@ -62,7 +64,7 @@ export default function Home() {
   if (loading) return <Loading />
 
   return (
-    <div className="space-y-4 pb-4">
+    <div className="space-y-4 pb-4 landscape:grid landscape:grid-cols-2 landscape:items-start landscape:gap-4 landscape:space-y-0">
       {/* Header greeting */}
       <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-2xl p-5 flex items-center justify-between">
         <div>
@@ -134,7 +136,7 @@ export default function Home() {
       )}
 
       {/* Today's tasks */}
-      {activePlan && (
+      {activePlans.length > 0 && (
         <div className="bg-white rounded-2xl p-5 shadow-sm">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-gray-800">今日任务</h3>
@@ -160,9 +162,14 @@ export default function Home() {
                       </p>
                       <p className="text-xs text-gray-400 truncate">{task.taskContent}</p>
                     </div>
-                    <span className="text-xs text-gray-400 flex-shrink-0">
-                      {TASK_TYPE_LABELS[task.taskType]}
-                    </span>
+                    <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
+                      <span className="text-xs text-blue-400 bg-blue-50 px-1.5 py-0.5 rounded">
+                        {planNameMap[task.planId]}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {TASK_TYPE_LABELS[task.taskType]}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>

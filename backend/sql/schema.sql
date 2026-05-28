@@ -72,25 +72,50 @@ CREATE TABLE IF NOT EXISTS reminders (
     user_id VARCHAR(64) NOT NULL,
     plan_id VARCHAR(64) NOT NULL,
     reminder_type INTEGER NOT NULL,          -- 提醒类型: 1-每日提醒 2-催更提醒 3-周报提醒
+    schedule_type VARCHAR(20) DEFAULT 'MODE', -- 调度类型: MODE/INTERVAL/ABSOLUTE/REPEATING
     trigger_time TIMESTAMP NOT NULL,
+    interval_minutes INTEGER,                -- INTERVAL 类型的间隔分钟数
+    repeat_daily BOOLEAN DEFAULT false,      -- REPEATING 类型标记
+    timezone VARCHAR(50) DEFAULT 'Asia/Shanghai',
     content VARCHAR(1000),
     is_sent INTEGER DEFAULT 0,               -- 是否已发送: 0-否 1-是
     sent_at TIMESTAMP,
+    status VARCHAR(20) DEFAULT 'PENDING',    -- PENDING/PROCESSING/TRIGGERED/CANCELLED
+    is_read INTEGER DEFAULT 0,               -- 是否已读: 0-未读 1-已读
+    task_ids TEXT,                           -- JSON 数组，关联的任务 ID 列表
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
     CONSTRAINT fk_reminders_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     CONSTRAINT fk_reminders_plan FOREIGN KEY (plan_id) REFERENCES study_plans(plan_id) ON DELETE CASCADE
 );
 
+ALTER TABLE reminders ADD COLUMN IF NOT EXISTS schedule_type VARCHAR(20) DEFAULT 'MODE';
+ALTER TABLE reminders ADD COLUMN IF NOT EXISTS interval_minutes INTEGER;
+ALTER TABLE reminders ADD COLUMN IF NOT EXISTS repeat_daily BOOLEAN DEFAULT false;
+ALTER TABLE reminders ADD COLUMN IF NOT EXISTS timezone VARCHAR(50) DEFAULT 'Asia/Shanghai';
+ALTER TABLE reminders ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'PENDING';
+ALTER TABLE reminders ADD COLUMN IF NOT EXISTS is_read INTEGER DEFAULT 0;
+ALTER TABLE reminders ADD COLUMN IF NOT EXISTS task_ids TEXT;
+ALTER TABLE reminders ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW();
+ALTER TABLE reminders ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();
+ALTER TABLE reminders ALTER COLUMN status SET DEFAULT 'PENDING';
+UPDATE reminders SET status = 'PENDING' WHERE status IS NULL;
+UPDATE reminders SET status = 'PENDING' WHERE is_sent = 0 AND status = 'TRIGGERED';
+
 -- 提醒设置表
 CREATE TABLE IF NOT EXISTS reminder_settings (
     user_id VARCHAR(64) PRIMARY KEY,
-    mode INTEGER DEFAULT 1,                    -- 监督模式: 0-静默 1-温柔 2-强化 3-唐僧
+    mode INTEGER DEFAULT 1,                    -- 监督模式: 0-静默 1-温柔 2-强化 3-唐僧 4-地狱
     custom_times VARCHAR(500),                 -- 自定义提醒时间 JSON数组 ["09:00","14:00","20:00"]
     monking_interval INTEGER DEFAULT 30,       -- 唐僧模式间隔(分钟) 5-120
+    hell_interval INTEGER DEFAULT 15,          -- 地狱模式间隔(分钟) 5-60
     is_active BOOLEAN DEFAULT true,            -- 是否启用
     created_at TIMESTAMP,
     updated_at TIMESTAMP,
     CONSTRAINT fk_reminder_settings_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
+
+ALTER TABLE reminder_settings ADD COLUMN IF NOT EXISTS hell_interval INTEGER DEFAULT 15;
 
 -- 彩蛋触发记录表
 CREATE TABLE IF NOT EXISTS easter_eggs (

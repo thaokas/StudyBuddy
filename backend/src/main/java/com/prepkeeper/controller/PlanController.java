@@ -1,10 +1,8 @@
 package com.prepkeeper.controller;
 
-import com.prepkeeper.dto.request.PlanChatRequest;
 import com.prepkeeper.dto.request.PlanCreateRequest;
 import com.prepkeeper.dto.request.PlanWithTasksRequest;
 import com.prepkeeper.dto.response.ApiResponse;
-import com.prepkeeper.dto.response.PlanChatResponse;
 import com.prepkeeper.dto.response.PlanResponse;
 import com.prepkeeper.security.UserPrincipal;
 import com.prepkeeper.service.PlanService;
@@ -34,16 +32,6 @@ public class PlanController {
             @AuthenticationPrincipal UserPrincipal principal) {
 
         PlanResponse response = planService.createPlan(principal.getUserId(), request);
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-
-    @Operation(summary = "对话式计划生成")
-    @PostMapping("/chat")
-    public ResponseEntity<ApiResponse<PlanChatResponse>> planChat(
-            @Valid @RequestBody PlanChatRequest request,
-            @AuthenticationPrincipal UserPrincipal principal) {
-
-        PlanChatResponse response = planService.planChat(principal.getUserId(), request);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

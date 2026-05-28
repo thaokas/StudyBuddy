@@ -1,13 +1,13 @@
-"""测试配置 & 共享 fixtures"""
+"""Test configuration & shared fixtures."""
 import pytest
 from datetime import date, timedelta
 
-from app.agents.planner.state import ExamProfile, PlannerState
+from app.agents.planner.state import initial_state
 
 
 @pytest.fixture
 def sample_checkin_state():
-    """打卡测试的初始 state"""
+    """Initial state for check-in tests."""
     return {
         "completed_content": "完成了高数第三章不定积分的学习和习题",
         "overall_completion_rate": 45.0,
@@ -19,27 +19,31 @@ def sample_checkin_state():
 
 @pytest.fixture
 def sample_planner_state():
-    """计划生成测试的初始 state（信息齐全）"""
+    """Initial planner state with complete exam info."""
     exam_date = (date.today() + timedelta(days=90)).strftime("%Y-%m-%d")
-    return PlannerState(
-        user_id="test-user-001",
-        profile=ExamProfile(
-            exam_name="考研数学一",
-            exam_type="考研",
-            exam_date=exam_date,
-            daily_hours=3.0,
-            foundation_level=0,
-            weak_subjects=["线性代数"],
-            rest_days_per_week=1,
-        ),
-        messages=[],
-        conversation_rounds=0,
-    )
+    state = initial_state()
+    state["profile"] = {
+        "exam_name": "考研数学一",
+        "exam_type": "考研",
+        "exam_date": exam_date,
+        "daily_hours": 3.0,
+        "foundation_level": 0,
+        "exam_subjects": ["高等数学", "线性代数"],
+        "weak_subjects": ["线性代数"],
+        "rest_days_per_week": 1,
+        "missing_fields": [],
+        "is_ready": True,
+    }
+    state["messages"] = [
+        {"role": "user", "content": "帮我制定一个考研数学一的备考计划"},
+        {"role": "assistant", "content": "好的！"},
+    ]
+    return state
 
 
 @pytest.fixture
 def sample_reminder_state():
-    """提醒测试的初始 state"""
+    """Initial state for reminder tests."""
     return {
         "today_total_tasks": [
             {"subject": "数学", "name": "完成第三章习题", "estimated_minutes": 60},
@@ -63,7 +67,7 @@ def sample_reminder_state():
 
 @pytest.fixture
 def sample_report_state():
-    """周报测试的初始 state"""
+    """Initial state for weekly report tests."""
     week_start = (date.today() - timedelta(days=date.today().weekday())).strftime("%Y-%m-%d")
     week_end = (date.today() - timedelta(days=date.today().weekday()) + timedelta(days=6)).strftime("%Y-%m-%d")
     return {

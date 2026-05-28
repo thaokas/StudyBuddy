@@ -1,21 +1,27 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { planApi, checkinApi, taskApi } from '@/api'
 import { useAuthStore } from '@/store/authStore'
 import type { PlanResponse, TaskResponse, CheckinResponse } from '@/types'
 import Loading from '@/components/Loading'
 import dayjs from 'dayjs'
 
+const TASK_TYPE_LABELS: Record<number, string> = { 1: '学习', 2: '复习', 3: '刷题', 4: '模考' }
+
 export default function Checkin() {
   const user = useAuthStore((s) => s.user)
   const [plans, setPlans] = useState<PlanResponse[]>([])
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null)
-  const [todayTasks, setTodayTasks] = useState<TaskResponse[]>([])
+  const [allTodayTasks, setAllTodayTasks] = useState<TaskResponse[]>([])
   const [todayCheckin, setTodayCheckin] = useState<CheckinResponse | null>(null)
   const [content, setContent] = useState('')
   const [selectedTasks, setSelectedTasks] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<CheckinResponse | null>(null)
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const userId = user?.userId ?? localStorage.getItem('userId')
@@ -23,8 +29,11 @@ export default function Checkin() {
     planApi.getByUser(userId).then((res) => {
       const active = res.data.data.filter((p) => p.planStatus === 0)
       setPlans(active)
-      if (active.length > 0) setSelectedPlanId(active[0].planId)
-      else setLoading(false)
+      if (active.length > 0) {
+        setSelectedPlanId(active[0].planId)
+      } else {
+        setLoading(false)
+      }
     })
   }, [user])
 
@@ -32,10 +41,10 @@ export default function Checkin() {
     if (!selectedPlanId) return
     setLoading(true)
     Promise.all([
-      taskApi.getToday(selectedPlanId),
+      taskApi.getTodayAll(),
       checkinApi.getToday(selectedPlanId),
     ]).then(([tasksRes, checkinRes]) => {
-      setTodayTasks(tasksRes.data.data)
+      setAllTodayTasks(tasksRes.data.data || [])
       setTodayCheckin(checkinRes.data.data)
     }).finally(() => setLoading(false))
   }, [selectedPlanId])
@@ -46,18 +55,46 @@ export default function Checkin() {
     )
   }
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      alert('请选择图片文件')
+      return
+    }
+    setImageFile(file)
+    const reader = new FileReader()
+    reader.onloadend = () => setImagePreview(reader.result as string)
+    reader.readAsDataURL(file)
+  }
+
+  const removeImage = () => {
+    setImageFile(null)
+    setImagePreview(null)
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
   const handleSubmit = async () => {
     if (!selectedPlanId) return
-    if (!content.trim()) {
-      alert('请填写今日打卡内容')
+    if (!content.trim() && !imageFile) {
+      alert('请填写打卡内容或上传打卡图片')
       return
     }
     setSubmitting(true)
     try {
+      let imageUrl: string | undefined
+      if (imageFile) {
+        setUploadingImage(true)
+        const uploadRes = await checkinApi.uploadImage(imageFile)
+        imageUrl = uploadRes.data.data.imageUrl
+        setUploadingImage(false)
+      }
+
       const res = await checkinApi.submit({
         planId: selectedPlanId,
         content,
-        checkinType: 1,
+        imageUrl,
+        checkinType: imageFile ? 2 : 1,
         taskIds: selectedTasks,
       })
       setResult(res.data.data)
@@ -67,8 +104,11 @@ export default function Checkin() {
       alert(msg || '打卡失败，请稍后重试')
     } finally {
       setSubmitting(false)
+      setUploadingImage(false)
     }
   }
+
+  const planMap = new Map(plans.map((p) => [p.planId, p.examName]))
 
   if (loading) return <Loading />
 
@@ -79,7 +119,7 @@ export default function Checkin() {
         <div className="text-6xl">🎉</div>
         <h2 className="text-xl font-bold text-gray-800">打卡成功！</h2>
         <div className="bg-blue-50 rounded-2xl p-5 w-full text-center">
-          <p className="text-blue-600 font-medium">{result.encouragement}</p>
+          <p className="text-blue-600 font-medium">{result.encouragement || '今天也很努力，继续加油！'}</p>
           <div className="flex justify-center gap-6 mt-4">
             <div>
               <p className="text-2xl font-bold text-blue-500">{result.currentStreak}</p>
@@ -87,7 +127,7 @@ export default function Checkin() {
             </div>
             <div>
               <p className="text-2xl font-bold text-green-500">
-                {Math.round(result.completionRate * 100)}%
+                {Math.round(result.completionRate)}%
               </p>
               <p className="text-xs text-gray-400">完成率</p>
             </div>
@@ -95,7 +135,7 @@ export default function Checkin() {
         </div>
         {result.easterEgg && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 w-full">
-            <p className="text-yellow-600 font-medium text-sm">🥚 彩蛋解锁！</p>
+            <p className="text-yellow-600 font-medium text-sm">彩蛋解锁！</p>
             <p className="text-yellow-500 text-sm mt-1">{result.easterEgg.content}</p>
           </div>
         )}
@@ -118,9 +158,11 @@ export default function Checkin() {
           <div className="text-4xl mb-2">✅</div>
           <p className="font-medium text-green-700">今日已打卡</p>
           <p className="text-sm text-gray-500 mt-1">
-            {dayjs().format('M月D日')} · 完成率 {Math.round(todayCheckin.completionRate * 100)}%
+            {dayjs().format('M月D日')} · 完成率 {Math.round(todayCheckin.completionRate)}%
           </p>
-          <p className="text-sm text-blue-600 mt-2">{todayCheckin.encouragement}</p>
+          {todayCheckin.encouragement && (
+            <p className="text-sm text-blue-600 mt-2">{todayCheckin.encouragement}</p>
+          )}
         </div>
         <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
           <p className="text-3xl font-bold text-blue-500">{todayCheckin.currentStreak}</p>
@@ -158,21 +200,39 @@ export default function Checkin() {
         <div className="text-center py-16 text-gray-400 text-sm">暂无进行中的计划</div>
       ) : (
         <>
-          {/* Task checklist */}
-          {todayTasks.length > 0 && (
+          {/* All today's tasks with scrollable preview */}
+          {allTodayTasks.length > 0 && (
             <div className="bg-white rounded-2xl p-4 shadow-sm">
-              <p className="font-medium text-gray-700 mb-3">今日完成的任务（可选）</p>
-              <div className="space-y-2">
-                {todayTasks.map((task) => (
-                  <label key={task.taskId} className="flex items-center gap-3 cursor-pointer">
+              <p className="font-medium text-gray-700 mb-3">
+                今日任务 ({allTodayTasks.length})
+              </p>
+              <div className="max-h-60 overflow-y-auto space-y-2 pr-1">
+                {allTodayTasks.map((task) => (
+                  <label
+                    key={task.taskId}
+                    className="flex items-center gap-3 cursor-pointer py-1.5 px-2 rounded-lg hover:bg-gray-50 transition"
+                  >
                     <input
                       type="checkbox"
                       checked={selectedTasks.includes(task.taskId)}
                       onChange={() => handleTaskToggle(task.taskId)}
-                      className="w-4 h-4 accent-blue-500 rounded"
+                      className="w-4 h-4 accent-blue-500 rounded flex-shrink-0"
                     />
-                    <span className="text-sm text-gray-700">{task.subject}</span>
-                    <span className="text-xs text-gray-400 ml-auto">{task.estimatedMinutes}min</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 flex-shrink-0">
+                          {TASK_TYPE_LABELS[task.taskType] || '任务'}
+                        </span>
+                        <span className="text-sm text-gray-700 truncate">{task.taskContent || task.subject}</span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-xs text-gray-400">{task.subject}</span>
+                        <span className="text-xs text-gray-300">·</span>
+                        <span className="text-xs text-gray-400">{task.estimatedMinutes}min</span>
+                        <span className="text-xs text-gray-300">·</span>
+                        <span className="text-xs text-gray-400">{planMap.get(task.planId) || ''}</span>
+                      </div>
+                    </div>
                   </label>
                 ))}
               </div>
@@ -186,8 +246,42 @@ export default function Checkin() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="记录今天的学习收获、遇到的困难或心情..."
-              rows={5}
+              rows={4}
               className="w-full text-sm text-gray-700 placeholder-gray-300 resize-none focus:outline-none"
+            />
+          </div>
+
+          {/* Image upload */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm">
+            <p className="font-medium text-gray-700 mb-2">打卡图片（可选）</p>
+            {imagePreview ? (
+              <div className="relative">
+                <img
+                  src={imagePreview}
+                  alt="打卡图片预览"
+                  className="w-full h-40 object-cover rounded-xl border border-gray-200"
+                />
+                <button
+                  onClick={removeImage}
+                  className="absolute top-2 right-2 bg-black/50 text-white w-6 h-6 rounded-full text-sm flex items-center justify-center hover:bg-black/70 transition"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full border-2 border-dashed border-gray-300 rounded-xl py-6 text-gray-400 text-sm hover:border-blue-400 hover:text-blue-400 transition"
+              >
+                📷 点击上传学习打卡图片
+              </button>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageSelect}
+              className="hidden"
             />
           </div>
 
@@ -196,7 +290,7 @@ export default function Checkin() {
             disabled={submitting}
             className="w-full bg-blue-500 disabled:bg-blue-300 text-white py-3 rounded-xl font-medium hover:bg-blue-600 transition"
           >
-            {submitting ? '提交中...' : '✅ 完成打卡'}
+            {uploadingImage ? '上传图片中...' : submitting ? '提交中...' : '✅ 完成打卡'}
           </button>
         </>
       )}

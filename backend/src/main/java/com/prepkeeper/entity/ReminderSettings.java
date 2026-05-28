@@ -13,7 +13,7 @@ public class ReminderSettings {
     @Column(name = "user_id", length = 64)
     private String userId;
 
-    /** 监督模式: 0-静默 1-温柔 2-强化 3-唐僧 */
+    /** 监督模式: 0-静默 1-温柔 2-强化 3-唐僧 4-地狱 */
     @Column(name = "mode")
     private Integer mode = 1;
 
@@ -24,6 +24,10 @@ public class ReminderSettings {
     /** 唐僧模式间隔(分钟)，5-120 */
     @Column(name = "monking_interval")
     private Integer monkingInterval = 30;
+
+    /** 地狱模式间隔(分钟)，5-60 */
+    @Column(name = "hell_interval")
+    private Integer hellInterval = 15;
 
     @Column(name = "is_active")
     private Boolean isActive = true;

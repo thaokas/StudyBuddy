@@ -43,17 +43,6 @@ class ChatRequest(BaseModel):
     context: Optional[Dict[str, Any]] = None
 
 
-class PlanGenerateRequest(BaseModel):
-    """计划生成请求"""
-    user_id: str
-    exam_name: str = Field(..., description="考试名称，如：考研数学")
-    exam_type: str = Field(..., description="考试类型：考研/期末/考证/考公/语言/期中")
-    exam_date: date = Field(..., description="考试日期")
-    daily_hours: float = Field(..., gt=0, le=24, description="每日可用时长（小时）")
-    foundation_level: int = Field(1, ge=0, le=2, description="基础水平：0-零基础 1-有一定基础 2-已复习一轮")
-    weak_subjects: Optional[List[str]] = Field(default=None, description="薄弱科目列表")
-
-
 class CheckinRequest(BaseModel):
     """打卡请求"""
     completed_content: str = Field(..., description="今日完成的计划内容描述")
@@ -82,14 +71,6 @@ class TaskSchema(BaseModel):
 
     class Config:
         from_attributes = True
-
-
-class PlanGenerateResponse(BaseModel):
-    """计划生成响应"""
-    plan_id: Optional[str]
-    total_tasks: int
-    message: str
-    tasks: List[Dict[str, Any]] = []
 
 
 class CheckinResponse(BaseModel):
@@ -165,67 +146,24 @@ class WeeklyReportResponse(BaseModel):
     daily_breakdown: List[Dict[str, Any]] = []
 
 
-class ProfileSummary(BaseModel):
-    """已收集的备考信息摘要"""
-    exam_name: Optional[str] = None
-    exam_type: Optional[str] = None
-    exam_date: Optional[str] = None
-    daily_hours: Optional[float] = None
-    foundation_level: Optional[int] = None
-    weak_subjects: List[str] = []
-    rest_days_per_week: int = 1
-    missing_fields: List[str] = []
-    is_ready: bool = False
+class PlannerChatRequest(BaseModel):
+    """SSE streaming plan generation request."""
+    message: str = Field(..., description="User message for this turn")
+    thread_id: Optional[str] = Field(None, description="Thread ID for multi-turn continuation")
+    state: Optional[Dict[str, Any]] = Field(None, description="Previous agent state for multi-turn conversations")
 
 
-class PlanChatRequest(BaseModel):
-    """多轮对话式计划生成请求（无状态 — 前端持有所有对话状态）"""
-    user_id: str = "anonymous"
-    message: str
-    profile: Optional[ProfileSummary] = None
-    search_results: List[str] = []
-    messages: List[Dict[str, str]] = []
+class PlannerMaterialLinkRequest(BaseModel):
+    """Public web material supplied for planner context."""
+    url: str = Field(..., description="Public HTTP(S) URL containing readable study material")
 
 
-class PlanChatResponse(BaseModel):
-    """多轮对话式计划生成响应（无状态）"""
-    status: str  # "waiting_for_input" | "completed" | "error"
-    action: str = ""  # "search" | "ask_user" | "generate_plan"
-    message: str
-    profile: Optional[ProfileSummary] = None
-    search_results: List[str] = []
-    messages: List[Dict[str, str]] = []
-    plan_id: Optional[str] = None
-    tasks: List[Dict[str, Any]] = []
-
-
-# ── LLM Proxy & Search schemas ──
-
-class LlmChatRequest(BaseModel):
-    """LLM代理请求"""
-    messages: List[Dict[str, str]] = []
-    system_prompt: str = ""
-
-
-class LlmChatResponse(BaseModel):
-    """LLM代理响应"""
-    content: str
-    error: Optional[str] = None
-
-
-class SearchRequest(BaseModel):
-    """搜索请求"""
-    query: str
-
-
-class SearchResult(BaseModel):
-    """单条搜索结果"""
-    title: str = ""
-    snippet: str = ""
-    url: str = ""
-
-
-class SearchResponse(BaseModel):
-    """搜索响应"""
-    results: List[SearchResult] = []
-    error: Optional[str] = None
+class PlannerMaterialResponse(BaseModel):
+    """A summarized material that can be included in a study plan."""
+    id: str
+    kind: str
+    name: str
+    source: Optional[str] = None
+    mime_type: Optional[str] = None
+    summary: str
+    selected: bool = True
