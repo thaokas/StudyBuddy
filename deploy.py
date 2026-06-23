@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 交互式部署脚本 - 跨平台 (Windows / macOS / Linux)
-小搭 PrepKeeper 一键部署配置工具
+小搭 StudyBuddy 一键部署配置工具
 """
 
 import os
@@ -43,7 +43,7 @@ FRONTEND_DIR = ROOT / "frontend"
 def print_banner():
     print()
     print(f"{Style.CYAN}{Style.BOLD}╔══════════════════════════════════════════╗{Style.RESET}")
-    print(f"{Style.CYAN}{Style.BOLD}║     小搭 PrepKeeper · 交互式部署工具     ║{Style.RESET}")
+    print(f"{Style.CYAN}{Style.BOLD}║     小搭 StudyBuddy · 交互式部署工具     ║{Style.RESET}")
     print(f"{Style.CYAN}{Style.BOLD}╚══════════════════════════════════════════╝{Style.RESET}")
     print()
 
@@ -213,13 +213,13 @@ def ask_database() -> dict:
     if confirm("使用 Docker 启动 PostgreSQL 容器？"):
         db_host = ask("数据库主机", "localhost")
         db_port = ask("数据库端口", "5432")
-        db_name = ask("数据库名", "prepkeeper")
+        db_name = ask("数据库名", "studybuddy")
         db_user = ask("数据库用户名", "postgres")
-        db_pass = ask("数据库密码", "", password=True) or "prepkeeper"
+        db_pass = ask("数据库密码", "", password=True) or "studybuddy"
     else:
         db_host = ask("数据库主机", "localhost")
         db_port = ask("数据库端口", "5432")
-        db_name = ask("数据库名", "prepkeeper")
+        db_name = ask("数据库名", "studybuddy")
         db_user = ask("数据库用户名", "postgres")
         db_pass = ask("数据库密码", "", password=True)
         if not db_pass:
@@ -231,7 +231,7 @@ def ask_database() -> dict:
         "name": db_name,
         "user": db_user,
         "password": db_pass,
-        "use_docker": True if db_pass == "prepkeeper" else confirm("生成 docker-compose.yml 文件？", True),
+        "use_docker": True if db_pass == "studybuddy" else confirm("生成 docker-compose.yml 文件？", True),
     }
 
 
@@ -289,7 +289,7 @@ def ask_langsmith() -> dict:
 
     endpoint = ask("LangSmith Endpoint", "https://api.smith.langchain.com")
     api_key = ask("LangSmith API Key", "", password=True)
-    project = ask("LangSmith 项目名", "prepkeeper")
+    project = ask("LangSmith 项目名", "studybuddy")
     return {"tracing": "true", "endpoint": endpoint, "api_key": api_key, "project": project}
 
 
@@ -367,7 +367,7 @@ def generate_backend_yml(config: dict):
     yml = f"""# 由 deploy.py 自动生成
 spring:
   application:
-    name: prep-keeper-backend
+    name: study-buddy-backend
 
   datasource:
     url: jdbc:postgresql://{db['host']}:{db['port']}/{db['name']}
@@ -423,7 +423,7 @@ def generate_docker_compose(config: dict):
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: prepkeeper-db
+    container_name: studybuddy-db
     environment:
       POSTGRES_DB: {db['name']}
       POSTGRES_USER: {db['user']}
@@ -471,7 +471,7 @@ def generate_run_scripts(config: dict):
     sh_path = ROOT / "start.sh"
     sh_content = f"""#!/usr/bin/env bash
 set -e
-echo "===== 小搭 PrepKeeper 启动 ====="
+echo "===== 小搭 StudyBuddy 启动 ====="
 
 # 1. PostgreSQL（Docker）
 if [ -f backend/docker-compose.yml ]; then
@@ -513,7 +513,7 @@ wait
     bat_path = ROOT / "start.bat"
     bat_content = f"""@echo off
 chcp 65001 >nul
-echo ===== 小搭 PrepKeeper 启动 =====
+echo ===== 小搭 StudyBuddy 启动 =====
 
 REM 1. PostgreSQL (Docker)
 if exist backend\\docker-compose.yml (

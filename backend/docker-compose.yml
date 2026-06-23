@@ -1,9 +1,9 @@
 services:
   postgres:
     image: postgres:latest
-    container_name: prepkeeper
+    container_name: studybuddy
     environment:
-      POSTGRES_DB: prepkeeper
+      POSTGRES_DB: studybuddy
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: star2005
     ports:
@@ -20,7 +20,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: prepkeeper-redis
+    container_name: studybuddy-redis
     ports:
       - "6379:6379"
     volumes:

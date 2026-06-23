@@ -32,14 +32,14 @@ export default function SplashScreen() {
     >
       <img
         src="/background.jpg"
-        alt="prepKeeper"
+        alt="studyBuddy"
         className="absolute inset-0 w-full h-full object-cover"
       />
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className="animate-[fadeIn_0.6s_ease-out]">
           <img
             src="/logo-start.png"
-            alt="prepKeeper"
+            alt="studyBuddy"
             className="w-48 h-48 object-contain rounded-2xl shadow-lg"
           />
         </div>

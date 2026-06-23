@@ -4,7 +4,7 @@
 services:
   # PostgreSQL 数据库
   - type: pserv
-    name: prepkeeper-db
+    name: studybuddy-db
     env: docker
     dockerfilePath: ./backend/docker-compose.yml
     disk:
@@ -13,7 +13,7 @@ services:
       sizeGB: 10
     envVars:
       - key: POSTGRES_DB
-        value: prepkeeper
+        value: studybuddy
       - key: POSTGRES_USER
         value: postgres
       - key: POSTGRES_PASSWORD
@@ -21,13 +21,13 @@ services:
 
   # Agent 服务
   - type: web
-    name: prepkeeper-agent
+    name: studybuddy-agent
     env: docker
     dockerfilePath: ./agent-service/Dockerfile
     envVars:
       - key: DATABASE_URL
         fromService:
-          name: prepkeeper-db
+          name: studybuddy-db
           type: pserv
           property: connectionstring
       - key: LLM_API_KEY
@@ -47,41 +47,41 @@ services:
 
   # 后端服务
   - type: web
-    name: prepkeeper-backend
+    name: studybuddy-backend
     env: docker
     dockerfilePath: ./backend/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
         fromService:
-          name: prepkeeper-db
+          name: studybuddy-db
           type: pserv
           property: connectionstring
       - key: SPRING_DATASOURCE_USERNAME
         fromService:
-          name: prepkeeper-db
+          name: studybuddy-db
           type: pserv
           property: user
       - key: SPRING_DATASOURCE_PASSWORD
         fromService:
-          name: prepkeeper-db
+          name: studybuddy-db
           type: pserv
           property: password
       - key: JWT_SECRET
         generateValue: true
       - key: AGENT_URL
         fromService:
-          name: prepkeeper-agent
+          name: studybuddy-agent
           type: web
           property: hostport
 
   # 前端服务
   - type: web
-    name: prepkeeper-frontend
+    name: studybuddy-frontend
     env: docker
     dockerfilePath: ./frontend/Dockerfile
     envVars:
       - key: BACKEND_URL
         fromService:
-          name: prepkeeper-backend
+          name: studybuddy-backend
           type: web
           property: hostport

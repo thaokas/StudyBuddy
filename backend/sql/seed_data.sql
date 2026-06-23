@@ -1,4 +1,4 @@
--- PrepKeeper 模拟数据
+-- StudyBuddy 模拟数据
 -- PostgreSQL
 
 -- 清理已有数据（按外键依赖顺序删除）

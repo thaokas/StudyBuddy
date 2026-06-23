@@ -8,7 +8,7 @@ interface StorageLike {
   setItem: (key: string, value: string) => void
 }
 
-const STORAGE_KEY = 'prepkeeper.reminder.presented'
+const STORAGE_KEY = 'studybuddy.reminder.presented'
 const CLAIM_TTL_MS = 7 * 24 * 60 * 60 * 1000
 
 export function claimStoredReminderPresentation(
@@ -37,7 +37,7 @@ export async function claimRealtimePresentation(reminderId: string): Promise<boo
 
   try {
     if ('locks' in navigator && navigator.locks) {
-      return await navigator.locks.request(`prepkeeper-reminder:${reminderId}`, () => claim())
+      return await navigator.locks.request(`studybuddy-reminder:${reminderId}`, () => claim())
     }
     return claim()
   } catch {

@@ -11,7 +11,7 @@ export default function Checkin() {
   const user = useAuthStore((s) => s.user)
   const [plans, setPlans] = useState<PlanResponse[]>([])
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null)
-  const [allTodayTasks, setAllTodayTasks] = useState<TaskResponse[]>([])
+  const [todayTasks, setTodayTasks] = useState<TaskResponse[]>([])
   const [todayCheckin, setTodayCheckin] = useState<CheckinResponse | null>(null)
   const [content, setContent] = useState('')
   const [selectedTasks, setSelectedTasks] = useState<string[]>([])
@@ -40,11 +40,12 @@ export default function Checkin() {
   useEffect(() => {
     if (!selectedPlanId) return
     setLoading(true)
+    setSelectedTasks([])
     Promise.all([
-      taskApi.getTodayAll(),
+      taskApi.getToday(selectedPlanId),
       checkinApi.getToday(selectedPlanId),
     ]).then(([tasksRes, checkinRes]) => {
-      setAllTodayTasks(tasksRes.data.data || [])
+      setTodayTasks(tasksRes.data.data || [])
       setTodayCheckin(checkinRes.data.data)
     }).finally(() => setLoading(false))
   }, [selectedPlanId])
@@ -109,6 +110,15 @@ export default function Checkin() {
   }
 
   const planMap = new Map(plans.map((p) => [p.planId, p.examName]))
+
+  // Group today's tasks by subject for the selected plan
+  const subjectGroups = todayTasks.reduce<Record<string, TaskResponse[]>>((acc, task) => {
+    const subj = task.subject || '其他'
+    if (!acc[subj]) acc[subj] = []
+    acc[subj].push(task)
+    return acc
+  }, {})
+  const selectedTaskObjects = todayTasks.filter((t) => selectedTasks.includes(t.taskId))
 
   if (loading) return <Loading />
 
@@ -177,8 +187,8 @@ export default function Checkin() {
       <h2 className="text-lg font-bold text-gray-800">今日打卡</h2>
       <p className="text-sm text-gray-400">{dayjs().format('YYYY年M月D日')}</p>
 
-      {/* Plan selector */}
-      {plans.length > 1 && (
+      {/* Plan selector — always show when plans exist, pairs with Panel 1 */}
+      {plans.length > 0 && (
         <div className="flex gap-2 overflow-x-auto pb-1">
           {plans.map((plan) => (
             <button
@@ -200,40 +210,69 @@ export default function Checkin() {
         <div className="text-center py-16 text-gray-400 text-sm">暂无进行中的计划</div>
       ) : (
         <>
-          {/* All today's tasks with scrollable preview */}
-          {allTodayTasks.length > 0 && (
-            <div className="bg-white rounded-2xl p-4 shadow-sm">
-              <p className="font-medium text-gray-700 mb-3">
-                今日任务 ({allTodayTasks.length})
-              </p>
-              <div className="max-h-60 overflow-y-auto space-y-2 pr-1">
-                {allTodayTasks.map((task) => (
-                  <label
-                    key={task.taskId}
-                    className="flex items-center gap-3 cursor-pointer py-1.5 px-2 rounded-lg hover:bg-gray-50 transition"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedTasks.includes(task.taskId)}
-                      onChange={() => handleTaskToggle(task.taskId)}
-                      className="w-4 h-4 accent-blue-500 rounded flex-shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 flex-shrink-0">
-                          {TASK_TYPE_LABELS[task.taskType] || '任务'}
-                        </span>
-                        <span className="text-sm text-gray-700 truncate">{task.taskContent || task.subject}</span>
-                      </div>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-xs text-gray-400">{task.subject}</span>
-                        <span className="text-xs text-gray-300">·</span>
-                        <span className="text-xs text-gray-400">{task.estimatedMinutes}min</span>
-                        <span className="text-xs text-gray-300">·</span>
-                        <span className="text-xs text-gray-400">{planMap.get(task.planId) || ''}</span>
-                      </div>
+          {/* Panel 1: Subject-grouped tasks for the selected plan */}
+          <div className="bg-white rounded-2xl p-4 shadow-sm">
+            <p className="font-medium text-gray-700 mb-3">
+              {planMap.get(selectedPlanId!) || '备考科目'} · 今日任务 ({todayTasks.length})
+            </p>
+            {todayTasks.length > 0 ? (
+              <div className="max-h-80 overflow-y-auto space-y-4 pr-1">
+                {Object.entries(subjectGroups).map(([subject, tasks]) => (
+                  <div key={subject}>
+                    <p className="text-xs font-medium text-blue-500 mb-1.5 px-1">{subject}</p>
+                    <div className="space-y-1.5">
+                      {tasks.map((task) => (
+                        <label
+                          key={task.taskId}
+                          className="flex items-center gap-3 cursor-pointer py-1.5 px-2 rounded-lg hover:bg-gray-50 transition"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedTasks.includes(task.taskId)}
+                            onChange={() => handleTaskToggle(task.taskId)}
+                            className="w-4 h-4 accent-blue-500 rounded flex-shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 flex-shrink-0">
+                                {TASK_TYPE_LABELS[task.taskType] || '任务'}
+                              </span>
+                              <span className="text-sm text-gray-700 truncate">{task.taskContent || task.subject}</span>
+                            </div>
+                            <span className="text-xs text-gray-400">{task.estimatedMinutes}min</span>
+                          </div>
+                        </label>
+                      ))}
                     </div>
-                  </label>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-sm text-gray-400">
+                今日暂无任务
+              </div>
+            )}
+          </div>
+
+          {/* Panel 2: Completed items in smaller font */}
+          {selectedTaskObjects.length > 0 && (
+            <div className="bg-green-50 border border-green-200 rounded-2xl p-4">
+              <p className="text-xs font-medium text-green-600 mb-2">
+                已完成项 ({selectedTaskObjects.length})
+              </p>
+              <div className="space-y-1.5">
+                {selectedTaskObjects.map((task) => (
+                  <div key={task.taskId} className="flex items-center gap-2 text-xs text-gray-500">
+                    <span className="text-green-400 flex-shrink-0">✓</span>
+                    <span
+                      className="px-1 py-0.5 rounded bg-green-100 text-green-600 flex-shrink-0"
+                      style={{ fontSize: '0.65rem' }}
+                    >
+                      {TASK_TYPE_LABELS[task.taskType] || '任务'}
+                    </span>
+                    <span className="truncate">{task.taskContent || task.subject}</span>
+                    <span className="flex-shrink-0 text-gray-300">{task.estimatedMinutes}min</span>
+                  </div>
                 ))}
               </div>
             </div>

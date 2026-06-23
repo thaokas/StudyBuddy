@@ -1,11 +1,11 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: prepkeeper-db
+    container_name: studybuddy-db
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-prepkeeper}
+      POSTGRES_DB: ${POSTGRES_DB:-studybuddy}
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-prepkeeper}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-studybuddy}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
@@ -16,14 +16,14 @@ services:
       retries: 5
       start_period: 10s
     networks:
-      - prepkeeper
+      - studybuddy
 
   agent:
     build:
       context: ./agent-service
-    container_name: prepkeeper-agent
+    container_name: studybuddy-agent
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-prepkeeper}@postgres:5432/${POSTGRES_DB:-prepkeeper}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-studybuddy}@postgres:5432/${POSTGRES_DB:-studybuddy}
       LLM_API_KEY: ${LLM_API_KEY}
       LLM_BASE_URL: ${LLM_BASE_URL}
       LLM_MODEL: ${LLM_MODEL}
@@ -43,16 +43,16 @@ services:
         condition: service_healthy
     restart: unless-stopped
     networks:
-      - prepkeeper
+      - studybuddy
 
   backend:
     build:
       context: ./backend
-    container_name: prepkeeper-backend
+    container_name: studybuddy-backend
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-prepkeeper}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-studybuddy}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-postgres}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-prepkeeper}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-studybuddy}
       JWT_SECRET: ${JWT_SECRET}
       AGENT_URL: http://agent:8000
     depends_on:
@@ -62,23 +62,23 @@ services:
         condition: service_started
     restart: unless-stopped
     networks:
-      - prepkeeper
+      - studybuddy
 
   frontend:
     build:
       context: ./frontend
-    container_name: prepkeeper-frontend
+    container_name: studybuddy-frontend
     ports:
       - "80:80"
     depends_on:
       - backend
     restart: unless-stopped
     networks:
-      - prepkeeper
+      - studybuddy
 
 volumes:
   postgres_data:
 
 networks:
-  prepkeeper:
+  studybuddy:
     driver: bridge

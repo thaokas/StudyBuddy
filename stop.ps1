@@ -89,4 +89,4 @@ else {
     }
 }
 
-Write-Host 'PrepKeeper has been stopped.'
+Write-Host 'StudyBuddy has been stopped.'

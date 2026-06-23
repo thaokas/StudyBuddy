@@ -57,7 +57,7 @@ export default function Layout() {
       <DesktopSidebar />
 
       <div className="min-h-screen min-h-[100dvh] max-w-md lg:max-w-none mx-auto lg:mx-0 lg:pl-64">
-        <main className="min-h-screen min-h-[100dvh] px-4 pt-4 pb-24 lg:px-8 lg:py-8">
+        <main className="min-h-screen min-h-[100dvh] px-4 pt-4 pb-24 lg:px-4 lg:py-4">
           <div className="w-full lg:max-w-7xl lg:mx-auto">
             <Outlet />
           </div>
@@ -122,7 +122,7 @@ function DesktopSidebar() {
         <img src="/logo.png" alt="小搭" className="h-11 w-11 rounded-2xl object-cover" />
         <div>
           <p className="text-base font-bold text-slate-900">小搭</p>
-          <p className="text-xs text-slate-400">PrepKeeper</p>
+          <p className="text-xs text-slate-400">StudyBuddy</p>
         </div>
       </div>
 
@@ -155,7 +155,7 @@ function DesktopSidebar() {
       <div className="rounded-3xl bg-gradient-to-br from-blue-50 to-cyan-50 p-4">
         <p className="text-sm font-semibold text-slate-800">今天也稳稳推进</p>
         <p className="mt-1 text-xs leading-5 text-slate-500">
-          宽屏工作台会保留学习上下文，窄屏继续保持手机体验。
+          坚持是最难的，但也是最有效的。加油！
         </p>
       </div>
     </aside>

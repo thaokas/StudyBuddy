@@ -9,13 +9,13 @@ const repoRoot = path.resolve(frontendRoot, '..')
 
 test('weekly report keeps the ApiResponse envelope expected by the page', async () => {
   const controller = await readFile(
-    path.join(repoRoot, 'backend/src/main/java/com/prepkeeper/controller/AgentProxyController.java'),
+    path.join(repoRoot, 'backend/src/main/java/com/studybuddy/controller/AgentProxyController.java'),
     'utf8',
   )
   const agentApi = await readFile(path.join(frontendRoot, 'src/api/agent.ts'), 'utf8')
   const reportPage = await readFile(path.join(frontendRoot, 'src/pages/Report.tsx'), 'utf8')
 
-  assert.match(controller, /import com\.prepkeeper\.dto\.response\.ApiResponse;/)
+  assert.match(controller, /import com\.studybuddy\.dto\.response\.ApiResponse;/)
   assert.match(controller, /ResponseEntity<ApiResponse<Map<String, Object>>> generateWeeklyReport/)
   assert.match(controller, /return ResponseEntity\.ok\(ApiResponse\.success\(response\)\);/)
   assert.match(agentApi, /client\.post<ApiResponse<WeeklyReportResponse>>\('\/agent\/report\/weekly', data\)/)

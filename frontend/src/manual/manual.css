@@ -1,0 +1,17 @@
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: auto;
+}
+
+button,
+a,
+input,
+textarea {
+  touch-action: manipulation;
+}

@@ -1,11 +1,11 @@
-# 小搭 PrepKeeper
+# 小搭 StudyBuddy
 
 智能备考督导助手，基于 AI 多轮对话生成个性化备考计划，提供每日提醒、打卡鼓励、周报分析等陪伴式学习体验。
 
 ## 项目结构
 
 ```
-prepKeeper/
+studyBuddy/
 ├── agent-service/     # AI Agent 服务 (Python / FastAPI + LangGraph)
 ├── backend/           # 后端服务 (Java / Spring Boot)
 ├── frontend/          # 前端 (React + TypeScript + Vite)

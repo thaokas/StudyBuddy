@@ -414,7 +414,7 @@ export default function PlanCreate() {
   const hasProfileBar = profile && (profile.exam_name || profile.exam_date || profile.daily_hours != null) && !planGenerated
 
   return (
-    <div className="flex h-[calc(100dvh-8rem)] flex-col lg:h-[calc(100dvh-4rem)] lg:grid lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-6">
+    <div className="flex h-[calc(100dvh-8rem)] flex-col lg:h-[calc(100dvh-2rem)] lg:grid lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-4">
       <section className="flex min-h-0 flex-1 flex-col lg:rounded-[2rem] lg:border lg:border-slate-200 lg:bg-white lg:p-5 lg:shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0 mb-2">
@@ -656,7 +656,7 @@ export default function PlanCreate() {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={loading || materialUploading}
-              className="w-12 h-12 border border-gray-200 text-gray-500 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition flex-shrink-0"
+              className="w-9 h-9 border border-gray-200 text-gray-500 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition flex-shrink-0"
               title="上传图片或文档"
             >
               ＋
@@ -665,10 +665,12 @@ export default function PlanCreate() {
               type="button"
               onClick={() => setShowLinkInput((value) => !value)}
               disabled={loading || materialUploading}
-              className="w-12 h-12 border border-gray-200 text-gray-500 rounded-2xl flex items-center justify-center hover:bg-gray-50 transition flex-shrink-0"
+              className="w-9 h-9 border border-gray-200 text-gray-400 rounded-xl flex items-center justify-center hover:bg-gray-50 hover:text-gray-600 transition flex-shrink-0"
               title="添加网页链接"
             >
-              链
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
             </button>
             <textarea
               value={input}
@@ -677,12 +679,12 @@ export default function PlanCreate() {
               placeholder="输入你的备考需求..."
               rows={1}
               disabled={loading}
-              className="flex-1 px-4 py-3 border border-gray-200 rounded-2xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:bg-gray-50"
+              className="flex-1 px-4 py-2 border border-gray-200 rounded-2xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 transition disabled:bg-gray-50"
             />
             <button
               onClick={() => handleSend()}
               disabled={loading || !input.trim()}
-              className="w-12 h-12 bg-blue-500 disabled:bg-blue-300 text-white rounded-2xl flex items-center justify-center hover:bg-blue-600 transition flex-shrink-0 active:scale-95"
+              className="w-9 h-9 bg-blue-500 disabled:bg-blue-300 text-white rounded-2xl flex items-center justify-center hover:bg-blue-600 transition flex-shrink-0 active:scale-95"
             >
               <svg
                 className="w-5 h-5"

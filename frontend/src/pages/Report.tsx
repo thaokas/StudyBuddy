@@ -89,10 +89,10 @@ export default function Report() {
 
   return (
     <div className="space-y-4 pb-6 lg:grid lg:grid-cols-[20rem_minmax(0,1fr)] lg:items-start lg:gap-6 lg:space-y-0">
-      <h2 className="text-lg font-bold text-gray-800">学习报告</h2>
+      <h2 className="text-lg font-bold text-gray-800 lg:col-span-2">学习报告</h2>
 
       {/* ── 日期选择区 ──────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
+      <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3 lg:sticky lg:top-4">
         {/* 快捷选项 */}
         <div className="flex gap-2 overflow-x-auto pb-1">
           {DATE_PRESETS.map((p) => (
@@ -146,7 +146,7 @@ export default function Report() {
 
       {/* ── 加载状态 ────────────────────────────────────────────────────── */}
       {loading && (
-        <div className="bg-white rounded-2xl p-8 shadow-sm text-center">
+        <div className="bg-white rounded-2xl p-8 shadow-sm text-center lg:col-start-2">
           <img src="/logo.png" alt="小搭" className="w-10 h-10 mb-3 mx-auto" />
           <p className="text-gray-500 text-sm">AI 正在分析你的学习数据，生成专属报告...</p>
           <div className="mt-4 w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
@@ -157,7 +157,7 @@ export default function Report() {
 
       {/* ── 报告结果 ────────────────────────────────────────────────────── */}
       {report && !loading && (
-        <div className="space-y-4 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4 lg:space-y-0">
+        <div className="space-y-4 lg:col-start-2 lg:row-start-2 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4 lg:space-y-0">
           {/* 等级 + 标题 */}
           <div className="bg-white rounded-2xl p-5 shadow-sm">
             <div className="flex items-center gap-4">

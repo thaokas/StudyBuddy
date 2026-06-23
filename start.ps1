@@ -431,7 +431,7 @@ Start-TrackedProcess `
 Wait-TcpPort -Name 'Frontend service' -Port 3000 -TrackedProcessName 'frontend'
 
 Write-Host ''
-Write-Host 'PrepKeeper is running:'
+Write-Host 'StudyBuddy is running:'
 Write-Host '  Frontend: http://localhost:3000'
 Write-Host '  Backend:  http://localhost:8080/swagger-ui.html'
 Write-Host '  Agent:    http://127.0.0.1:8000/docs'

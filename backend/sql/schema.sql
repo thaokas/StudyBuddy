@@ -1,4 +1,4 @@
--- PrepKeeper Database Schema
+-- StudyBuddy Database Schema
 -- PostgreSQL
 
 -- 用户表

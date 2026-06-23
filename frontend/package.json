@@ -1,11 +1,12 @@
 {
-  "name": "prepkeeper-frontend",
+  "name": "studybuddy-frontend",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:manual-screenshots": "vite build --config vite.manual.config.ts",
     "preview": "vite preview",
     "test": "node --test tests/*.test.mjs"
   },

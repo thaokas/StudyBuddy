@@ -2,7 +2,7 @@
 
 ## 项目简介
 
-PrepKeeper 后端服务，基于 Spring Boot 3.2 构建，提供用户认证、计划管理、任务管理、打卡记录、定时提醒、WebSocket 实时推送等功能。AI 相关能力通过 HTTP 代理转发至 Python Agent 服务。
+StudyBuddy 后端服务，基于 Spring Boot 3.2 构建，提供用户认证、计划管理、任务管理、打卡记录、定时提醒、WebSocket 实时推送等功能。AI 相关能力通过 HTTP 代理转发至 Python Agent 服务。
 
 ## 技术栈
 
@@ -28,7 +28,7 @@ PrepKeeper 后端服务，基于 Spring Boot 3.2 构建，提供用户认证、�
 
 1. 创建数据库：
 ```sql
-CREATE DATABASE prepkeeper;
+CREATE DATABASE studybuddy;
 ```
 
 2. 执行 `sql/schema.sql` 初始化表结构
@@ -46,8 +46,8 @@ mvn spring-boot:run
 ## 项目结构
 
 ```
-src/main/java/com/prepkeeper/
-├── PrepKeeperApplication.java
+src/main/java/com/studybuddy/
+├── StudyBuddyApplication.java
 ├── config/
 │   ├── CorsConfig.java
 │   ├── OpenApiConfig.java

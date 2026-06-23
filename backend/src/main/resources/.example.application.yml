@@ -1,9 +1,9 @@
 spring:
   application:
-    name: prep-keeper-backend
+    name: study-buddy-backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/prepkeeper
+    url: jdbc:postgresql://localhost:5432/studybuddy
     username:
     password:
     driver-class-name: org.postgresql.Driver
