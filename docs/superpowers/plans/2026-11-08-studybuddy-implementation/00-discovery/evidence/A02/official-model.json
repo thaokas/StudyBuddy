@@ -1,0 +1,7 @@
+{
+  "id": "deepseek-flash",
+  "name": "DeepSeek-V4.1-Flash",
+  "requestedRevision": "Flash 4.1 1017",
+  "datedRevisionConfirmed": false,
+  "listingEndpoint": "https://api.deepseek.com/models"
+}

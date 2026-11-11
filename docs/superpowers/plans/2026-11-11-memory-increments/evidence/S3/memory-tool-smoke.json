@@ -1,0 +1,219 @@
+{
+  "assertions": {
+    "toolCallsSucceeded": true,
+    "saveWrotePreference": true,
+    "newSessionInjectsPreference": true,
+    "recallToolFindsPreference": true,
+    "forgetSucceeded": true,
+    "deletedNotInjectedAfterRestart": true,
+    "rebuildSuppressed": true,
+    "notInjectedAfterRebuild": true,
+    "tableRemembered": true,
+    "tableItemDeleted": true,
+    "tableTombstoneWritten": true,
+    "tableNotRebuilt": true
+  },
+  "passed": true,
+  "memoryId": "mem_cf00db6590ed",
+  "tableRemembered": {
+    "id": "mem_cf00db6590ed",
+    "kind": "preference",
+    "text": "我更喜欢在上午学习数学。",
+    "status": "active",
+    "source_kind": "explicit"
+  },
+  "tableAfterDelete": {
+    "items": [],
+    "tombstones": [
+      {
+        "id": "mem_cf00db6590ed",
+        "content_hash": "1ce7f1d41f94e876b436d93d708ce9f9eaf1509e98cf8b8e5a982b2194e2d363",
+        "goal_id": "unassigned"
+      }
+    ]
+  },
+  "tableAfterRebuild": [],
+  "steps": [
+    {
+      "id": "remember",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 2,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        },
+        {
+          "roles": [
+            "user",
+            "assistant",
+            "user"
+          ],
+          "hasToolResult": true,
+          "hasToolUse": true
+        }
+      ],
+      "resultExcerpt": "[{\"type\":\"text\",\"text\":\"已记住（mem_cf00db6590ed）：偏好 我更喜欢在上午学习数学。\"}]",
+      "stderrTail": []
+    },
+    {
+      "id": "new-session",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 1,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        }
+      ],
+      "resultExcerpt": "",
+      "stderrTail": [
+        "[study] window seal on exit skipped: unavailable: 学习服务正在关闭，本次操作未生效"
+      ]
+    },
+    {
+      "id": "recall-tool",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 2,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        },
+        {
+          "roles": [
+            "user",
+            "assistant",
+            "user"
+          ],
+          "hasToolResult": true,
+          "hasToolUse": true
+        }
+      ],
+      "resultExcerpt": "[{\"type\":\"text\",\"text\":\"- mem_cf00db6590ed [偏好] 我更喜欢在上午学习数学。\\n  来源：agent｜更新：2026-11-11\"}]",
+      "stderrTail": [
+        "[study] window seal on exit skipped: unavailable: 学习服务正在关闭，本次操作未生效"
+      ]
+    },
+    {
+      "id": "forget",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 2,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        },
+        {
+          "roles": [
+            "user",
+            "assistant",
+            "user"
+          ],
+          "hasToolResult": true,
+          "hasToolUse": true
+        }
+      ],
+      "resultExcerpt": "[{\"type\":\"text\",\"text\":\"已删除 1 条记忆（mem_cf00db6590ed）；删除标记已保留，旧内容不会被重新召回。\"}]",
+      "stderrTail": [
+        "[study] window seal on exit skipped: unavailable: 学习服务正在关闭，本次操作未生效"
+      ]
+    },
+    {
+      "id": "after-delete",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 1,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        }
+      ],
+      "resultExcerpt": "",
+      "stderrTail": [
+        "[study] window seal on exit skipped: unavailable: 学习服务正在关闭，本次操作未生效"
+      ]
+    },
+    {
+      "id": "rebuild-attempt",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 2,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        },
+        {
+          "roles": [
+            "user",
+            "assistant",
+            "user"
+          ],
+          "hasToolResult": true,
+          "hasToolUse": true
+        }
+      ],
+      "resultExcerpt": "[{\"type\":\"text\",\"text\":\"未写入：这条内容已被学生删除；旧对话不能把它重新写入记忆。只有学生本人明确要求时才能恢复。\"}]",
+      "stderrTail": [
+        "[study] window seal on exit skipped: unavailable: 学习服务正在关闭，本次操作未生效"
+      ]
+    },
+    {
+      "id": "after-rebuild",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 1,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        }
+      ],
+      "resultExcerpt": "",
+      "stderrTail": [
+        "[study] window seal on exit skipped: unavailable: 学习服务正在关闭，本次操作未生效"
+      ]
+    }
+  ]
+}

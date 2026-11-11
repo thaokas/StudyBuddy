@@ -1,0 +1,27 @@
+{
+  "started": "2026-11-09T11:47:35.051Z",
+  "root": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a02\\desktop-1794224746290",
+  "checks": {
+    "uiWrite": {
+      "value": "ui-saved",
+      "revision": 1,
+      "writer": "ui"
+    },
+    "agentWrite": {
+      "value": "agent-saved",
+      "revision": 2,
+      "writer": "agent"
+    },
+    "sameService": {
+      "value": "agent-saved",
+      "revision": 2,
+      "writer": "agent"
+    },
+    "selectedSession": "所选会话: \"session-a5b51879-f3bf-4482-b977-05cfe0dbdea9\"",
+    "originalConversationRetained": true,
+    "pageErrors": []
+  },
+  "passed": true,
+  "realProvider": false,
+  "finished": "2026-11-09T11:47:46.873Z"
+}

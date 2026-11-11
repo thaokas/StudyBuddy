@@ -1,0 +1,27 @@
+{
+  "name": "@studybuddy/study",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "StudyBuddy study workspace plugin: SQLite kernel, namespace services, authenticated host routes, and the Web client bundle",
+  "exports": {
+    ".": "./host/index.mjs",
+    "./client": "./client/client.js"
+  },
+  "scripts": {
+    "build:client": "node scripts/build-client.mjs"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-sidebar",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

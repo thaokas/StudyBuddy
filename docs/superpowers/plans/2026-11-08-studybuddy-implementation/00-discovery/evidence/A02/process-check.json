@@ -1,0 +1,7 @@
+﻿{
+    "checkedAt":  "2026-11-09T12:09:07.3889467Z",
+    "scope":  "Owned A02 node/electron launchers and .desktop-build/a02 command lines",
+    "method":  "Host Win32_Process read-only query",
+    "ownedProcessesRemaining":  0,
+    "passed":  true
+}

@@ -1,0 +1,12 @@
+dsh: warning: 1 entry did not activate
+a02-probe (file:///D:/Data/ProjectsRepo/StudyBuddy/probes/A02/index.mjs): JsonSchemaError: unsupported JSON schema: schema.required is not supported by the value schema DSL
+    at authorError (file:///D:/Data/ProjectsRepo/StudyBuddy/source/deepseek-harness/packages/core/tools/lib/index.js:17:8)
+    at assertAuthorKeys (file:///D:/Data/ProjectsRepo/StudyBuddy/source/deepseek-harness/packages/core/tools/lib/index.js:28:69)
+    at runSchemaCompiler (file:///D:/Data/ProjectsRepo/StudyBuddy/source/deepseek-harness/packages/core/tools/lib/index.js:165:5)
+    at compileValueSchema (file:///D:/Data/ProjectsRepo/StudyBuddy/source/deepseek-harness/packages/core/tools/lib/index.js:245:2)
+    at valueSchemaSpecToJsonSchema (file:///D:/Data/ProjectsRepo/StudyBuddy/source/deepseek-harness/packages/core/tools/lib/index.js:265:17)
+    at defineTool (file:///D:/Data/ProjectsRepo/StudyBuddy/source/deepseek-harness/packages/core/tools/lib/index.js:321:23)
+    at Fiber.<anonymous> (file:///D:/Data/ProjectsRepo/StudyBuddy/probes/A02/index.mjs:48:39)
+    at <anonymous> (D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\vendor\cordis\src\fiber.ts:372:45)
+    at Object.apply [as callback] (file:///D:/Data/ProjectsRepo/StudyBuddy/probes/A02/index.mjs:48:7)
+    at async Fiber._reload (D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\vendor\cordis\src\fiber.ts:691:9)

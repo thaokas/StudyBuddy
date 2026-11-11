@@ -1,0 +1,14 @@
+{
+  "name": "@studybuddy-probe/a02",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Disposable A02 extension probe; excluded from StudyBuddy releases",
+  "exports": { ".": "./index.mjs", "./client": "./client.js" },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": ["@deepseek-ai/dsh-client-ui-layout", "@deepseek-ai/dsh-client-ui-sidebar", "@deepseek-ai/dsh-client-locale"]
+    }
+  }
+}

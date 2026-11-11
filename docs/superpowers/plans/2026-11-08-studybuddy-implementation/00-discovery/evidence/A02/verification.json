@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-11-09T12:09:12.960Z",
+  "passed": true,
+  "checks": {
+    "commit": "fcc0ad462172522aaf5c93a7b2e01f6b9f0b0159",
+    "upstreamWorktreeClean": true,
+    "hashes": {
+      "pnpm-lock.yaml": "B6F0946199DB2661E45AC0CEEAD23E6CEEDF148604B48EA9B05A6287A4094BCD",
+      "pnpm-workspace.yaml": "EB42731B8F509DD4EE3AE880EAE1CDE5381A1875A3598FD2FA83D1C1E5E1EF1A",
+      "scripts/primary-runtime/lock.json": "733C3C53D95AE524BDDB123E1319C48ECACB0DC729BE956C25188F930C095BD5",
+      "LICENSE": "EBB4F09972AEE8608BE255DEBAF78451A68E95C290F55C240DEC2ECFA16EA6BE"
+    },
+    "results": {
+      "ui-result.json": true,
+      "cancel-result.json": true,
+      "attachment-result.json": true,
+      "resume-ui-result.json": true,
+      "interfaces-result.json": true,
+      "native-result.json": true,
+      "credentials-result.json": true,
+      "desktop-ui-result.json": true,
+      "desktop-settings-result.json": true,
+      "desktop-attachment-result.json": true,
+      "real-ui-result.json": true,
+      "real-extra-result.json": true,
+      "real-resume-result.json": true,
+      "desktop-real-result.json": true,
+      "desktop-real-resume-result.json": true
+    },
+    "model": {
+      "id": "deepseek-flash",
+      "name": "DeepSeek-V4.1-Flash",
+      "requestedRevision": "Flash 4.1 1017",
+      "datedRevisionConfirmed": false,
+      "listingEndpoint": "https://api.deepseek.com/models"
+    },
+    "buildCheck": "2 passed, 0 failed, 0 skipped",
+    "credentialSafety": {
+      "textFilesScanned": 77,
+      "realKeyMatches": 0,
+      "realKeyPersistedInOfficialProfile": false,
+      "sourceCredentialDocumentExported": false
+    },
+    "syntaxFiles": 18,
+    "relativeLinks": 16,
+    "ownedProcessesRemaining": 0
+  }
+}

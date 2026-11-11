@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-11-08T15:16:47.439Z",
+  "root": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a01\\electron-diagnostic-1794151007304",
+  "runs": [
+    {
+      "name": "lexical",
+      "executable": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\node_modules\\.pnpm\\electron@44.7.0_supports-color@9.4.0\\node_modules\\electron\\dist\\electron.exe",
+      "cwd": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness",
+      "args": [
+        "--version",
+        "--enable-logging=file",
+        "--log-file=D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a01\\electron-diagnostic-1794151007304\\lexical\\chromium.log",
+        "--user-data-dir=D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a01\\electron-diagnostic-1794151007304\\lexical\\user-data"
+      ],
+      "status": 2147483651,
+      "signal": null,
+      "stdout": "\r\n",
+      "stderr": "",
+      "chromiumLog": null
+    },
+    {
+      "name": "realpath",
+      "executable": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\node_modules\\.pnpm\\electron@44.7.0_supports-color@9.4.0\\node_modules\\electron\\dist\\electron.exe",
+      "cwd": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness",
+      "args": [
+        "--version",
+        "--enable-logging=file",
+        "--log-file=D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a01\\electron-diagnostic-1794151007304\\realpath\\chromium.log",
+        "--user-data-dir=D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a01\\electron-diagnostic-1794151007304\\realpath\\user-data"
+      ],
+      "status": 2147483651,
+      "signal": null,
+      "stdout": "\r\n",
+      "stderr": "",
+      "chromiumLog": null
+    },
+    {
+      "name": "dist-cwd",
+      "executable": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\node_modules\\.pnpm\\electron@44.7.0_supports-color@9.4.0\\node_modules\\electron\\dist\\electron.exe",
+      "cwd": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\node_modules\\.pnpm\\electron@44.7.0_supports-color@9.4.0\\node_modules\\electron\\dist",
+      "args": [
+        "--version",
+        "--enable-logging=file",
+        "--log-file=D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a01\\electron-diagnostic-1794151007304\\dist-cwd\\chromium.log",
+        "--user-data-dir=D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a01\\electron-diagnostic-1794151007304\\dist-cwd\\user-data"
+      ],
+      "status": 2147483651,
+      "signal": null,
+      "stdout": "\r\n",
+      "stderr": "",
+      "chromiumLog": null
+    },
+    {
+      "name": "minimal-env",
+      "executable": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\node_modules\\.pnpm\\electron@44.7.0_supports-color@9.4.0\\node_modules\\electron\\dist\\electron.exe",
+      "cwd": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness",
+      "args": [
+        "--version",
+        "--enable-logging=file",
+        "--log-file=D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a01\\electron-diagnostic-1794151007304\\minimal-env\\chromium.log",
+        "--user-data-dir=D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a01\\electron-diagnostic-1794151007304\\minimal-env\\user-data"
+      ],
+      "status": 2147483651,
+      "signal": null,
+      "stdout": "\r\n",
+      "stderr": "",
+      "chromiumLog": null
+    }
+  ]
+}

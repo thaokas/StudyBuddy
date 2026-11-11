@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "sessionId": "session-ab7718c5-a148-47e2-a70d-46f5e40c2efd",
+  "provider": "studybuddy-deepseek",
+  "model": "deepseek-flash",
+  "officialEndpoint": "https://api.deepseek.com/anthropic",
+  "turnEnd": "completed",
+  "expectedReply": true,
+  "syntheticChatArchived": true,
+  "verification": "Read existing completed synthetic session; no new model request",
+  "checkedAt": "2026-11-09T13:42:30.535Z"
+}

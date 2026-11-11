@@ -1,0 +1,13 @@
+﻿✔ first-run defaults retain thinking levels and later native model edits (27.976ms)
+✔ DSH credential references and records persist encrypted and remain editable after restart (1624.2366ms)
+✔ independent writers retain each other’s changes (1641.2993ms)
+✔ a credential save waits for a long record refresh held by another writer (4150.5763ms)
+✔ malformed imported credentials fail without quoting the secret line (159.436ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7560.2162

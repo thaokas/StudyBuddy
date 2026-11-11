@@ -1,0 +1,225 @@
+{
+  "started": "2026-11-10T13:10:40.900Z",
+  "checks": {
+    "standard": {
+      "chip": "标准模式",
+      "tools": 42,
+      "hasCordis": false,
+      "cards": 0,
+      "skillCatalog": true
+    },
+    "creatorMode": {
+      "defaultChip": "标准模式",
+      "items": [
+        "标准模式\n处理代码、文件和资料，适合大多数任务。Agent 会按需使用检索、编辑和终端等工具。",
+        "PTC 模式\n包含标准模式的所有能力，更适合批量调用工具，并对结果进行筛选、整理、去重、统计或汇总的任务。",
+        "极简模式\nAgent 使用终端和图片读取工具，并支持上下文压缩，适合测试和对比其基础表现。",
+        "创造模式\n用对话定制 DSH：让 Agent 编写插件，添加新功能或界面；也能组合工具和提示词，创建自己的模式。"
+      ],
+      "chip": "创造模式",
+      "tools": 45,
+      "hasCordis": true,
+      "cards": 1
+    },
+    "created": {
+      "installedText": "个性化页面 已安装 学习清单页 按日期列出今天的学习块与完成状态，只读学习服务。 添加到 · 会话 Tab 撤销",
+      "installedName": "@dsh-local/view-52e25b0e-7301-4ed2-b298-b9a132724cfe",
+      "dependency": "link:C:/Users/35373/AppData/Local/Temp/study-creator-iYNNdQ/run/home/profiles/web/created-plugins/52e25b0e-7301-4ed2-b298-b9a132724cfe",
+      "readsStudyRoute": true,
+      "directFileAccess": false,
+      "seeded": {
+        "taskId": "task_5fb8e420-af45-400f-85d9-d46525bfeadb",
+        "taskOk": true,
+        "blockOk": true,
+        "blockId": "block_2ed3ba14-c7bd-45f0-ade2-86dfed636713"
+      },
+      "sourceDirectory": "C:\\Users\\35373\\AppData\\Local\\Temp\\study-creator-iYNNdQ\\run\\workspace\\deepseek-harness\\default-workspace\\.dsh-created-plugins\\52e25b0e-7301-4ed2-b298-b9a132724cfe",
+      "promptLocation": "page"
+    },
+    "installedPage": {
+      "text": "学习清单 2026-11-10 09:00–09:30 极限习题（30 分钟）",
+      "tabs": [
+        "对话",
+        "轨迹",
+        "学习清单"
+      ]
+    },
+    "defaultUnchanged": {
+      "defaultWrite": false,
+      "hasCordis": false,
+      "cards": 0
+    },
+    "sessionPresetKept": {
+      "hasCordis": true
+    },
+    "restart": {
+      "blankChip": "标准模式",
+      "tabs": [
+        "对话",
+        "轨迹",
+        "学习清单"
+      ],
+      "page": "学习清单 2026-11-10 09:00–09:30 极限习题（30 分钟）"
+    },
+    "undoRestore": {
+      "removed": "个性化页面 已移除 学习清单页 按日期列出今天的学习块与完成状态，只读学习服务。 添加到 · 会话 Tab 恢复",
+      "undoRemovedDependency": true,
+      "restoredDependency": true,
+      "tabBack": true
+    },
+    "failure": {
+      "text": "个性化页面 创建失败，可重试 失败页面 故意让 Creator 报告未完成，验证失败提示。 添加到 会话 Tab 暂不需要 重新创建"
+    },
+    "errors": {
+      "firstPage": {
+        "page": [],
+        "console": []
+      },
+      "restartedPage": {
+        "page": [],
+        "console": []
+      }
+    }
+  },
+  "screenshots": [
+    "creator-standard-answer.png",
+    "creator-card-offered.png",
+    "creator-card-installed.png",
+    "creator-installed-page.png",
+    "creator-after-restart.png",
+    "creator-after-restore.png",
+    "creator-failed-card.png"
+  ],
+  "requests": [
+    {
+      "index": 1,
+      "kind": "answer",
+      "tools": 42,
+      "hasPropose": false,
+      "hasStructured": false,
+      "results": []
+    },
+    {
+      "index": 2,
+      "kind": "answer",
+      "tools": 0,
+      "hasPropose": false,
+      "hasStructured": false,
+      "results": []
+    },
+    {
+      "index": 3,
+      "kind": "skill",
+      "tools": 44,
+      "hasPropose": false,
+      "hasStructured": false,
+      "results": []
+    },
+    {
+      "index": 4,
+      "kind": "answer",
+      "tools": 0,
+      "hasPropose": false,
+      "hasStructured": false,
+      "results": []
+    },
+    {
+      "index": 5,
+      "kind": "proposal",
+      "tools": 45,
+      "hasPropose": true,
+      "hasStructured": false,
+      "results": [
+        "skill"
+      ]
+    },
+    {
+      "index": 6,
+      "kind": "answer",
+      "tools": 45,
+      "hasPropose": true,
+      "hasStructured": false,
+      "results": [
+        "propose_action"
+      ]
+    },
+    {
+      "index": 7,
+      "kind": "creator",
+      "tools": 45,
+      "hasPropose": false,
+      "hasStructured": true,
+      "results": [],
+      "prompt": {
+        "title": "学习清单页",
+        "location": "page",
+        "packageName": "@dsh-local/view-52e25b0e-7301-4ed2-b298-b9a132724cfe",
+        "directory": "C:\\Users\\35373\\AppData\\Local\\Temp\\study-creator-iYNNdQ\\run\\workspace\\deepseek-harness\\default-workspace\\.dsh-created-plugins\\52e25b0e-7301-4ed2-b298-b9a132724cfe"
+      }
+    },
+    {
+      "index": 8,
+      "kind": "answer",
+      "tools": 42,
+      "hasPropose": false,
+      "hasStructured": false,
+      "results": []
+    },
+    {
+      "index": 9,
+      "kind": "answer",
+      "tools": 45,
+      "hasPropose": true,
+      "hasStructured": false,
+      "results": []
+    },
+    {
+      "index": 10,
+      "kind": "skill",
+      "tools": 44,
+      "hasPropose": false,
+      "hasStructured": false,
+      "results": []
+    },
+    {
+      "index": 11,
+      "kind": "proposal",
+      "tools": 45,
+      "hasPropose": true,
+      "hasStructured": false,
+      "results": [
+        "skill"
+      ]
+    },
+    {
+      "index": 12,
+      "kind": "answer",
+      "tools": 45,
+      "hasPropose": true,
+      "hasStructured": false,
+      "results": [
+        "propose_action"
+      ]
+    },
+    {
+      "index": 13,
+      "kind": "creator",
+      "tools": 45,
+      "hasPropose": false,
+      "hasStructured": true,
+      "results": [],
+      "prompt": {
+        "title": "失败页面",
+        "location": "page",
+        "packageName": "@dsh-local/view-184f7e6a-b6d7-49fd-b076-fe8c951b26c6",
+        "directory": "C:\\Users\\35373\\AppData\\Local\\Temp\\study-creator-iYNNdQ\\run\\workspace\\deepseek-harness\\default-workspace\\.dsh-created-plugins\\184f7e6a-b6d7-49fd-b076-fe8c951b26c6"
+      }
+    }
+  ],
+  "passed": true,
+  "finished": "2026-11-10T13:11:38.751Z",
+  "hostStderr": [
+    [],
+    []
+  ]
+}

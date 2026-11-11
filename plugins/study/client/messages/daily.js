@@ -1,0 +1,28 @@
+export default {
+  en: {
+    'daily.ask':'Ask about this task', 'daily.start':'Start pomodoro',
+    'daily.confirm':'Confirm draft', 'daily.apply':'Apply revision',
+    'daily.done':'Done', 'daily.partial':'Partly done', 'daily.notStarted':'Not done', 'daily.cancelled':'Cancel',
+    'daily.trialConfirm':'This plan exceeds capacity or overlaps. Confirm a trial?',
+    'daily.doneQuantity':'Cumulative completed quantity', 'daily.totalQuantity':'Total quantity',
+    'daily.sessionUnavailable':'The conversation service is not ready. Please retry.',
+    'daily.timerStarted':'Pomodoro started. Finishing the timer does not complete the task.',
+    'daily.recovered':'Background checks resumed. They stop when the app closes. Evening changes need your confirmation.',
+    'daily.recoveryDetails':'Last review: {status}; unanswered: {pending}; awaiting confirmation: {confirmation}.',
+    'daily.recoveryError':'Could not load recovery summary: {message}',
+    'daily.permission':'Enable study notifications',
+  },
+  zh: {
+    'daily.ask':'问这道题', 'daily.start':'开始番茄',
+    'daily.confirm':'确认草案', 'daily.apply':'应用修订',
+    'daily.done':'完成', 'daily.partial':'部分完成', 'daily.notStarted':'未完成', 'daily.cancelled':'取消',
+    'daily.trialConfirm':'计划超出容量或存在重叠，确认试行？',
+    'daily.doneQuantity':'累计完成数量', 'daily.totalQuantity':'总数量',
+    'daily.sessionUnavailable':'会话服务尚未就绪，请重试。',
+    'daily.timerStarted':'番茄已开始。计时结束不会自动完成任务。',
+    'daily.recovered':'后台检查已恢复；关闭应用后会停止。晚间调整需要你确认保存。',
+    'daily.recoveryDetails':'最近复盘：{status}；未答复：{pending}；待确认：{confirmation}。',
+    'daily.recoveryError':'恢复摘要加载失败：{message}',
+    'daily.permission':'启用学习系统通知',
+  },
+};

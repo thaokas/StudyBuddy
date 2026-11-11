@@ -1,0 +1,56 @@
+{
+  "createdAt": "2026-11-11T04:57:28.457Z",
+  "source": ".studybuddy/study",
+  "integrity": "ok",
+  "moduleSchema": [
+    {
+      "module_id": "followup",
+      "schema_version": 1
+    },
+    {
+      "module_id": "learning",
+      "schema_version": 1
+    },
+    {
+      "module_id": "materials",
+      "schema_version": 1
+    },
+    {
+      "module_id": "memory",
+      "schema_version": 1
+    },
+    {
+      "module_id": "planning",
+      "schema_version": 1
+    },
+    {
+      "module_id": "plans",
+      "schema_version": 1
+    },
+    {
+      "module_id": "tasks",
+      "schema_version": 1
+    },
+    {
+      "module_id": "timer",
+      "schema_version": 1
+    },
+    {
+      "module_id": "tutoring",
+      "schema_version": 1
+    }
+  ],
+  "memoryTableExists": true,
+  "files": [
+    {
+      "name": "study.pre-s4.db",
+      "bytes": 671744,
+      "sha256": "61c2edf754beca4be24d945ce4c53218bbdf43db2d75dbf45c398f86ef824507"
+    },
+    {
+      "name": "memory.v1.backup.json",
+      "bytes": 54,
+      "sha256": "bb3890a163aac1a4d42178cffc0dc6042e86346cea092c1c214eb2ed43e0eb79"
+    }
+  ]
+}

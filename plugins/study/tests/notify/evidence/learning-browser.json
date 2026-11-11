@@ -1,0 +1,17 @@
+{
+  "at": "2026-11-10T18:16:51.971Z",
+  "browser": "msedge",
+  "granted": {
+    "permission": "granted",
+    "first": true,
+    "second": false,
+    "pagePermission": true
+  },
+  "denied": {
+    "permission": "default",
+    "first": false,
+    "second": false,
+    "pagePermission": true
+  },
+  "passed": true
+}

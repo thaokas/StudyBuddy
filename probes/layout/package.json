@@ -1,0 +1,21 @@
+{
+  "name": "@studybuddy/layout-probe",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Disposable T03 dual-column layout probe; excluded from StudyBuddy releases",
+  "exports": {
+    ".": "./index.mjs",
+    "./client": "./client.js"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-sidebar-right",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  }
+}

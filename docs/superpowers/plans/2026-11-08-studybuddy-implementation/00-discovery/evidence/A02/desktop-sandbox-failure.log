@@ -1,0 +1,7 @@
+$ pnpm --filter @deepseek-ai/dsh-desktop run start
+$ tsx scripts/dev.ts --skip-build
+[1109/194406.973:ERROR:third_party\crashpad\crashpad\util\win\registration_protocol_win.cc:108] CreateFile: 拒绝访问。 (0x5)
+Debugger listening on ws://127.0.0.1:64867/6a9c4767-ab5c-4d22-b667-fa95c7ca36f2
+For help, see: https://nodejs.org/learn/getting-started/debugging
+[16492:1109/194515.771:FATAL:electron\shell\browser\win\install_dir_access.cc:52] Sandboxed processes cannot read D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\node_modules\.pnpm\electron@44.7.0_supports-color@9.4.0\node_modules\electron\dist: its ACL has an entry for an AppContainer package SID but none for ALL APPLICATION PACKAGES, so Windows denies the sandbox token access. Grant it with: icacls "D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\node_modules\.pnpm\electron@44.7.0_supports-color@9.4.0\node_modules\electron\dist" /grant *S-1-15-2-1:(OI)(CI)(RX)
+desktop development: --inspect=127.0.0.1:64867 --remote-debugging-port=64868 --user-data-dir=D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\apps\desktop\.desktop-build\a02\desktop-1794224645149\electron-user-data D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\apps\desktop exited with 2147483651

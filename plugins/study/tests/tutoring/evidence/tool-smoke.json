@@ -1,0 +1,214 @@
+{
+  "plugin": "D:\\Data\\ProjectsRepo\\StudyBuddy\\plugins\\study\\host\\index.mjs",
+  "dataDir": "C:\\Users\\35373\\AppData\\Local\\Temp\\study-tutoring-smoke-TPdax5\\data",
+  "taskId": "task_335dfbfd-2828-4daf-a320-16cc894b7840",
+  "toolVisible": true,
+  "toolResultSeen": true,
+  "injectedMessageSeen": true,
+  "injectedFactsSeen": true,
+  "sessionSourceKindCount": 2,
+  "freeChatAddedInjection": false,
+  "exit": {
+    "code": 0,
+    "signal": null,
+    "stderrTail": []
+  },
+  "freeExit": {
+    "code": 0,
+    "signal": null,
+    "stderrTail": []
+  },
+  "database": {
+    "link": {
+      "session_id": "session-9df9d5ad-961c-4379-b355-8905fb964066",
+      "task_id": "task_335dfbfd-2828-4daf-a320-16cc894b7840",
+      "digest": "618db7ae50faf25692a65df534074d4ac0444b56eaf70cc060eefaa447ffc18d",
+      "injected_at": "2026-11-10T12:18:23.010Z"
+    },
+    "changes": [
+      {
+        "actor": "agent",
+        "action": "inject"
+      }
+    ],
+    "tasks": [
+      {
+        "id": "task_335dfbfd-2828-4daf-a320-16cc894b7840",
+        "title": "第二章 导数习题"
+      }
+    ]
+  },
+  "stderrTail": [],
+  "passed": true,
+  "seedDatabase": {
+    "link": null,
+    "changes": [],
+    "tasks": [
+      {
+        "id": "task_335dfbfd-2828-4daf-a320-16cc894b7840",
+        "title": "第二章 导数习题"
+      }
+    ]
+  },
+  "databasesAfterSeed": [
+    "C:\\Users\\35373\\AppData\\Local\\Temp\\study-tutoring-smoke-TPdax5\\data\\study.db"
+  ],
+  "toolResultExcerpt": "[{\"type\":\"tool_result\",\"tool_use_id\":\"mock-call-1\",\"content\":[{\"type\":\"text\",\"text\":\"已带入任务《第二章 导数习题》的答疑上下文（资料片段 1 条）；同一任务不会重复注入。\"}],\"is_error\":false},{\"type\":\"tool_result\",\"tool_use_id\":\"mock-call-1\",\"content\":[{\"type\":\"text\",\"text\":\"已带入任务《第二章 导数习题》的答疑上下文（资料片段 1 条）；同一任务不会重复注入。\"}],\"is_error\":false},{\"type\":\"tool_result\",\"tool_use_id\":\"mock-call-1\",\"content\":[{\"type\":\"text\",\"text\":\"任务《第二章 导数习题》的答疑上下文已经在当前会话里，不重复注入。\"}],\"is_error\":false}]",
+  "requests": [
+    {
+      "roles": [
+        "user"
+      ],
+      "toolNames": [
+        "create_goal",
+        "edit",
+        "get_goal",
+        "glob",
+        "grep",
+        "interrupt_agent",
+        "job_kill",
+        "job_list",
+        "job_output",
+        "list_agents",
+        "memory_forget",
+        "memory_recall",
+        "memory_remember",
+        "pwsh",
+        "read",
+        "read_image",
+        "send_message",
+        "skill",
+        "study_export",
+        "study_materials",
+        "study_plan",
+        "study_progress",
+        "study_status",
+        "study_tutoring",
+        "subagent",
+        "subagent_fork",
+        "todo_write",
+        "update_goal",
+        "wait_agent",
+        "web_fetch",
+        "web_search",
+        "workflow",
+        "working_directory",
+        "write"
+      ],
+      "hasToolResult": false,
+      "hasStudyTutoringCall": true
+    },
+    {
+      "roles": [
+        "user"
+      ],
+      "toolNames": [],
+      "hasToolResult": false,
+      "hasStudyTutoringCall": true
+    },
+    {
+      "roles": [
+        "user",
+        "assistant",
+        "user"
+      ],
+      "toolNames": [
+        "create_goal",
+        "edit",
+        "get_goal",
+        "glob",
+        "grep",
+        "interrupt_agent",
+        "job_kill",
+        "job_list",
+        "job_output",
+        "list_agents",
+        "memory_forget",
+        "memory_recall",
+        "memory_remember",
+        "pwsh",
+        "read",
+        "read_image",
+        "send_message",
+        "skill",
+        "study_export",
+        "study_materials",
+        "study_plan",
+        "study_progress",
+        "study_status",
+        "study_tutoring",
+        "subagent",
+        "subagent_fork",
+        "todo_write",
+        "update_goal",
+        "wait_agent",
+        "web_fetch",
+        "web_search",
+        "workflow",
+        "working_directory",
+        "write"
+      ],
+      "hasToolResult": true,
+      "hasStudyTutoringCall": true
+    },
+    {
+      "roles": [
+        "user",
+        "assistant",
+        "user",
+        "assistant",
+        "user"
+      ],
+      "toolNames": [
+        "create_goal",
+        "edit",
+        "get_goal",
+        "glob",
+        "grep",
+        "interrupt_agent",
+        "job_kill",
+        "job_list",
+        "job_output",
+        "list_agents",
+        "memory_forget",
+        "memory_recall",
+        "memory_remember",
+        "pwsh",
+        "read",
+        "read_image",
+        "send_message",
+        "skill",
+        "study_export",
+        "study_materials",
+        "study_plan",
+        "study_progress",
+        "study_status",
+        "study_tutoring",
+        "subagent",
+        "subagent_fork",
+        "todo_write",
+        "update_goal",
+        "wait_agent",
+        "web_fetch",
+        "web_search",
+        "workflow",
+        "working_directory",
+        "write"
+      ],
+      "hasToolResult": true,
+      "hasStudyTutoringCall": true
+    }
+  ],
+  "injectedRequestCount": 2,
+  "injectedExcerpt": "【任务答疑上下文｜来自学习服务的最新事实，不是聊天副本】\n任务：第二章 导数习题\n学科：数学\n完成条件：做完 1-10 题并订正错题\n预计工作量：30 分钟\n材料位置：mat_c8b5171e-1b4c-4564-9e5e-ba5811cbba06\n相关资料（引用来自资料库，可核对）：\n- 《数学练习册》 第二章 导数 来源 2026-11-10（页码未核实）：第一题：求 x^2 的导数。 第二题：求 sin(x) 的导数。；未核实：page\n最新计划「冒烟学习计划」修订 1：\n- 2026-11-10 19:00–19:30 第二章 导数习题（30 分钟）\n只依据以上可核对事实解答。资料不足、页码或题号无法确认时请直接说明，不要替学生补全；需要更多原文时使用 study_materials 检索。",
+  "sourceKindAfterFirst": 2,
+  "databasesAfterFirst": [
+    "C:\\Users\\35373\\AppData\\Local\\Temp\\study-tutoring-smoke-TPdax5\\data\\study.db"
+  ],
+  "injectionRecordsOk": true,
+  "sessionFiles": [
+    "\\sessions\\--D-Data-ProjectsRepo-StudyBuddy-source-deepseek-harness--\\session-9df9d5ad-961c-4379-b355-8905fb964066\\session.v4.jsonl",
+    "\\sessions\\--D-Data-ProjectsRepo-StudyBuddy-source-deepseek-harness--\\session-ca894f84-6c1f-4b98-b30a-94489efe3f35\\session.v4.jsonl"
+  ],
+  "databaseOk": true
+}

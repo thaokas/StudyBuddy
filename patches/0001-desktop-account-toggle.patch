@@ -1,0 +1,215 @@
+diff --git a/apps/desktop/README.i18n.yaml b/apps/desktop/README.i18n.yaml
+index 18cc78031f..ef2f235916 100644
+--- a/apps/desktop/README.i18n.yaml
++++ b/apps/desktop/README.i18n.yaml
+@@ -15,8 +15,8 @@
+   en: 127ea90553cb6af7
+   zh: 7b1c5aec8558c684
+ /deepseek-harness-desktop/application-overview:
+-  en: d4afa46403997884
+-  zh: 9b9fe126afda70f0
++  en: 899f790bd062ed71
++  zh: 2e14fbbe81a0c161
+ /deepseek-harness-desktop/terminal-command:
+   en: 5f2d25a1d8472647
+   zh: 2acb5c5d7d1917e2
+diff --git a/apps/desktop/README.md b/apps/desktop/README.md
+index f59840e5c8..3593e0b755 100644
+--- a/apps/desktop/README.md
++++ b/apps/desktop/README.md
+@@ -39,6 +39,8 @@ The desktop application is an Electron shell around the complete dsh Web applica
+ 
+ Desktop binds `127.0.0.1`, the address Electron dials for the ready URL and the WebSocket credential filter. WebSocket streams use `ws:` or `wss:` according to the Host listener; credentials require matching authority and scheme.
+ 
++API-only deployments set `DSH_DESKTOP_ACCOUNT_ENABLED=0` and disable the account provider, account model adapter, account controller, and account UI in their profile. The shell then enters the workspace without native account onboarding, does not subscribe to account streams, and reads credential metadata without account RPC. The Models settings page continues to manage custom providers and API keys. Omission or `1` retains the standard account flow; other values fail startup.
++
+ The first application-menu command, **About DeepSeek Harness**, opens Electron's native About panel with the application icon, product name, and installed release version. The menu follows the Desktop shell locale. On macOS, Hide, Hide Others, Show All, and Quit use localized labels; Hide and Quit include the DeepSeek Harness product name. These commands retain their native actions and shortcuts. macOS reads the icon from its application bundle, so an unpackaged development launch displays Electron's icon; Windows receives the packaged PNG.
+ 
+ Desktop’s local native directory flow opens an Electron folder dialog attached to the application window, restoring, showing, and focusing that window first. Concurrent requests share one dialog; cancellation returns no path and failures remain retryable. Ordinary Web uses the Host chooser. Browse mode lists Host directories. On Linux without zenity or kdialog, automatic selection uses browse instead of the Electron dialog.
+diff --git a/apps/desktop/README.zh.md b/apps/desktop/README.zh.md
+index 62e19b7e8c..b34efaa217 100644
+--- a/apps/desktop/README.zh.md
++++ b/apps/desktop/README.zh.md
+@@ -39,6 +39,8 @@ Electron 在 `userData/desktop/locale-cache` 缓存最近确认的界面语言
+ 
+ Desktop 绑定 `127.0.0.1`，即 Electron 为就绪 URL 与 WebSocket 凭据过滤器拨号的地址。WebSocket 流按 Host 监听器使用 `ws:` 或 `wss:`；附加凭据要求 authority 与 scheme 均匹配。
+ 
++仅使用 API 的部署可设置 `DSH_DESKTOP_ACCOUNT_ENABLED=0`，并在 profile 中禁用账号提供器、账号模型适配器、账号控制器和账号界面。桌面壳会直接进入工作区，不显示原生账号引导、不订阅账号流，读取凭据元数据时也不请求账号 RPC；模型设置仍可管理自定义提供商和 API Key。省略或设为 `1` 保留标准账号流程，其他值会阻止启动。
++
+ 应用菜单第一项“**关于 DeepSeek Harness**”打开 Electron 原生关于面板，展示应用图标、产品名称和当前安装的发布版本。菜单文案跟随桌面壳的语言。macOS 的隐藏、隐藏其他、显示全部和退出条目使用本地化文案，隐藏和退出条目包含 DeepSeek Harness 产品名称。这些条目保留原生动作和快捷键。macOS 从应用包读取图标，因此未打包的开发启动会显示 Electron 图标；Windows 使用随包分发的 PNG。
+ 
+ Desktop 的本地原生目录流程打开绑定应用窗口的 Electron 文件夹对话框，并先恢复、显示和聚焦该窗口。并发请求共用一个对话框；取消不返回路径，失败后可以重试。普通 Web 使用 Host 选择器。浏览模式列出 Host 目录。Linux 缺少 zenity 或 kdialog 时，自动选择使用浏览模式，不使用 Electron 对话框。
+diff --git a/apps/desktop/src/main.ts b/apps/desktop/src/main.ts
+index dd3141228b..b897d79651 100644
+--- a/apps/desktop/src/main.ts
++++ b/apps/desktop/src/main.ts
+@@ -49,7 +49,7 @@ import { pruneCrashReports, RendererConsoleTail, writeCrashReport, type CrashRep
+ import { OperationJournal } from './operation-journal.ts'
+ import { runOperationReportJob, type OperationReportJobResult } from './operation-report-job.ts'
+ import { openWelcomeWindow } from './welcome-window.ts'
+-import { WELCOME_IPC, needsWelcome, type WelcomeNotice } from './welcome-api.ts'
++import { WELCOME_IPC, desktopAccountEnabled, needsWelcome, type WelcomeNotice } from './welcome-api.ts'
+ import { connectDesktopWelcome, type DesktopWelcomeBackend } from './welcome-backend.ts'
+ import { DesktopUpdateJournal } from './update-journal.ts'
+ import { DesktopUpdatePreparationError } from './update-error.ts'
+@@ -370,6 +370,7 @@ function createWindow(preload: string, show = false, primary = false): BrowserWi
+ }
+ 
+ async function main(): Promise<void> {
++  const accountEnabled = desktopAccountEnabled(process.env.DSH_DESKTOP_ACCOUNT_ENABLED)
+   const desktopSettings = await readDesktopSettings(app.getPath('userData'))
+   void pruneCrashReports(app.getPath('logs'))
+   const journalDirectory = process.env.DSH_DESKTOP_UPDATE_JOURNAL_DIR
+@@ -543,12 +544,12 @@ async function main(): Promise<void> {
+           .catch((error: unknown) => { console.error('desktop: legacy Host cookie cleanup failed', error) })
+         if (ready.injections === undefined) throw new Error('Desktop Host did not provide boot injections')
+         injections = ready.injections
+-        welcomeBackend = connectDesktopWelcome(ready.url, cookie)
++        welcomeBackend = connectDesktopWelcome(ready.url, cookie, fetch, { accountEnabled })
+         analyticsEnabled = await welcomeBackend.analyticsEnabled().catch(() => false)
+         if (!reportedLaunch) { reportedLaunch = true; void track('desktop_app_launch', {}) }
+         stopAccount?.()
+         const accountBackend = welcomeBackend.account
+-        stopAccount = accountBackend.watch((state) => {
++        stopAccount = accountEnabled ? accountBackend.watch((state) => {
+           if (quitting) return
+           if (welcomeWindow !== undefined && !welcomeWindow.isDestroyed()) welcomeWindow.webContents.send(WELCOME_IPC.state, state)
+           const attempt = state.attempt
+@@ -583,7 +584,7 @@ async function main(): Promise<void> {
+             const state = await accountBackend.state()
+             if (welcomeWindow !== undefined && !welcomeWindow.isDestroyed()) welcomeWindow.webContents.send(WELCOME_IPC.state, state)
+           }).catch(() => undefined)
+-        }, (enabled) => { analyticsEnabled = enabled })
++        }, (enabled) => { analyticsEnabled = enabled }) : undefined
+       },
+       stop: async () => {
+         analyticsEnabled = false
+@@ -1365,6 +1366,7 @@ async function main(): Promise<void> {
+   let openingWelcome: Promise<void> | undefined
+   const showWelcome = (): Promise<void> => {
+     if (quitting) return Promise.resolve()
++    if (!accountEnabled) return enterWorkspace()
+     if (welcomeWindow !== undefined && !welcomeWindow.isDestroyed()) {
+       if (!welcomeWindow.isVisible()) void track('auth_page_view', {})
+       welcomeWindow.show()
+diff --git a/apps/desktop/src/welcome-api.ts b/apps/desktop/src/welcome-api.ts
+index c693f385d6..0135b6b0d3 100644
+--- a/apps/desktop/src/welcome-api.ts
++++ b/apps/desktop/src/welcome-api.ts
+@@ -73,3 +73,14 @@ export interface WelcomeAuthentication {
+ export function needsWelcome(authentication: WelcomeAuthentication): boolean {
+   return !authentication.loggedIn && !authentication.hasApiKey
+ }
++
++/**
++ * Resolve whether the deployment offers DeepSeek account onboarding.
++ * @param value - DSH_DESKTOP_ACCOUNT_ENABLED; omitted preserves the standard shell.
++ * @returns false for an API-only deployment, which enters the workspace without native account onboarding.
++ */
++export function desktopAccountEnabled(value: string | undefined): boolean {
++  if (value === undefined || value === '1') return true
++  if (value === '0') return false
++  throw new Error('DSH_DESKTOP_ACCOUNT_ENABLED must be 0 or 1')
++}
+diff --git a/apps/desktop/src/welcome-backend.ts b/apps/desktop/src/welcome-backend.ts
+index 15b0932cb2..54739a0d4a 100644
+--- a/apps/desktop/src/welcome-backend.ts
++++ b/apps/desktop/src/welcome-backend.ts
+@@ -39,12 +39,14 @@ function record(value: unknown): value is Record<string, unknown> {
+  * @param hostUrl - URL of the running Desktop Host; only its origin is used.
+  * @param cookie - Cookie header returned by `authenticateWebHost` for this Host.
+  * @param send - HTTP client for Host requests.
++ * @param options - Deployment account policy; disabled accounts are never queried by metadata reads.
+  * @returns metadata reads and write-only credential operations over standard RPC.
+  */
+ export function connectDesktopWelcome(
+   hostUrl: string,
+   cookie: string,
+   send: (input: string, init?: RequestInit) => Promise<Response> = fetch,
++  options: { accountEnabled: boolean } = { accountEnabled: true },
+ ): DesktopWelcomeBackend {
+   const origin = new URL(hostUrl).origin
+   const invoke = async (
+@@ -112,7 +114,7 @@ export function connectDesktopWelcome(
+     }
+     if (ref !== undefined && !record(states[ref])) throw new Error('desktop welcome: missing credential metadata')
+     return {
+-      loggedIn: (await account.state()).status === 'credential-stored',
++      loggedIn: options.accountEnabled && (await account.state()).status === 'credential-stored',
+       hasApiKey: Object.values(states).some(value => record(value) && value.configured === true),
+       writable: ref !== undefined && record(states[ref]) && states[ref].writable === true,
+       localePreference: localePreference(namespaces),
+diff --git a/apps/desktop/tests/account-policy.spec.ts b/apps/desktop/tests/account-policy.spec.ts
+new file mode 100644
+index 0000000000..0063b88405
+--- /dev/null
++++ b/apps/desktop/tests/account-policy.spec.ts
+@@ -0,0 +1,10 @@
++/** Deployment policy for shells that use API credentials without account onboarding. */
++import { expect, it } from 'vitest'
++import { desktopAccountEnabled } from '../src/welcome-api.ts'
++
++it('keeps account onboarding by default and permits an explicit API-only deployment', () => {
++  expect(desktopAccountEnabled(undefined)).toBe(true)
++  expect(desktopAccountEnabled('1')).toBe(true)
++  expect(desktopAccountEnabled('0')).toBe(false)
++  expect(() => desktopAccountEnabled('false')).toThrow('DSH_DESKTOP_ACCOUNT_ENABLED')
++})
+diff --git a/apps/desktop/tests/welcome-host.spec.ts b/apps/desktop/tests/welcome-host.spec.ts
+index d5dfb480a2..a5a0e845ae 100644
+--- a/apps/desktop/tests/welcome-host.spec.ts
++++ b/apps/desktop/tests/welcome-host.spec.ts
+@@ -76,6 +76,14 @@ describe('desktop welcome Web operations', () => {
+     expect(host.keys.has('undefined')).toBe(false)
+   })
+ 
++  it('reads custom credentials without account RPC when the deployment disables accounts', async () => {
++    const host = transport()
++    host.keys.set('EXAMPLE_API_KEY', 'custom-key')
++    const backend = connectDesktopWelcome(url, cookie, host.send, { accountEnabled: false })
++    expect(await backend.read()).toMatchObject({ loggedIn: false, hasApiKey: true })
++    expect(host.send.mock.calls.some(([input]) => String(input).includes('/api/account/'))).toBe(false)
++  })
++
+   it.each(['', 'bad key', 'key\n'])('rejects malformed keys without contacting a provider: %s', async (value) => {
+     const host = transport()
+     const backend = connectDesktopWelcome(url, cookie, host.send)
+diff --git a/apps/desktop/tests/welcome-startup.spec.ts b/apps/desktop/tests/welcome-startup.spec.ts
+index e578c8a655..2bd151b93c 100644
+--- a/apps/desktop/tests/welcome-startup.spec.ts
++++ b/apps/desktop/tests/welcome-startup.spec.ts
+@@ -174,6 +174,34 @@ afterEach(() => {
+   vi.restoreAllMocks()
+ })
+ 
++it('enters an API-only workspace with no stored key and never starts account onboarding', async () => {
++  vi.resetModules()
++  vi.clearAllMocks()
++  vi.useFakeTimers()
++  state.hasApiKey = false
++  state.preference = 'zh'
++  state.operations = undefined
++  state.accountListener = undefined
++  state.expiryListener = undefined
++  state.beforeRead.mockResolvedValue(undefined)
++  state.beforeWelcome.mockResolvedValue(undefined)
++  vi.stubEnv('DSH_CLIENT_VERSION', '1.2.3')
++  vi.stubEnv('DSH_DESKTOP_DEV_PROJECT_DIR', '/development-profile')
++  vi.stubEnv('DSH_DESKTOP_NODE_BINARY', '/runtime/node')
++  vi.stubEnv('DSH_DESKTOP_PNPM_ENTRY', '/runtime/pnpm')
++  vi.stubEnv('DSH_DESKTOP_DSH_DIR', '/runtime/dsh')
++  vi.stubEnv('DSH_DESKTOP_PRIMARY_RUNTIME_DIR', '/runtime/primary-runtime')
++  vi.stubEnv('DSH_DESKTOP_ACCOUNT_ENABLED', '0')
++  vi.stubEnv('DSH_DESKTOP_MANDATORY_UPDATE_CONFIG', undefined)
++  vi.stubEnv('DSH_DESKTOP_UPDATE_JOURNAL_DIR', undefined)
++  vi.stubEnv('DSH_DESKTOP_OPEN_DEVTOOLS', '0')
++  await import('../src/main.ts')
++  await vi.waitFor(() => { expect(state.showWorkspace).toHaveBeenCalled() })
++  expect(state.operations).toBeUndefined()
++  expect(state.accountListener).toBeUndefined()
++  expect(state.expiryListener).toBeUndefined()
++})
++
+ it.each([false, true])('starts welcome onboarding without carrying update focus into login or skip (Windows update=%s)', async (updated) => {
+   vi.resetModules()
+   vi.clearAllMocks()

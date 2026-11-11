@@ -1,0 +1,25 @@
+{
+  "started": "2026-11-09T13:02:19.679Z",
+  "label": "desktop-real",
+  "source": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\",
+  "root": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a02\\desktop-real-1794229338863",
+  "home": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a02\\desktop-real-1794229338863\\home",
+  "userData": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a02\\desktop-real-1794229338863\\electron-user-data",
+  "realProvider": true,
+  "model": {
+    "id": "deepseek-flash",
+    "name": "DeepSeek-V4.1-Flash",
+    "requestedRevision": "Flash 4.1 1017",
+    "datedRevisionConfirmed": false,
+    "listingEndpoint": "https://api.deepseek.com/models"
+  },
+  "maxOutputTokensPerRequest": 1024,
+  "scope": "Profile readiness; functional results are in the separate test reports.",
+  "passed": true,
+  "origin": "http://127.0.0.1:52457",
+  "exit": {
+    "code": 0,
+    "signal": null
+  },
+  "finished": "2026-11-09T13:04:04.418Z"
+}

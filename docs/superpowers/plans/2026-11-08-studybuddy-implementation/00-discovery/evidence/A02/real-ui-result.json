@@ -1,0 +1,65 @@
+{
+  "root": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a02\\desktop-real-1794225320269",
+  "realProvider": true,
+  "model": {
+    "id": "deepseek-flash",
+    "name": "DeepSeek-V4.1-Flash",
+    "requestedRevision": "Flash 4.1 1017",
+    "datedRevisionConfirmed": false,
+    "listingEndpoint": "https://api.deepseek.com/models"
+  },
+  "passed": true,
+  "uiWrite": {
+    "value": "real-ui-saved",
+    "revision": 1,
+    "writer": "ui"
+  },
+  "turnAdmitted": true,
+  "agentWrite": {
+    "value": "real-agent-saved",
+    "revision": 2,
+    "writer": "agent"
+  },
+  "sessionId": "session-6f1713f6-7188-4b55-88eb-4255d7b29e4d",
+  "toolCalls": [
+    "a02_probe",
+    "read"
+  ],
+  "nativeToolResultSeen": true,
+  "assistantStreams": [
+    {
+      "chunks": 9,
+      "usage": {
+        "inputTokens": 16624,
+        "outputTokens": 53,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "totalTokens": 16677
+      }
+    },
+    {
+      "chunks": 6,
+      "usage": {
+        "inputTokens": 194,
+        "outputTokens": 83,
+        "cacheReadTokens": 16512,
+        "cacheWriteTokens": 0,
+        "totalTokens": 16789
+      }
+    },
+    {
+      "chunks": 5,
+      "usage": {
+        "inputTokens": 243,
+        "outputTokens": 310,
+        "cacheReadTokens": 16640,
+        "cacheWriteTokens": 0,
+        "totalTokens": 17193
+      }
+    }
+  ],
+  "turnEnd": {
+    "kind": "completed"
+  },
+  "finished": "2026-11-09T11:57:26.071Z"
+}

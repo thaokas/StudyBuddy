@@ -1,0 +1,14 @@
+native/system/packages/darwin-arm64      | [WARN] Unsupported platform: wanted: {"cpu":["arm64"],"os":["darwin"],"libc":["any"]} (current: {"os":"win32","cpu":"x64","libc":"unknown"})
+native/system/packages/darwin-x64        | [WARN] Unsupported platform: wanted: {"cpu":["x64"],"os":["darwin"],"libc":["any"]} (current: {"os":"win32","cpu":"x64","libc":"unknown"})
+native/system/packages/linux-arm64       | [WARN] Unsupported platform: wanted: {"cpu":["arm64"],"os":["linux"],"libc":["any"]} (current: {"os":"win32","cpu":"x64","libc":"unknown"})
+native/system/packages/linux-x64         | [WARN] Unsupported platform: wanted: {"cpu":["x64"],"os":["linux"],"libc":["any"]} (current: {"os":"win32","cpu":"x64","libc":"unknown"})
+packages/experimental/cua-macos          | [WARN] Unsupported platform: wanted: {"cpu":["any"],"os":["darwin"],"libc":["any"]} (current: {"os":"win32","cpu":"x64","libc":"unknown"})
+No broken requirements found.
+Office runtime versions and document round trips passed.
+No broken requirements found.
+11.28.5
+desktop development: DSH_HOME=D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\apps\desktop\.desktop-build\a01\desktop-1794222588954\home
+desktop development: userData=D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\apps\desktop\.desktop-build\a01\desktop-1794222588954\electron-user-data
+desktop development: inspectors main=56072, renderer=56073, host=56074
+
+dsh web: http://127.0.0.1:56184/?token=[REDACTED]

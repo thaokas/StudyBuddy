@@ -1,0 +1,290 @@
+{
+  "task": "T03",
+  "route": "1-zero-patch-right-panel",
+  "started": "2026-11-09T18:03:57.075Z",
+  "checks": {
+    "hero": {
+      "expandButtons": 1,
+      "openPanels": 0,
+      "probeTabBodies": 0,
+      "addTaskButtons": 0,
+      "messages": 0,
+      "geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 900
+        },
+        "conversation": {
+          "x": 280,
+          "y": 0,
+          "width": 1160,
+          "height": 900
+        },
+        "rightbarTrack": {
+          "x": 1440,
+          "y": 0,
+          "width": 0,
+          "height": 900
+        },
+        "rightPanel": {
+          "x": 792,
+          "y": 0,
+          "width": 648,
+          "height": 900
+        }
+      }
+    },
+    "blankSessionStudy": {
+      "messages": 0,
+      "geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 900
+        },
+        "conversation": {
+          "x": 280,
+          "y": 0,
+          "width": 512,
+          "height": 900
+        },
+        "rightbarTrack": {
+          "x": 792,
+          "y": 0,
+          "width": 648,
+          "height": 900
+        },
+        "rightPanel": {
+          "x": 792,
+          "y": 0,
+          "width": 648,
+          "height": 900
+        }
+      },
+      "widthReadout": "当前宽度: 647px"
+    },
+    "globalPanel": {
+      "studyVisible": false,
+      "openPanels": 1,
+      "composerVisible": false,
+      "geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 900
+        },
+        "conversation": {
+          "x": 280,
+          "y": 0,
+          "width": 1160,
+          "height": 900
+        },
+        "rightbarTrack": {
+          "x": 1440,
+          "y": 0,
+          "width": 0,
+          "height": 900
+        },
+        "rightPanel": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      }
+    },
+    "mockRequestsAfterFirstTurn": 2,
+    "opened": {
+      "geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 900
+        },
+        "conversation": {
+          "x": 280,
+          "y": 0,
+          "width": 512,
+          "height": 900
+        },
+        "rightbarTrack": {
+          "x": 792,
+          "y": 0,
+          "width": 648,
+          "height": 900
+        },
+        "rightPanel": {
+          "x": 792,
+          "y": 0,
+          "width": 648,
+          "height": 900
+        }
+      },
+      "widthReadout": "当前宽度: 647px",
+      "tabCount": 2
+    },
+    "widest": {
+      "geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 900
+        },
+        "conversation": {
+          "x": 280,
+          "y": 0,
+          "width": 400,
+          "height": 900
+        },
+        "rightbarTrack": {
+          "x": 680,
+          "y": 0,
+          "width": 760,
+          "height": 900
+        },
+        "rightPanel": {
+          "x": 680,
+          "y": 0,
+          "width": 760,
+          "height": 900
+        }
+      },
+      "widthReadout": "当前宽度: 759px"
+    },
+    "widestCollapsed": {
+      "geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 56,
+          "height": 900
+        },
+        "conversation": {
+          "x": 56,
+          "y": 0,
+          "width": 400,
+          "height": 900
+        },
+        "rightbarTrack": {
+          "x": 456,
+          "y": 0,
+          "width": 984,
+          "height": 900
+        },
+        "rightPanel": {
+          "x": 456,
+          "y": 0,
+          "width": 984,
+          "height": 900
+        }
+      },
+      "widthReadout": "当前宽度: 983px"
+    },
+    "operability": {
+      "addedCount": "2",
+      "noteValue": "下午三点复习英语",
+      "requestsBeforeSecondTurn": 2,
+      "requestsAfterSecondTurn": 3,
+      "conversationStillVisible": true
+    },
+    "reload": {
+      "sessionRestored": true,
+      "panelRestored": true,
+      "tabRestored": true,
+      "geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 900
+        },
+        "conversation": {
+          "x": 280,
+          "y": 0,
+          "width": 512,
+          "height": 900
+        },
+        "rightbarTrack": {
+          "x": 792,
+          "y": 0,
+          "width": 648,
+          "height": 900
+        },
+        "rightPanel": {
+          "x": 792,
+          "y": 0,
+          "width": 648,
+          "height": 900
+        }
+      },
+      "tabs": 2
+    },
+    "pageErrors": [],
+    "consoleErrors": [],
+    "widthLimit": {
+      "formula": "min(70% × 1440 = 1008, 1440 − nav − 400)",
+      "navExpanded": {
+        "nav": 280,
+        "measured": 760,
+        "conversation": 400
+      },
+      "navRail": {
+        "nav": 56,
+        "measured": 984,
+        "conversation": 400
+      },
+      "centerMin": 400
+    },
+    "noSessionAnswer": "DSH 启动即创建一个空白“新会话”，因此没有“完全无会话”的首屏：空白会话下右栏可展开，学习区在发送第一条消息前就可用（消息数 0）。但全局面板（如“插件”）替换对话时，右栏与学习区一起消失（openPanels=1，studyVisible=false）。右栏按 session id 存储，真正没有任何 session 的界面不会渲染学习区。",
+    "direction": "学习区落在右栏、对话在中间列，方向与目标（左学习、右对话）相反。"
+  },
+  "screenshots": [
+    "route1-hero-blank-session.png",
+    "route1-blank-session-study.png",
+    "route1-global-panel.png",
+    "route1-opened.png",
+    "route1-widest.png",
+    "route1-widest-collapsed-sidebar.png",
+    "route1-operable.png",
+    "route1-reload.png"
+  ],
+  "passed": true,
+  "finished": "2026-11-09T18:04:24.500Z",
+  "hostStderr": [
+    []
+  ]
+}

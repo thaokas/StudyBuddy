@@ -1,0 +1,23 @@
+{
+  "started": "2026-11-10T13:36:10.859Z",
+  "passed": true,
+  "checks": {
+    "layers": [
+      "@deepseek-ai/dsh-base",
+      "@deepseek-ai/dsh-web-app",
+      "@deepseek-ai/dsh-personalized-recommendations"
+    ],
+    "skipped": [],
+    "creatorRows": [
+      "action-cards",
+      "client-ui-action-cards",
+      "creation-recommendations",
+      "client-ui-creation-recommendations",
+      "plugin-recommendations",
+      "client-ui-plugin-recommendations"
+    ],
+    "skill": "C:\\Users\\35373\\AppData\\Local\\Temp\\study-creator-compose-rhdbhF\\home\\skills\\study-creator\\SKILL.md",
+    "marker": "C:\\Users\\35373\\AppData\\Local\\Temp\\study-creator-compose-rhdbhF\\home\\.studybuddy-creator-enabled"
+  },
+  "finished": "2026-11-10T13:36:10.923Z"
+}

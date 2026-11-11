@@ -1,0 +1,777 @@
+diff --git a/.agents/notes/implemented/architecture/2026-11-10-second-main-column.i18n.yaml b/.agents/notes/implemented/architecture/2026-11-10-second-main-column.i18n.yaml
+new file mode 100644
+index 0000000000..6f927c6b3b
+--- /dev/null
++++ b/.agents/notes/implemented/architecture/2026-11-10-second-main-column.i18n.yaml
+@@ -0,0 +1,19 @@
++# Bilingual-pair consistency record for 2026-11-10-second-main-column.md (docs/i18n/README.md): per heading
++# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
++# After editing either side, bring the other along and re-record with:
++#   pnpm run verify-translation-pairing --write .agents/notes/implemented/architecture/2026-11-10-second-main-column.md
++/agent-note-add-a-second-main-column-inside-the-centre-for-a-plugin-workbench:
++  en: 15ff3ee9e1244432
++  zh: be20c0522877f7b0
++/agent-note-add-a-second-main-column-inside-the-centre-for-a-plugin-workbench/problem:
++  en: 821ce65d6590c28d
++  zh: d89a69d9b5af2256
++/agent-note-add-a-second-main-column-inside-the-centre-for-a-plugin-workbench/decision:
++  en: 8de62e02dac12a56
++  zh: 15b6df6fc42b8f46
++/agent-note-add-a-second-main-column-inside-the-centre-for-a-plugin-workbench/alternatives-considered:
++  en: 0697d39a831c7ea1
++  zh: 3f4816a90da236e5
++/agent-note-add-a-second-main-column-inside-the-centre-for-a-plugin-workbench/consequences:
++  en: 1b8c43a1964e352c
++  zh: 58ecb8ad45bbfbcd
+diff --git a/.agents/notes/implemented/architecture/2026-11-10-second-main-column.md b/.agents/notes/implemented/architecture/2026-11-10-second-main-column.md
+new file mode 100644
+index 0000000000..0201f355fe
+--- /dev/null
++++ b/.agents/notes/implemented/architecture/2026-11-10-second-main-column.md
+@@ -0,0 +1,46 @@
++# Agent Note: Add a second main column inside the centre for a plugin workbench
++
++Status: implemented
++
++English | [中文](2026-11-10-second-main-column.zh.md)
++
++## Problem
++
++A study-workbench plugin needs its working surface beside the native conversation in the same window: left study area, right conversation. The shipped frame offers three placements and none fits:
++
++| Placement | Why it is not enough |
++|---|---|
++| Left `sidebar` | 264–420px navigation column; the occupant owns it and would replace navigation |
++| Right `rightbar` | Opens on the right (reversed direction), is Session-scoped, and disappears when a global panel replaces the conversation |
++| A global main panel | Replaces the conversation instead of standing beside it |
++
++A fourth grid track would fix the direction but forces every column solve, resize handle, and responsive rule to price another track. The upstream layout specs assert the three-track template directly.
++
++## Decision
++
++Add a root-scoped `studyleft` single slot inside the centre column, drawn left of `main`:
++
++| Item | Contract |
++|---|---|
++| Rendering | `CenterColumn` becomes a horizontal flex row: `[studyleft wrapper][mainPanel]`; the frame's grid template is unchanged |
++| Width source | `ctx.layout.setLeftmain(px)` writes `layoutInfo.leftmain`; 0 hides the column |
++| Clamp | Rendered width is `clampWidth(leftmain, 320, centre − 400)` |
++| Visibility | Hidden below a 1024px frame or when the centre is under 720px (400px conversation + 320px column); no frame-level notice, the occupant's single-page entry is the fallback |
++| Handle | The frame draws one handle at `sidebar + rendered width`; dragging left widens the study column |
++| Owner props | `{ width, savedWidth, viewportWidth, canShow }`; `width` is the rendered value, `savedWidth` is the preference the occupant persists so a squeeze cannot overwrite it |
++| Persistence | None in the frame. `leftmain` resets on reload like every other layout preference; the occupant restores its own copy through `setLeftmain` |
++| Locale | Zero new keys and no frame controls |
++
++## Alternatives considered
++
++- **A fourth grid track**: every `computeColumns` caller, the template string, and the drag/resize tests would learn the track; the centre-internal flex split leaves the existing three-track solve and its specs intact.
++- **Reuse the right `rightbar`**: reversed direction, Session-scoped rendering, and covered by a global panel — the route this workbench replaced.
++- **Fall back to the left `sidebar`**: replaces the navigation column outright and is far narrower than a workbench.
++- **Persist the width in the layout store**: the frame owns geometry, not plugin preferences; keeping Storage out of `ui-layout` lets the occupant version its own key.
++
++## Consequences
++
++- The centre's own children are now a flex row; `mainPanel` keeps `flex: 1` and `min-width: 0`, and any future centre child must account for the row direction.
++- Below 1024px or beside a wide right panel the study column disappears while its occupant stays mounted only as a single page; a user who relied on the side-by-side view gets no in-frame explanation.
++- The centre can be temporarily narrower than its protected 400px while the JS solve lags a live resize; the conversation absorbs the difference for one frame.
++- Upstream specs for the grid template and column solve are untouched; the new slot adds one declaration, one store field, one service method, and one handle.
+diff --git a/.agents/notes/implemented/architecture/2026-11-10-second-main-column.zh.md b/.agents/notes/implemented/architecture/2026-11-10-second-main-column.zh.md
+new file mode 100644
+index 0000000000..edcf500751
+--- /dev/null
++++ b/.agents/notes/implemented/architecture/2026-11-10-second-main-column.zh.md
+@@ -0,0 +1,46 @@
++# Agent Note: Add a second main column inside the centre for a plugin workbench
++
++Status: implemented
++
++[English](2026-11-10-second-main-column.md) | 中文
++
++## Problem
++
++一个学习工作台插件需要在同一窗口内把工作区放在原生对话旁边：左边学习、右边对话。现有框架只提供三个放置点，都不满足：
++
++| 放置点 | 为什么不够 |
++|---|---|
++| 左 `sidebar` | 264–420px 的导航列，占用方拥有整列，放进来等于替换导航 |
++| 右 `rightbar` | 出现在右侧（方向相反）、按会话作用域渲染，且全局面板替换对话时一起消失 |
++| 全局面板 `main` | 替换对话，而不是与对话并排 |
++
++增加第四条网格轨道能解决方向问题，但所有列求解、拖拽手柄与响应式规则都要为多出的一条轨道计价；上游布局测试直接断言三条轨道的模板。
++
++## Decision
++
++在中栏内增加 root 作用域的 `studyleft` 单值 slot，画在 `main` 左侧：
++
++| 项 | 契约 |
++|---|---|
++| 渲染 | `CenterColumn` 改为横向 flex 行：`[studyleft 容器][mainPanel]`；框架网格模板不变 |
++| 宽度来源 | `ctx.layout.setLeftmain(px)` 写入 `layoutInfo.leftmain`；0 表示隐藏 |
++| 夹取 | 渲染宽度为 `clampWidth(leftmain, 320, 中栏 − 400)` |
++| 可见性 | 框架低于 1024px 或中栏小于 720px（400px 对话 + 320px 学习栏）时隐藏；没有框架层提示，占用方的单页入口承担回退 |
++| 手柄 | 框架在 `sidebar + 渲染宽度` 处绘制一个手柄；向左拖放宽学习栏 |
++| Owner props | `{ width, savedWidth, viewportWidth, canShow }`；`width` 是渲染值，`savedWidth` 是占用方要持久化的偏好，避免挤压覆盖用户宽度 |
++| 持久化 | 框架不持久化。`leftmain` 与其他布局偏好一样在刷新后重置；占用方通过 `setLeftmain` 恢复自己的副本 |
++| Locale | 不新增 key，也没有框架控件 |
++
++## Alternatives considered
++
++- **增加第四条网格轨道**：所有 `computeColumns` 调用方、模板字符串以及拖拽/改宽测试都要学习新轨道；中栏内部用 flex 切分可让现有三轨求解与其测试保持原样。
++- **复用右侧 `rightbar`**：方向相反、按会话作用域渲染，且会被全局面板覆盖——正是本工作台要替换的路线。
++- **退回左 `sidebar`**：会直接替换导航列，且宽度远小于工作台。
++- **把宽度持久化进布局 store**：框架拥有几何，不拥有插件偏好；把 Storage 留在 `ui-layout` 之外，占用方才能自行版本化自己的键。
++
++## Consequences
++
++- 中栏的子元素现在是 flex 行；`mainPanel` 保持 `flex: 1` 与 `min-width: 0`，未来任何中栏子元素都必须考虑行方向。
++- 低于 1024px 或右侧面板较宽时学习栏消失，占用方只以单页形式存在；依赖并排视图的用户不会看到框架内解释。
++- 实时缩放时 JS 求解落后于视口，中栏可能短暂窄于受保护的 400px，对话列承担这一帧的差额。
++- 网格模板与列求解的上游测试不受影响；新 slot 只增加一个声明、一个 store 字段、一个服务方法和一个手柄。
+diff --git a/packages/client/ui-layout/README.md b/packages/client/ui-layout/README.md
+index 8a20476270..4ac2906971 100644
+--- a/packages/client/ui-layout/README.md
++++ b/packages/client/ui-layout/README.md
+@@ -9,7 +9,7 @@ English | [中文](README.zh.md)
+ 
+ ## Summary
+ 
+-This package provides the Web GUI's three-column AppFrame, edge-column widths, and `ctx.layout` presentation control. The right column concedes space before the center; its occupant renders fullscreen while the frame retains the wide-screen track underneath. The theme presenter owns color scheme, alias tokens, font sizes, font lists, and document metadata. Layout state resets on reload.
++This package provides the Web GUI's three-column AppFrame, edge-column widths, and `ctx.layout` presentation control. The right column concedes space before the center; its occupant renders fullscreen while the frame retains the wide-screen track underneath. The center can host a second main column for a plugin workbench beside the conversation. The theme presenter owns color scheme, alias tokens, font sizes, font lists, and document metadata. Layout state resets on reload.
+ 
+ ## Table of Contents
+ 
+@@ -35,6 +35,8 @@ The drawer mask fades with the panel’s transition duration and easing on both
+ 
+ Global panels occupy the root-scoped `main` keyed slot; `conversation` is the reserved key for the Conversation. `ctx.layout.selectPanel(id)` selects a registered panel, and `null` selects the Conversation without changing the current Session. The Plugins page contributes one of the shipped global panels.
+ 
++A plugin may add a second main column inside the center by occupying the root-scoped `studyleft` slot and reporting its saved width through `ctx.layout.setLeftmain(px)`. It draws left of `main`: the frame keeps at least 320px for it, never lets it push the conversation below 400px, and hides it in the same render when the frame is under 1024px wide or the center cannot hold 720px — the occupying plugin's single-page entry is then the fallback. The frame draws the resize handle and clamps the saved width (zero hides the column); it persists nothing, so the occupant stores the `savedWidth` owner prop and restores it after reload. The slot adds no locale keys and no frame controls.
++
+ The single root-scoped `shell.bottom` slot spans the full width below the three columns. Its occupant controls its own height and visibility; the columns shrink by that height, and empty content reserves no space. Main-panel navigation preserves the bottom component. Column resize handles stop above it, while `shell.overlay` covers the whole frame. The default composition leaves this slot empty.
+ 
+ <a id="window-chrome-seat"></a>
+@@ -62,7 +64,7 @@ The root registration supplies folded-landscape posture through an injected obse
+ 
+ `selectPanel(id)` checks the live `main` registry before changing selection; an absent key throws and leaves the current panel intact. `beginNavigation()` returns an abort signal for an asynchronous UI navigation. A later call, a valid panel selection (including repeated selection), or layout disposal aborts that signal without cancelling underlying Session creation. Consumers check the signal before committing navigation or moving drafts.
+ 
+-One registration declares the frame slots and binds `ctx.layout` methods `selectPanel`, `toggleSidebar`, `openRightbar(track, fullscreen)`, and `closeRightbar`. One root store separates `panelInfo` selection from `layoutInfo` measurements, width preferences, and presentation reports. `ctx.layout.panelInfo` and the standard `usePanelInfo` hook share the same selection source; AppFrame subscribes to the stable layout object. The `rightbar` owner supplies actual `width`, `viewportWidth`, and normal-presentation eligibility `canShow`; insufficient room causes a deterministic close, never automatic reopening on widening. Fullscreen hides the width handle without releasing a track the occupant retains. AppFrame keeps the column containers mounted. The right column's root controller renders `rightbar.session` through `SessionProvider` only while the Conversation is selected; its unmount report releases the track. The independent title component uses the selected Session title only while the Conversation is visible, with the build-configured product title or localized `common.brand.localBuild` as its fallback; locale revisions update that fallback. The theme presenter is a second effect: pure DOM writes from resolved snapshots — initial state through the getter once, then event-driven only, with no React path. It applies palette, font-size, font-list, and token variables before measuring the rendered background as the single color authority. Fullscreen presentation suppresses grid and handle transitions; its occupant reports the new columns only after covering the frame. Fullscreen exit keeps transitions suppressed while the frame installs its destination geometry: close removes the right track, and restore retains it. Subsequent normal geometry actions restore ordinary transitions.
++One registration declares the frame slots and binds `ctx.layout` methods `selectPanel`, `toggleSidebar`, `setLeftmain(px)`, `openRightbar(track, fullscreen)`, and `closeRightbar`. One root store separates `panelInfo` selection from `layoutInfo` measurements, width preferences, and presentation reports. `layoutInfo.leftmain` is the second main column's saved preference; zero hides it and the frame clamps the rendered width to the current center. `ctx.layout.panelInfo` and the standard `usePanelInfo` hook share the same selection source; AppFrame subscribes to the stable layout object. The `rightbar` owner supplies actual `width`, `viewportWidth`, and normal-presentation eligibility `canShow`; insufficient room causes a deterministic close, never automatic reopening on widening. Fullscreen hides the width handle without releasing a track the occupant retains. AppFrame keeps the column containers mounted. The right column's root controller renders `rightbar.session` through `SessionProvider` only while the Conversation is selected; its unmount report releases the track. The independent title component uses the selected Session title only while the Conversation is visible, with the build-configured product title or localized `common.brand.localBuild` as its fallback; locale revisions update that fallback. The theme presenter is a second effect: pure DOM writes from resolved snapshots — initial state through the getter once, then event-driven only, with no React path. It applies palette, font-size, font-list, and token variables before measuring the rendered background as the single color authority. Fullscreen presentation suppresses grid and handle transitions; its occupant reports the new columns only after covering the frame. Fullscreen exit keeps transitions suppressed while the frame installs its destination geometry: close removes the right track, and restore retains it. Subsequent normal geometry actions restore ordinary transitions.
+ 
+ </details>
+ 
+@@ -97,8 +99,8 @@ None; this package neither assembles nor sends a provider request.
+ 
+ These limits define the current layout behavior. They are current package constraints, not a general window-manager comparison or a task backlog.
+ 
+-- **Panel geometry is transient** — reload restores the sidebar default and the right panel hidden; each dragged width is one frame-wide preference, not a per-Session fact.
+-- **Extremely narrow windows** — after the right panel closes, the center may still fall below 400px; browser drawers reserve no sidebar width below 768px.
++- **Panel geometry is transient** — reload restores the sidebar default and the right panel hidden; each dragged width is one frame-wide preference, not a per-Session fact. The second main column's saved width is the occupying plugin's own preference: the frame resets it with everything else, so the plugin restores it through `setLeftmain` after reload.
++- **Extremely narrow windows** — after the right panel closes, the center may still fall below 400px; browser drawers reserve no sidebar width below 768px. The second main column disappears below a 1024px frame or when the center cannot keep 720px, without a frame-level notice: the occupying plugin's single-page entry carries the fallback.
+ - **Track and panel travel on one shared curve only while animating** — during a discrete open/close the frame sets `data-animating` and its track transition and the occupant's slide read the same duration and easing variables; an occupant that used its own would detach the panel's edge from the conversation's while squeezing. Drags and instant presentation switches run transition-free, so the curve does not cover them.
+ - **No scroll anchoring during squeeze reflow** — layout changes may move the reader's viewport.
+ 
+diff --git a/packages/client/ui-layout/README.zh.md b/packages/client/ui-layout/README.zh.md
+index e19b7a0bd2..d5e04245d8 100644
+--- a/packages/client/ui-layout/README.zh.md
++++ b/packages/client/ui-layout/README.zh.md
+@@ -9,7 +9,7 @@ kind: "package-reference"
+ 
+ ## 概述
+ 
+-本包提供 Web GUI 的三栏 AppFrame、左右栏宽度与 `ctx.layout` 呈现控制。右栏先让步以保护中栏空间，全屏由占用方呈现，框架保留宽屏底层轨道。主题呈现器负责配色、别名 token、字号、字体列表与 document 元数据；布局状态在刷新后重置。
++本包提供 Web GUI 的三栏 AppFrame、左右栏宽度与 `ctx.layout` 呈现控制。右栏先让步以保护中栏空间，全屏由占用方呈现，框架保留宽屏底层轨道。中栏内还可以承载第二个主栏，让插件工作台与会话界面并排。主题呈现器负责配色、别名 token、字号、字体列表与 document 元数据；布局状态在刷新后重置。
+ 
+ ## 目录
+ 
+@@ -35,6 +35,8 @@ kind: "package-reference"
+ 
+ 全局面板占据 root 作用域的 `main` keyed slot；`conversation` 是为会话界面保留的 key。`ctx.layout.selectPanel(id)` 选中已注册面板，`null` 则选中会话界面，但不改变当前会话。Plugins 页面是默认组合中的一个全局面板。
+ 
++插件可以占据 root 作用域的 `studyleft` slot，并通过 `ctx.layout.setLeftmain(px)` 报告保存的宽度，从而在中栏内增加第二个主栏。它画在 `main` 左侧：框架至少给它 320px，且不允许它把会话界面压到 400px 以下；框架宽度低于 1024px 或中栏装不下 720px 时，它在同一次渲染中隐藏——此时占用插件的单页入口就是回退方式。框架绘制拖拽手柄并夹取保存宽度（0 表示隐藏），自身不持久化，占用方保存 owner props 里的 `savedWidth` 并在刷新后恢复。该 slot 不新增 locale key，也不新增框架控件。
++
+ root 作用域的单一 `shell.bottom` slot 横跨三列下方的整行。占用方控制自身高度与显隐；三列按该高度缩短，空内容不预留空间。切换主面板时保留底部组件。列宽拖拽手柄止于底部内容上方，`shell.overlay` 仍覆盖整个框架。默认组合不占用此 slot。
+ 
+ <a id="window-chrome-seat"></a>
+@@ -62,7 +64,7 @@ root 注册通过注入的可观察源提供横屏折叠状态，由渲染器负
+ 
+ `selectPanel(id)` 在改变选中态前检查实时 `main` 注册表；缺失的 key 会抛错并保留当前面板。`beginNavigation()` 为异步 UI 导航返回 abort signal。后续调用、有效面板选择（包括重复选择）或布局释放会中止该 signal，但不取消底层会话创建。消费方在提交导航或搬移草稿前检查 signal。
+ 
+-一次注册声明框架的子 slot，并绑定 `ctx.layout` 的 `selectPanel`、`toggleSidebar`、`openRightbar(track, fullscreen)` 与 `closeRightbar`。同一个 root 存储把 `panelInfo` 选中态与 `layoutInfo` 测量、宽度偏好、呈现报告分开。`ctx.layout.panelInfo` 与标准 `usePanelInfo` hook 共用同一个选中态来源；AppFrame 订阅引用稳定的布局对象。`rightbar` owner 提供实际 `width`、`viewportWidth`，以及表示能否以普通模式呈现的 `canShow`；占用方在空间不足时执行确定性的收起，变宽不自行重新展开。全屏隐藏宽度手柄，但不自行释放占用方要求保留的轨道。AppFrame 保持各列容器挂载。右栏的 root 控制器仅在选中会话界面时，经 `SessionProvider` 渲染 `rightbar.session`；内容卸载时的报告释放轨道。独立的标题组件仅在会话界面可见时使用所选会话标题，以构建配置的产品标题或本地化 `common.brand.localBuild` 为回退值；语言变化会更新该回退值。主题呈现器是第二个 effect：从解析后的快照做纯 DOM 写入——初始状态经 getter 读取一次，此后仅事件驱动，不经过 React。它先应用调色板、字号、字体列表与 token 变量，再把渲染出的背景测量为唯一的颜色依据。全屏呈现禁用网格和手柄过渡；占用方完全覆盖框架后才报告新的列布局。退出全屏时，框架先保持无过渡并安装目标布局：关闭移除右轨道，恢复保留右轨道。后续普通几何操作恢复正常过渡。
++一次注册声明框架的子 slot，并绑定 `ctx.layout` 的 `selectPanel`、`toggleSidebar`、`setLeftmain(px)`、`openRightbar(track, fullscreen)` 与 `closeRightbar`。同一个 root 存储把 `panelInfo` 选中态与 `layoutInfo` 测量、宽度偏好、呈现报告分开。`layoutInfo.leftmain` 是第二个主栏的保存偏好；0 表示隐藏，框架按当前中栏夹取渲染宽度。`ctx.layout.panelInfo` 与标准 `usePanelInfo` hook 共用同一个选中态来源；AppFrame 订阅引用稳定的布局对象。`rightbar` owner 提供实际 `width`、`viewportWidth`，以及表示能否以普通模式呈现的 `canShow`；占用方在空间不足时执行确定性的收起，变宽不自行重新展开。全屏隐藏宽度手柄，但不自行释放占用方要求保留的轨道。AppFrame 保持各列容器挂载。右栏的 root 控制器仅在选中会话界面时，经 `SessionProvider` 渲染 `rightbar.session`；内容卸载时的报告释放轨道。独立的标题组件仅在会话界面可见时使用所选会话标题，以构建配置的产品标题或本地化 `common.brand.localBuild` 为回退值；语言变化会更新该回退值。主题呈现器是第二个 effect：从解析后的快照做纯 DOM 写入——初始状态经 getter 读取一次，此后仅事件驱动，不经过 React。它先应用调色板、字号、字体列表与 token 变量，再把渲染出的背景测量为唯一的颜色依据。全屏呈现禁用网格和手柄过渡；占用方完全覆盖框架后才报告新的列布局。退出全屏时，框架先保持无过渡并安装目标布局：关闭移除右轨道，恢复保留右轨道。后续普通几何操作恢复正常过渡。
+ 
+ </details>
+ 
+@@ -97,8 +99,8 @@ root 注册通过注入的可观察源提供横屏折叠状态，由渲染器负
+ 
+ 这些限制界定了当前布局行为。它们是当前包约束，不是通用窗口管理器对比或任务积压。
+ 
+-- **面板几何是瞬时状态**——重新加载会恢复侧栏默认值并隐藏右侧面板；拖动设置的宽度是整个框架共用的一份偏好，而非每个会话各自的属性。
+-- **极窄窗口**——右侧面板关闭后，中栏仍可能小于 400px；低于 768px 时，浏览器抽屉不占据侧栏宽度。
++- **面板几何是瞬时状态**——重新加载会恢复侧栏默认值并隐藏右侧面板；拖动设置的宽度是整个框架共用的一份偏好，而非每个会话各自的属性。第二个主栏的保存宽度是占用插件自己的偏好：框架会随其他状态一起重置，插件在刷新后通过 `setLeftmain` 恢复。
++- **极窄窗口**——右侧面板关闭后，中栏仍可能小于 400px；低于 768px 时，浏览器抽屉不占据侧栏宽度。第二个主栏在框架低于 1024px 或中栏装不下 720px 时消失，且没有框架层提示：由占用插件的单页入口承担回退。
+ - **轨道与面板仅在动画期间沿同一条曲线运动**——离散开合时框架设置 `data-animating`，其轨道过渡和占用方的滑入读取同一组时长与缓动变量；占用方若自用一套，挤压时面板边缘就会与会话界面的边缘脱开。拖拽和即时呈现切换不带过渡，因此该曲线不覆盖它们。
+ - **挤压重排期间无滚动锚定**——布局变化可能移动读者的视口。
+ 
+diff --git a/packages/client/ui-layout/src/client/AppFrame.module.css b/packages/client/ui-layout/src/client/AppFrame.module.css
+index fa1065dc56..4e3f15f091 100644
+--- a/packages/client/ui-layout/src/client/AppFrame.module.css
++++ b/packages/client/ui-layout/src/client/AppFrame.module.css
+@@ -70,8 +70,22 @@
+   grid-row: 1;
+   min-width: 0;
+   display: flex;
+-  flex-direction: column;
++  flex-direction: row;
++  overflow: hidden;
++}
++
++/* Second main column inside the centre: the frame sets its px width inline and
++   the occupant scrolls itself. It carries the divider against the conversation;
++   the frame's overflow clips it under the Windows caption radius. */
++.leftmainCol {
++  position: relative;
++  flex: 0 0 auto;
++  box-sizing: border-box;
++  min-width: 0;
++  height: 100%;
+   overflow: hidden;
++  background: var(--dsw-alias-bg-base);
++  border-right: 0.5px solid var(--dsw-alias-border-l3);
+ }
+ 
+ .mainPanel {
+diff --git a/packages/client/ui-layout/src/client/AppFrame.tsx b/packages/client/ui-layout/src/client/AppFrame.tsx
+index 23e71c9c03..47bfd31ae0 100644
+--- a/packages/client/ui-layout/src/client/AppFrame.tsx
++++ b/packages/client/ui-layout/src/client/AppFrame.tsx
+@@ -24,6 +24,12 @@ import { DocumentTitle } from './DocumentTitle.tsx'
+ import type { createLayoutStore } from './stores.ts'
+ import css from './AppFrame.module.css'
+ 
++/**
++ * Second main column minimum; the centre keeps 400px beside it, so a centre
++ * below `CENTER_MIN + LEFTMAIN_MIN` hides the column.
++ */
++const LEFTMAIN_MIN = 320
++
+ /** Browser posture supplied by the root registration. */
+ export interface AppFrameInjected {
+   hooks: { foldedLandscape: HostObservable<boolean> }
+@@ -32,7 +38,7 @@ export interface AppFrameInjected {
+ /** Full composed props: runtime, child slots, store, locale, and injected posture. */
+ export type AppFrameProps =
+   & PropsRuntime<'root'>
+-  & PropsRenderSlots<'sidebar' | 'main' | 'rightbar' | 'shell.bottom' | 'shell.overlay' | 'shell.leading'>
++  & PropsRenderSlots<'sidebar' | 'studyleft' | 'main' | 'rightbar' | 'shell.bottom' | 'shell.overlay' | 'shell.leading'>
+   & PropsStore<ReturnType<typeof createLayoutStore>>
+   & PropsLocale<'common'>
+   & InjectFace<AppFrameInjected>
+@@ -63,7 +69,7 @@ function RightbarColumn(props: { children?: ReactNode; inert: boolean }) {
+  * One drag handle: pointer capture, rAF-throttled dx reports against the drag-start origin.
+  * `side` keys the hover-reveal CSS to the owning column.
+  */
+-function DragHandle(props: { side: 'sidebar' | 'rightbar'; left: number; onStart: () => void; onDrag: (dx: number) => void; onEnd: () => void }) {
++function DragHandle(props: { side: 'sidebar' | 'leftmain' | 'rightbar'; left: number; onStart: () => void; onDrag: (dx: number) => void; onEnd: () => void }) {
+   const [dragging, setDragging] = useState(false)
+   const origin = useRef(0)
+   const latest = useRef(0)
+@@ -199,10 +205,21 @@ export function AppFrame({
+   const rightbarWidth = useRef(normal.rightbar)
+   rightbarWidth.current = normal.rightbar
+ 
++  // Second main column: shown while its occupant asked for a width and the
++  // centre can keep both minimums. The low clamp is LEFTMAIN_MIN, the high one
++  // leaves 400px for the conversation, so widening restores the saved share.
++  const leftmainFits = layoutInfo.leftmain > 0
++    && viewport >= SIDEBAR_AUTO_COLLAPSE
++    && cols.center >= CENTER_MIN + LEFTMAIN_MIN
++  const leftmainWidth = leftmainFits ? clampWidth(layoutInfo.leftmain, LEFTMAIN_MIN, cols.center - CENTER_MIN) : 0
++  const leftmainWidthRef = useRef(0)
++  leftmainWidthRef.current = leftmainWidth
++
+   // The drag base is the rendered width captured at drag start (grabbing a
+   // concession-clamped panel must not jump back to the stored preference);
+   // it stays frozen for the whole gesture so dx deltas do not compound.
+   const sidebarBase = useRef(0)
++  const leftmainBase = useRef(0)
+   const rightbarBase = useRef(0)
+   // Track-level transitions pause for the whole gesture: eased tracks would
+   // detach the column edge from the pointer (AppFrame.module.css).
+@@ -254,6 +271,10 @@ export function AppFrame({
+   const onSidebarDrag = useCallback((dx: number) => {
+     actions.setSidebar(sidebarBase.current + dx)
+   }, [actions])
++  const onLeftmainStart = useCallback(() => { leftmainBase.current = leftmainWidthRef.current; setDragging(true) }, [])
++  const onLeftmainDrag = useCallback((dx: number) => {
++    actions.setLeftmain(Math.max(LEFTMAIN_MIN, leftmainBase.current - dx))
++  }, [actions])
+   const onRightbarStart = useCallback(() => { rightbarBase.current = rightbarWidth.current; setDragging(true) }, [])
+   const onRightbarDrag = useCallback((dx: number) => {
+     actions.setRightbar(rightbarBase.current - dx)
+@@ -275,6 +296,9 @@ export function AppFrame({
+     width: sidebarWidth,
+     drawer,
+   }), [renderSlot, sidebarCollapsed, sidebarWidth, drawer])
++  const studyleft = useMemo(() => renderSlot('studyleft', {
++    width: leftmainWidth, savedWidth: layoutInfo.leftmain, viewportWidth: viewport, canShow: true,
++  }), [renderSlot, leftmainWidth, layoutInfo.leftmain, viewport])
+   const main = useMemo(() => (
+     <MainPanel usePanelInfo={usePanelInfo} renderSlot={renderSlot} />
+   ), [usePanelInfo, renderSlot])
+@@ -317,7 +341,14 @@ export function AppFrame({
+         {sidebar}
+       </div>
+       <>
+-        <CenterColumn inert={drawerOpen}>{main}</CenterColumn>
++        <CenterColumn inert={drawerOpen}>
++          {leftmainWidth > 0 && (
++            <div className={css.leftmainCol} style={{ width: leftmainWidth }} data-studyleft-col>
++              {studyleft}
++            </div>
++          )}
++          {main}
++        </CenterColumn>
+         <RightbarColumn inert={drawerOpen}>
+           {renderSlot('rightbar', { width: normal.rightbar, viewportWidth: viewport, canShow: normal.rightbar > 0 })}
+         </RightbarColumn>
+@@ -335,6 +366,7 @@ export function AppFrame({
+       )}
+       {/* The collapsed rail is fixed-width: no resize handle while closed. */}
+       {!drawer && !centeredSidebar && !sidebarCollapsed && <DragHandle side="sidebar" left={cols.sidebar} onStart={onSidebarStart} onDrag={onSidebarDrag} onEnd={onDragEnd} />}
++      {leftmainWidth > 0 && <DragHandle side="leftmain" left={cols.sidebar + leftmainWidth} onStart={onLeftmainStart} onDrag={onLeftmainDrag} onEnd={onDragEnd} />}
+       {layoutInfo.rightbarShown && !layoutInfo.rightbarFullscreen && normal.rightbar > 0 && (
+         <DragHandle side="rightbar" left={viewport - normal.rightbar} onStart={onRightbarStart} onDrag={onRightbarDrag} onEnd={onDragEnd} />
+       )}
+diff --git a/packages/client/ui-layout/src/client/index.ts b/packages/client/ui-layout/src/client/index.ts
+index aec243039c..b88e8939cb 100644
+--- a/packages/client/ui-layout/src/client/index.ts
++++ b/packages/client/ui-layout/src/client/index.ts
+@@ -87,6 +87,15 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
+      * occupant decides when to render its Session-bound content.
+      */
+     'rightbar': { kind: 'single'; scope: 'root'; owner: RightbarOwnerProps }
++    /**
++     * Second main column inside the centre, drawn left of `main`. OCCUPIED by
++     * the StudyBuddy workbench. The occupant reports its saved width through
++     * `ctx.layout.setLeftmain`; the frame clamps it beside the conversation's
++     * 400px minimum, hides it below a 1024px frame or a 720px centre, and draws
++     * the resize handle. The occupant receives the rendered width and saves its
++     * own copy; the frame stores px but never Storage.
++     */
++    'studyleft': { kind: 'single'; scope: 'root'; owner: LeftmainOwnerProps }
+     /**
+      * Full-width bottom content below all three columns. Its rendered height
+      * reduces the columns' available height; empty content reserves no space.
+@@ -150,6 +159,18 @@ export interface RightbarOwnerProps {
+   canShow: boolean
+ }
+ 
++/** Second main column owner share: the geometry the centre hands the occupant. */
++export interface LeftmainOwnerProps {
++  /** Rendered column width in px after the frame's clamp to the current centre. */
++  width: number
++  /** Saved preference; unclamped above the render width, zero hides the column. */
++  savedWidth: number
++  /** Current frame width in px. */
++  viewportWidth: number
++  /** Whether the column fits beside the conversation's 400px minimum. */
++  canShow: boolean
++}
++
+ /** Required services (cordis fiber inject — the loader passes all module exports as an object plugin). */
+ export const inject = ['slots', 'theme', 'locale', 'shortcuts']
+ 
+@@ -194,6 +215,7 @@ export function apply(ctx: ClientContext): void {
+       locale: 'common',
+       children: {
+         'sidebar': { kind: 'single', scope: 'root' },
++        'studyleft': { kind: 'single', scope: 'root' },
+         'main': { kind: 'keyed', scope: 'root' },
+         'rightbar': { kind: 'single', scope: 'root' },
+         'shell.bottom': { kind: 'single', scope: 'root' },
+diff --git a/packages/client/ui-layout/src/client/service.ts b/packages/client/ui-layout/src/client/service.ts
+index 22dd77a4e6..a86db4d7c2 100644
+--- a/packages/client/ui-layout/src/client/service.ts
++++ b/packages/client/ui-layout/src/client/service.ts
+@@ -41,6 +41,13 @@ export interface ILayout {
+   beginNavigation(): AbortSignal
+   /** Toggle the sidebar panel (closed ⟷ contract default width). */
+   toggleSidebar(): void
++  /**
++   * Set the saved width of the second main column inside the centre. The frame
++   * clamps it to the room beside the conversation's minimum and hides the
++   * column when the centre is too narrow; persistence belongs to the occupant.
++   * @param px - saved width in px; zero hides the column.
++   */
++  setLeftmain(px: number): void
+   /**
+    * Report the right panel's presentation without changing its expanded state.
+    * @param track - whether the normal panel width reserves a grid track,
+@@ -94,6 +101,11 @@ export class LayoutController implements ILayout {
+     this.panels.toggleSidebar()
+   }
+ 
++  /** Set the second main column's saved width; zero hides it. */
++  setLeftmain(px: number): void {
++    this.panels.setLeftmain(px)
++  }
++
+   /** Report the right panel's track and fullscreen presentation. */
+   openRightbar(track: boolean, fullscreen: boolean): void {
+     this.panels.openRightbar(track, fullscreen)
+diff --git a/packages/client/ui-layout/src/client/stores.ts b/packages/client/ui-layout/src/client/stores.ts
+index 264006bb45..53016bc96a 100644
+--- a/packages/client/ui-layout/src/client/stores.ts
++++ b/packages/client/ui-layout/src/client/stores.ts
+@@ -26,6 +26,8 @@ type LayoutInfo = {
+   /** Last positive frame measurement; window width bootstraps the first render. */
+   viewportWidth: number
+   narrowExpanded: boolean
++  /** Saved second main column width in px; zero hides the column. */
++  leftmain: number
+   /**
+    * Saved right panel width in px, or null before its first opening. Resizing
+    * the frame and closing the panel preserve this preference.
+@@ -60,6 +62,7 @@ type LayoutActions = {
+   retainMainPanels: (draft: LayoutState, panelIds: readonly string[]) => void
+   setSidebar: (draft: LayoutState, px: number) => void
+   toggleSidebar: (draft: LayoutState) => void
++  setLeftmain: (draft: LayoutState, px: number) => void
+   setViewportWidth: (draft: LayoutState, width: number) => void
+   setRightbar: (draft: LayoutState, px: number) => void
+   openRightbar: (draft: LayoutState, track: boolean, fullscreen: boolean) => void
+@@ -70,9 +73,10 @@ type LayoutActions = {
+  * Create the layout panel store handle. For the sidebar the preference IS the
+  * width, so closing it forgets its drag width — reopening restores the contract
+  * default. The right panel initializes at 45% of the frame on first opening
+- * and keeps that px preference across resizes and close. Drag writes clamp to
+- * the current frame's range. Narrow sidebar toggles change only the expansion
+- * override; opening the right panel clears that override.
++ * and keeps that px preference across resizes and close. The second main
++ * column keeps the occupying plugin's px preference; zero hides it. Drag writes
++ * clamp to the current frame's range. Narrow sidebar toggles change only the
++ * expansion override; opening the right panel clears that override.
+  * @returns the store handle (spec + type + identity + factory in one).
+  */
+ export function createLayoutStore(): EngineStoreHandle<LayoutState, LayoutActions>  {
+@@ -83,6 +87,7 @@ export function createLayoutStore(): EngineStoreHandle<LayoutState, LayoutAction
+         sidebar: SIDEBAR_DEFAULT,
+         viewportWidth: window.innerWidth,
+         narrowExpanded: false,
++        leftmain: 0,
+         rightbar: null,
+         rightbarShown: false,
+         rightbarTrack: false,
+@@ -104,6 +109,11 @@ export function createLayoutStore(): EngineStoreHandle<LayoutState, LayoutAction
+         d.layoutInfo.rightbarInstant = false
+         d.layoutInfo.sidebar = clampWidth(px, SIDEBAR_MIN, SIDEBAR_MAX)
+       },
++      // Unclamped above the saved value: the frame clamps to the current centre.
++      setLeftmain: (d, px: number) => {
++        d.layoutInfo.rightbarInstant = false
++        d.layoutInfo.leftmain = Math.max(0, Math.round(px))
++      },
+       // Narrow toggles flip only the override: the width preference survives
+       // untouched, so re-widening restores the pre-squeeze layout.
+       toggleSidebar: (d) => {
+diff --git a/packages/client/ui-layout/tests/app-frame.client.spec.tsx b/packages/client/ui-layout/tests/app-frame.client.spec.tsx
+index 8aff85d326..03038aedf2 100644
+--- a/packages/client/ui-layout/tests/app-frame.client.spec.tsx
++++ b/packages/client/ui-layout/tests/app-frame.client.spec.tsx
+@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+ import { act, cleanup, fireEvent, render } from '@testing-library/react'
+ import { AppFrame } from '../src/client/AppFrame.tsx'
+ import type { AppFrameProps } from '../src/client/AppFrame.tsx'
+-import type { MainPanelId, RightbarOwnerProps, SidebarOwnerProps } from '../src/client/index.ts'
++import type { MainPanelId, LeftmainOwnerProps, RightbarOwnerProps, SidebarOwnerProps } from '../src/client/index.ts'
+ import { createLayoutStore } from '../src/client/stores.ts'
+ import type { WorkspaceSnapshot } from '@deepseek-ai/dsh-api-workspace-controller/client'
+ import type { SessionId } from '@deepseek-ai/dsh-session/types'
+@@ -112,6 +112,7 @@ function mountFrame(windowWidth = frameWidth, content?: AppFrameProps['renderSlo
+   return {
+     ...utils, instance, frame, slotCalls,
+     rerenderFrame: () => { utils.rerender(element()) },
++    leftOwner: () => slotCalls.findLast(c => c.key === 'studyleft')!.props as LeftmainOwnerProps,
+     rightOwner: () => slotCalls.findLast(c => c.key === 'rightbar')!.props as RightbarOwnerProps,
+     sidebarOwner: () => slotCalls.findLast(c => c.key === 'sidebar')!.props as SidebarOwnerProps,
+   }
+@@ -128,7 +129,7 @@ function tracks(frame: HTMLElement): number[] {
+   return [Number(match[1]), rightbar]
+ }
+ 
+-function handleFor(frame: HTMLElement, side: 'sidebar' | 'rightbar'): HTMLElement {
++function handleFor(frame: HTMLElement, side: 'sidebar' | 'leftmain' | 'rightbar'): HTMLElement {
+   const handle = frame.querySelector<HTMLElement>(`[data-side="${side}"]`)
+   if (handle === null) throw new Error(`missing ${side} resize handle`)
+   return handle
+@@ -591,6 +592,78 @@ describe('AppFrame right panel presentation', () => {
+   })
+ })
+ 
++describe('AppFrame second main column', () => {
++  it('renders the study column inside the centre without adding a grid track', () => {
++    const { frame, instance, leftOwner, getByTestId } = mountFrame()
++    expect(frame.querySelector('[data-studyleft-col]')).toBeNull()
++    act(() => { instance.actions.setLeftmain(560) })
++    expect(leftOwner()).toEqual({ width: 560, savedWidth: 560, viewportWidth: 1920, canShow: true })
++    expect(tracks(frame)).toEqual([280, 0])
++    expect(getByTestId('studyleft-content')).toBeTruthy()
++    const column = frame.querySelector<HTMLElement>('[data-studyleft-col]')
++    expect(column?.style.width).toBe('560px')
++    expect(handleFor(frame, 'leftmain').style.left).toBe('840px')
++  })
++
++  it('clamps to the room beside the conversation and hides when the centre cannot hold it', () => {
++    frameWidth = 1440
++    const { frame, instance, leftOwner } = mountFrame()
++    act(() => {
++      instance.actions.setLeftmain(560)
++      instance.actions.setRightbar(300)
++      instance.actions.openRightbar(true, false)
++    })
++    // 1440 − 280 − 300 = 860px centre; 460px may go to the study column.
++    expect(leftOwner()).toEqual({
++      width: 460, savedWidth: 560, viewportWidth: 1440, canShow: true,
++    })
++    expect(handleFor(frame, 'leftmain').style.left).toBe('740px')
++
++    act(() => { instance.actions.setRightbar(760) })
++    expect(frame.querySelector('[data-studyleft-col]')).toBeNull()
++    expect(frame.querySelector('[data-side="leftmain"]')).toBeNull()
++    expect(instance.getSnapshot().layoutInfo.leftmain).toBe(560)
++
++    act(() => { instance.actions.closeRightbar() })
++    expect(frame.querySelector<HTMLElement>('[data-studyleft-col]')?.style.width).toBe('560px')
++  })
++
++  it('hides below 1024px and restores the saved width when the frame widens', () => {
++    const { frame, instance } = mountFrame()
++    act(() => { instance.actions.setLeftmain(560) })
++    resize(1023)
++    expect(frame.querySelector('[data-studyleft-col]')).toBeNull()
++    expect(instance.getSnapshot().layoutInfo.leftmain).toBe(560)
++    resize(1024)
++    expect(frame.querySelector<HTMLElement>('[data-studyleft-col]')?.style.width).toBe('344px')
++    resize(1440)
++    expect(frame.querySelector<HTMLElement>('[data-studyleft-col]')?.style.width).toBe('560px')
++  })
++
++  it('resizes through the handle with a frozen drag base and writes the preference', () => {
++    const { frame, instance, leftOwner } = mountFrame()
++    act(() => { instance.actions.setLeftmain(560) })
++    drag(handleFor(frame, 'leftmain'), 840, 790)
++    expect(instance.getSnapshot().layoutInfo.leftmain).toBe(610)
++    expect(leftOwner().width).toBe(610)
++    expect(leftOwner().savedWidth).toBe(610)
++    expect(handleFor(frame, 'leftmain').style.left).toBe('890px')
++    drag(handleFor(frame, 'leftmain'), 890, 950)
++    expect(instance.getSnapshot().layoutInfo.leftmain).toBe(550)
++    expect(leftOwner().width).toBe(550)
++    expect(frame.dataset.dragging).toBeUndefined()
++  })
++
++  it('keeps the column visible at its minimum when the handle is dragged past it', () => {
++    const { frame, instance } = mountFrame()
++    act(() => { instance.actions.setLeftmain(560) })
++    drag(handleFor(frame, 'leftmain'), 840, 2000)
++    expect(instance.getSnapshot().layoutInfo.leftmain).toBe(320)
++    expect(frame.querySelector<HTMLElement>('[data-studyleft-col]')?.style.width).toBe('320px')
++    expect(handleFor(frame, 'leftmain').style.left).toBe('600px')
++  })
++})
++
+ describe('AppFrame pointer resizing', () => {
+   it('updates columns during the gesture and freezes the drag-start width', () => {
+     const { frame, instance } = mountFrame()
+diff --git a/packages/client/ui-layout/tests/apply.client.spec.ts b/packages/client/ui-layout/tests/apply.client.spec.ts
+index 7ab8585886..3e6b8b94ca 100644
+--- a/packages/client/ui-layout/tests/apply.client.spec.ts
++++ b/packages/client/ui-layout/tests/apply.client.spec.ts
+@@ -87,6 +87,7 @@ describe('ui-layout client apply', () => {
+     expect(ctx.get('layout')).toBeInstanceOf(LayoutController)
+     expect(slots.entries('root')).toHaveLength(1)
+     expect(slots.spec('sidebar')).toEqual({ kind: 'single', scope: 'root' })
++    expect(slots.spec('studyleft')).toEqual({ kind: 'single', scope: 'root' })
+     expect(slots.spec('main')).toEqual({ kind: 'keyed', scope: 'root' })
+     expect(slots.spec('rightbar')).toEqual({ kind: 'single', scope: 'root' })
+     expect(slots.spec('shell.bottom')).toEqual({ kind: 'single', scope: 'root' })
+@@ -130,6 +131,8 @@ describe('ui-layout client apply', () => {
+     expect(() => { layout.selectPanel('missing' as MainPanelId) }).toThrow('main panel "missing" is not registered')
+     layout.toggleSidebar()
+     expect(instance.getSnapshot().layoutInfo.sidebar).toBe(0)
++    layout.setLeftmain(560)
++    expect(instance.getSnapshot().layoutInfo.leftmain).toBe(560)
+     const host = rendererHost()
+     expect(host.storeOf(entry, undefined)).toBe(instance)
+     const panelInfo = host.root.getSnapshot().hooks.panelInfo!
+@@ -224,6 +227,7 @@ describe('ui-layout client apply', () => {
+     expect(ctx.get('layout')).toBeUndefined()
+     expect(slots.entries('root')).toHaveLength(0)
+     expect(slots.spec('sidebar')).toBeUndefined()
++    expect(slots.spec('studyleft')).toBeUndefined()
+     expect(slots.spec('main')).toBeUndefined()
+     expect(slots.spec('rightbar')).toBeUndefined()
+     expect(slots.spec('shell.bottom')).toBeUndefined()
+diff --git a/packages/client/ui-layout/tests/layout-store.client.spec.ts b/packages/client/ui-layout/tests/layout-store.client.spec.ts
+index a2e5226568..3eca6d1a42 100644
+--- a/packages/client/ui-layout/tests/layout-store.client.spec.ts
++++ b/packages/client/ui-layout/tests/layout-store.client.spec.ts
+@@ -16,6 +16,7 @@ describe('createLayoutStore', () => {
+         sidebar: 280,
+         viewportWidth: 1920,
+         narrowExpanded: false,
++        leftmain: 0,
+         rightbar: null,
+         rightbarShown: false,
+         rightbarTrack: false,
+@@ -63,6 +64,18 @@ describe('createLayoutStore', () => {
+     expect(store.getSnapshot().layoutInfo).toMatchObject({ sidebar: 400, narrowExpanded: false })
+   })
+ 
++  it('rounds the second main column preference and treats zero as hidden', () => {
++    const { store, actions } = createLayoutStore().create()
++    actions.setLeftmain(560.4)
++    expect(store.getSnapshot().layoutInfo.leftmain).toBe(560)
++    actions.setLeftmain(-20)
++    expect(store.getSnapshot().layoutInfo.leftmain).toBe(0)
++    // Above the frame's clamp the preference is retained: widening the frame
++    // restores the intended share instead of the last squeezed width.
++    actions.setLeftmain(2400)
++    expect(store.getSnapshot().layoutInfo.leftmain).toBe(2400)
++  })
++
+   it('clears the manual override only when crossing 1024px', () => {
+     const { store, actions } = createLayoutStore().create()
+     actions.setViewportWidth(980)
+@@ -119,7 +132,7 @@ describe('main panel selection', () => {
+     expect(store.getSnapshot().layoutInfo).toBe(selected.layoutInfo)
+   })
+ 
+-  it.each(['setSidebar', 'toggleSidebar', 'setViewportWidth', 'setRightbar', 'openRightbar', 'closeRightbar'] as const)(
++  it.each(['setSidebar', 'toggleSidebar', 'setLeftmain', 'setViewportWidth', 'setRightbar', 'openRightbar', 'closeRightbar'] as const)(
+     'preserves panelInfo identity when %s changes layoutInfo', (action) => {
+       const { store, actions } = createLayoutStore().create()
+       actions.selectPanel(panelA)
+@@ -128,6 +141,7 @@ describe('main panel selection', () => {
+       switch (action) {
+         case 'setSidebar': actions.setSidebar(400); break
+         case 'toggleSidebar': actions.toggleSidebar(); break
++        case 'setLeftmain': actions.setLeftmain(600); break
+         case 'setViewportWidth': actions.setViewportWidth(980); break
+         case 'setRightbar': actions.setRightbar(500); break
+         case 'openRightbar': actions.openRightbar(true, true); break
+@@ -261,7 +275,7 @@ describe('right panel instant geometry', () => {
+     expect(store.getSnapshot().layoutInfo).toMatchObject({ rightbarTrack: false, rightbarInstant: false })
+   })
+ 
+-  it.each(['setSidebar', 'toggleSidebar', 'setRightbar', 'setViewportWidth'] as const)('clears instant geometry on %s', (action) => {
++  it.each(['setSidebar', 'toggleSidebar', 'setLeftmain', 'setRightbar', 'setViewportWidth'] as const)('clears instant geometry on %s', (action) => {
+     const { store, actions } = createLayoutStore().create()
+     actions.openRightbar(true, true)
+     actions.closeRightbar()
+diff --git a/packages/client/ui-layout/tests/service.client.spec.ts b/packages/client/ui-layout/tests/service.client.spec.ts
+index b3e3680d5c..962e05f20f 100644
+--- a/packages/client/ui-layout/tests/service.client.spec.ts
++++ b/packages/client/ui-layout/tests/service.client.spec.ts
+@@ -9,6 +9,7 @@ function fakePanels(): PanelActions {
+     retainMainPanels: vi.fn(),
+     setSidebar: vi.fn(),
+     toggleSidebar: vi.fn(),
++    setLeftmain: vi.fn(),
+     setViewportWidth: vi.fn(),
+     setRightbar: vi.fn(),
+     openRightbar: vi.fn(),
+diff --git a/packages/client/ui-sidebar/tests/panel-list.client.spec.tsx b/packages/client/ui-sidebar/tests/panel-list.client.spec.tsx
+index 554192b591..fff6ec041e 100644
+--- a/packages/client/ui-sidebar/tests/panel-list.client.spec.tsx
++++ b/packages/client/ui-sidebar/tests/panel-list.client.spec.tsx
+@@ -45,6 +45,7 @@ async function bench(collapsed = false, track?: TrackProductEvent) {
+     panelInfo: runtime.panelInfo,
+     beginNavigation: vi.fn(() => new AbortController().signal),
+     toggleSidebar: vi.fn(),
++    setLeftmain: vi.fn(),
+     selectPanel: vi.fn((activePanelId: MainPanelId | null) => { runtime.panelInfo.set({ activePanelId }) }),
+     openRightbar: vi.fn(),
+     closeRightbar: vi.fn(),
+diff --git a/packages/client/ui-workspace/tests/workspaces-service.client.spec.ts b/packages/client/ui-workspace/tests/workspaces-service.client.spec.ts
+index f4e5bdcac9..fdb7546de6 100644
+--- a/packages/client/ui-workspace/tests/workspaces-service.client.spec.ts
++++ b/packages/client/ui-workspace/tests/workspaces-service.client.spec.ts
+@@ -289,7 +289,7 @@ function bench(options: BenchOptions = {}) {
+   if (options.conversation !== false) ctx.provide('conversation', { input: { requestDraftInitialization } })
+   const layout = new LayoutController({
+     selectPanel: vi.fn(), retainMainPanels: vi.fn(),
+-    setSidebar: vi.fn(), toggleSidebar: vi.fn(), setViewportWidth: vi.fn(),
++    setSidebar: vi.fn(), toggleSidebar: vi.fn(), setLeftmain: vi.fn(), setViewportWidth: vi.fn(),
+     setRightbar: vi.fn(), openRightbar: vi.fn(), closeRightbar: vi.fn(),
+   }, () => true, createSnapshotStore({ activePanelId: null }))
+   const selectPanel = vi.spyOn(layout, 'selectPanel')
+diff --git a/packages/extensions/cordis-client-runner/src/client/slot-catalog.ts b/packages/extensions/cordis-client-runner/src/client/slot-catalog.ts
+index 04eeacf67a..94160f6b07 100644
+--- a/packages/extensions/cordis-client-runner/src/client/slot-catalog.ts
++++ b/packages/extensions/cordis-client-runner/src/client/slot-catalog.ts
+@@ -3858,7 +3858,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
+     ],
+     replaceRisk: 'shadows-shipped-ui',
+     example: 'return {\n  inject: [\'slots\'],\n  apply(ctx) {\n    ctx.slots.inject(\'shell.bottom\', () => ctx.slots.register(\n      { name: \'shell.bottom\' },\n      () => React.createElement(\'div\', null, \'hello\'),\n    ))\n  },\n}',
+-    source: 'packages/client/ui-layout/src/client/index.ts:96',
++    source: 'packages/client/ui-layout/src/client/index.ts:105',
+   },
+   {
+     key: 'shell.leading',
+@@ -3890,7 +3890,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
+     ],
+     replaceRisk: 'shadows-shipped-ui',
+     example: 'return {\n  inject: [\'slots\'],\n  apply(ctx) {\n    ctx.slots.inject(\'shell.leading\', () => ctx.slots.register(\n      { name: \'shell.leading\' },\n      () => React.createElement(\'div\', null, \'hello\'),\n    ))\n  },\n}',
+-    source: 'packages/client/ui-layout/src/client/index.ts:121',
++    source: 'packages/client/ui-layout/src/client/index.ts:130',
+   },
+   {
+     key: 'shell.overlay',
+@@ -3960,7 +3960,7 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
+     ],
+     replaceRisk: 'none',
+     example: 'return {\n  inject: [\'slots\'],\n  apply(ctx) {\n    ctx.slots.inject(\'shell.overlay\', () => ctx.slots.register(\n      { name: \'shell.overlay\', id: \'my-entry\', order: 100, label: \'My entry\' },\n      () => React.createElement(\'div\', null, \'hello\'),\n    ))\n  },\n}',
+-    source: 'packages/client/ui-layout/src/client/index.ts:107',
++    source: 'packages/client/ui-layout/src/client/index.ts:116',
+   },
+   {
+     key: 'shell.quota-notice',
+@@ -5395,6 +5395,38 @@ export const CLIENT_SLOT_API: readonly ClientSlotEntry[] = [
+     example: 'return {\n  inject: [\'slots\'],\n  apply(ctx) {\n    ctx.slots.inject(\'sidebar.workspaces.session.row.action\', () => ctx.slots.register(\n      { name: \'sidebar.workspaces.session.row.action\', id: \'my-entry\', order: 100, label: \'My entry\' },\n      () => React.createElement(\'div\', null, \'hello\'),\n    ))\n  },\n}',
+     source: 'packages/client/ui-workspace/src/client/contract/slots.ts:212',
+   },
++  {
++    key: 'studyleft',
++    kind: 'single',
++    scope: 'root',
++    summary: 'Second main column inside the centre, drawn left of `main`.',
++    doc: 'Second main column inside the centre, drawn left of `main`. OCCUPIED by\nthe StudyBuddy workbench. The occupant reports its saved width through\n`ctx.layout.setLeftmain`; the frame clamps it beside the conversation\'s\n400px minimum, hides it below a 1024px frame or a 720px centre, and draws\nthe resize handle. The occupant receives the rendered width and saves its\nown copy; the frame stores px but never Storage.',
++    registerOptions: [],
++    ownerProps: [
++      '/** Second main column owner share: the geometry the centre hands the occupant. */\nexport interface LeftmainOwnerProps {\n  /** Rendered column width in px after the frame\'s clamp to the current centre. */\n  width: number\n  /** Saved preference; unclamped above the render width, zero hides the column. */\n  savedWidth: number\n  /** Current frame width in px. */\n  viewportWidth: number\n  /** Whether the column fits beside the conversation\'s 400px minimum. */\n  canShow: boolean\n}',
++    ],
++    ownerPropsReferences: [],
++    standardProps: [
++      'useRemoteAccess: (action: RemoteEndpoint) => boolean',
++      'useResource: UseResource',
++      'useContextMenu: UseContextMenu',
++      'useWorkspaces: SnapshotSelectorHook<WorkspaceSnapshot>',
++      'usePanelInfo: UsePanelInfo',
++      'useSessions: UseSessions',
++      'useSessionStatus: UseSessionStatus',
++      'useSessionRetainInfo: UseSessionRetainInfo',
++      'useSessionAccess: (sessionId: SessionId, action: RemoteEndpoint) => boolean',
++      'useWorkspaceAccess: (workspaceId: WorkspaceId, action: RemoteEndpoint) => boolean',
++    ],
++    keyDomain: '',
++    hookContext: '',
++    slotInject: '',
++    declaredBy: 'an entry in \'root\' (client-ui-layout), so it exists while that entry is mounted',
++    occupants: [],
++    replaceRisk: 'none',
++    example: 'return {\n  inject: [\'slots\'],\n  apply(ctx) {\n    ctx.slots.inject(\'studyleft\', () => ctx.slots.register(\n      { name: \'studyleft\' },\n      () => React.createElement(\'div\', null, \'hello\'),\n    ))\n  },\n}',
++    source: 'packages/client/ui-layout/src/client/index.ts:98',
++  },
+   {
+     key: 'tool.call.images',
+     kind: 'single',

@@ -1,0 +1,41 @@
+# A01 首轮 WSL 阻断命令记录（历史）
+# 后续已恢复原生 PowerShell，安装/构建/Host/Desktop 的最新结果见 native-commands.md 与 baseline.md。
+# 执行者：pi coding assistant，本次 A01 会话
+# 工具工作目录：D:/Data/ProjectsRepo/StudyBuddy
+# 时间未取得：命令执行通道无法启动；计划目录日期不作为实际执行时间。
+# 以下错误转录仅去除了工具返回中的 NUL 字符，未记录环境变量或凭据。
+
+[1] functions.bash (timeout: 20s)
+command:
+pwd; ls -la; rg --files -g 'AGENTS.md' -g '*README*' -g '*EXECUTION*' -g '*DEPENDENCIES*' -g '*design*' -g '*设计*' -g '.gitmodules' -g '.gitignore'
+output:
+wsl: An error occurred mounting the distribution disk, it was mounted read-only as a fallback.
+wsl: See recovery instructions on: https://aka.ms/wsldiskmountrecovery
+<3>WSL (10 - Relay) ERROR: CreateProcessCommon:800: execvpe(/bin/bash) failed: No such file or directory
+exit: 1
+result: shell 启动失败；pwd、ls、rg 均未成功执行，不能据此判断目录内容。
+
+[2] functions.bash (timeout: 20s)
+command:
+powershell.exe -NoProfile -NonInteractive -Command '$PSVersionTable.PSVersion.ToString(); [System.Environment]::OSVersion.VersionString; Get-Location; Get-Command git,node,corepack,pnpm,bash -ErrorAction SilentlyContinue | Select-Object Name,Source'
+output:
+wsl: An error occurred mounting the distribution disk, it was mounted read-only as a fallback.
+wsl: See recovery instructions on: https://aka.ms/wsldiskmountrecovery
+<3>WSL (10 - Relay) ERROR: CreateProcessCommon:800: execvpe(/bin/bash) failed: No such file or directory
+exit: 1
+result: 外层 shell 仍先启动 WSL；powershell.exe 未成功执行，不能判断 PowerShell/Git/Node 是否安装。
+
+[3] 用户确认在当前目录开发、无需 WSL 后的复测
+functions.bash (timeout: 20s)
+command:
+pwd; command -v git; command -v node; command -v powershell.exe; command -v pwsh; command -v bash
+output:
+wsl: An error occurred mounting the distribution disk, it was mounted read-only as a fallback.
+wsl: See recovery instructions on: https://aka.ms/wsldiskmountrecovery
+<3>WSL (10 - Relay) ERROR: CreateProcessCommon:800: execvpe(/bin/bash) failed: No such file or directory
+exit: 1
+result: 当前已加载的 bash 工具仍指向 WSL，不能用命令内容切换外层终端。
+后续：根据本机 Pi 1.5.0 的 docs/windows.md、settings.md 与 configuration.md，新建项目 .pi/settings.json，设置 defaultTools 为 ["-bash", "+powershell"]。尚待用户 /reload 或重启后验证原生 powershell 工具，不声称工具已经切换成功。
+
+截至以上三次 WSL 调用时未执行：git status、git clone、git checkout、网络探测、依赖安装、构建、桌面/Host 冒烟。此结论不代表后续原生 PowerShell 会话的结果。
+文件 read/edit/write 工具操作不属于终端命令，没有进程退出码；结果见 baseline.md。

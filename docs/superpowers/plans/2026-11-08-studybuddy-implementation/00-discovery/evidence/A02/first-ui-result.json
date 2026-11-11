@@ -1,0 +1,11 @@
+{
+  "started": "2026-11-09T11:34:37.012Z",
+  "root": "D:\\Data\\ProjectsRepo\\StudyBuddy\\source\\deepseek-harness\\apps\\desktop\\.desktop-build\\a02\\local-1794224001197",
+  "checks": {
+    "unauthenticatedRejected": true
+  },
+  "passed": false,
+  "realProvider": false,
+  "error": "page.waitForFunction: Timeout 30000ms exceeded.",
+  "finished": "2026-11-09T11:35:08.357Z"
+}

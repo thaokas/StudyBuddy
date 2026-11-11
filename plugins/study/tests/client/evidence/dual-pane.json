@@ -1,0 +1,384 @@
+{
+  "task": "T04",
+  "profile": "dual-pane",
+  "started": "2026-11-10T10:47:35.051Z",
+  "checks": {
+    "build": {
+      "bytes": 169974,
+      "pages": [
+        "memory",
+        "timer",
+        "today",
+        "workbench"
+      ],
+      "messages": [
+        "common",
+        "memory",
+        "notify",
+        "studyleft",
+        "timer",
+        "today",
+        "workbench"
+      ]
+    },
+    "boot": {
+      "title": "学习工作台",
+      "empty": 1,
+      "messages": 0,
+      "geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 900
+        },
+        "center": {
+          "x": 280,
+          "y": 0,
+          "width": 1160,
+          "height": 900
+        },
+        "study": {
+          "x": 280,
+          "y": 0,
+          "width": 560,
+          "height": 900
+        },
+        "conversation": {
+          "width": 600
+        },
+        "paneWidthAttr": "560",
+        "savedWidth": "560",
+        "savedPage": null,
+        "composer": true
+      }
+    },
+    "seeded": {
+      "date": "2026-11-10",
+      "blockText": "09:00–09:30\n极限习题 30 分钟",
+      "summary": "09:00–09:30\n极限习题 30 分钟",
+      "widthAttr": "560"
+    },
+    "afterTurn": {
+      "requests": 2,
+      "conversationVisible": true,
+      "studyVisible": true,
+      "answerVisible": true
+    },
+    "widened": {
+      "geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 900
+        },
+        "center": {
+          "x": 280,
+          "y": 0,
+          "width": 1160,
+          "height": 900
+        },
+        "study": {
+          "x": 280,
+          "y": 0,
+          "width": 630,
+          "height": 900
+        },
+        "conversation": {
+          "width": 530
+        },
+        "paneWidthAttr": "630",
+        "savedWidth": "630",
+        "savedPage": null,
+        "composer": true
+      },
+      "savedWidth": "630"
+    },
+    "minimum": {
+      "geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 900
+        },
+        "center": {
+          "x": 280,
+          "y": 0,
+          "width": 1160,
+          "height": 900
+        },
+        "study": {
+          "x": 280,
+          "y": 0,
+          "width": 320,
+          "height": 900
+        },
+        "conversation": {
+          "width": 840
+        },
+        "paneWidthAttr": "320",
+        "savedWidth": "320",
+        "savedPage": null,
+        "composer": true
+      },
+      "savedWidth": "320"
+    },
+    "squeezed": {
+      "geometry": {
+        "viewport": {
+          "width": 1200,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 900
+        },
+        "center": {
+          "x": 280,
+          "y": 0,
+          "width": 920,
+          "height": 900
+        },
+        "study": {
+          "x": 280,
+          "y": 0,
+          "width": 520,
+          "height": 900
+        },
+        "conversation": {
+          "width": 400
+        },
+        "paneWidthAttr": "520",
+        "savedWidth": "630",
+        "savedPage": null,
+        "composer": true
+      },
+      "savedWidth": "630"
+    },
+    "widenedBack": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 0,
+        "width": 280,
+        "height": 900
+      },
+      "center": {
+        "x": 280,
+        "y": 0,
+        "width": 1160,
+        "height": 900
+      },
+      "study": {
+        "x": 280,
+        "y": 0,
+        "width": 630,
+        "height": 900
+      },
+      "conversation": {
+        "width": 530
+      },
+      "paneWidthAttr": "630",
+      "savedWidth": "630",
+      "savedPage": null,
+      "composer": true
+    },
+    "onWorkbench": {
+      "paneVisible": true,
+      "composerVisible": false,
+      "savedPage": "workbench"
+    },
+    "reloadedOnPage": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 0,
+        "width": 280,
+        "height": 900
+      },
+      "center": {
+        "x": 280,
+        "y": 0,
+        "width": 1160,
+        "height": 900
+      },
+      "study": {
+        "x": 280,
+        "y": 0,
+        "width": 630,
+        "height": 900
+      },
+      "conversation": {
+        "width": 530
+      },
+      "paneWidthAttr": "630",
+      "savedWidth": "630",
+      "savedPage": "workbench",
+      "composer": false
+    },
+    "backToConversation": {
+      "geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 900
+        },
+        "center": {
+          "x": 280,
+          "y": 0,
+          "width": 1160,
+          "height": 900
+        },
+        "study": {
+          "x": 280,
+          "y": 0,
+          "width": 630,
+          "height": 900
+        },
+        "conversation": {
+          "width": 530
+        },
+        "paneWidthAttr": "630",
+        "savedWidth": "630",
+        "savedPage": null,
+        "composer": true
+      },
+      "answerVisible": true,
+      "savedPage": null
+    },
+    "conversationReload": {
+      "geometry": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 280,
+          "height": 900
+        },
+        "center": {
+          "x": 280,
+          "y": 0,
+          "width": 1160,
+          "height": 900
+        },
+        "study": {
+          "x": 280,
+          "y": 0,
+          "width": 630,
+          "height": 900
+        },
+        "conversation": {
+          "width": 530
+        },
+        "paneWidthAttr": "630",
+        "savedWidth": "630",
+        "savedPage": null,
+        "composer": true
+      },
+      "workbenchPages": 0
+    },
+    "narrow": {
+      "geometry": {
+        "viewport": {
+          "width": 1023,
+          "height": 900
+        },
+        "sidebar": null,
+        "center": null,
+        "study": null,
+        "conversation": null,
+        "paneWidthAttr": null,
+        "savedWidth": "630",
+        "savedPage": null,
+        "composer": true
+      },
+      "handle": 0
+    },
+    "narrowFallback": {
+      "page": 1
+    },
+    "restored": {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 0,
+        "width": 280,
+        "height": 900
+      },
+      "center": {
+        "x": 280,
+        "y": 0,
+        "width": 1160,
+        "height": 900
+      },
+      "study": {
+        "x": 280,
+        "y": 0,
+        "width": 630,
+        "height": 900
+      },
+      "conversation": {
+        "width": 530
+      },
+      "paneWidthAttr": "630",
+      "savedWidth": "630",
+      "savedPage": "workbench",
+      "composer": false
+    },
+    "pageErrors": [],
+    "consoleErrors": []
+  },
+  "screenshots": [
+    "dual-pane-boot.png",
+    "dual-pane-seeded.png",
+    "dual-pane-conversation.png",
+    "dual-pane-widened.png",
+    "dual-pane-minimum.png",
+    "dual-pane-squeezed.png",
+    "dual-pane-workbench.png",
+    "dual-pane-reloaded-workbench.png",
+    "dual-pane-conversation-after-reload.png",
+    "dual-pane-reloaded-conversation.png",
+    "dual-pane-narrow.png",
+    "dual-pane-narrow-workbench.png",
+    "dual-pane-restored.png"
+  ],
+  "passed": true,
+  "finished": "2026-11-10T10:47:57.649Z",
+  "hostStderr": [
+    []
+  ]
+}

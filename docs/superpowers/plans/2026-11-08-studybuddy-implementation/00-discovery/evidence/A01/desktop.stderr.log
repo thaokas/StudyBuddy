@@ -1,0 +1,17 @@
+$ pnpm --filter @deepseek-ai/dsh-desktop run start
+$ tsx scripts/dev.ts --skip-build
+Debugger listening on ws://127.0.0.1:56072/13edac13-f678-4317-89d7-502cf76dc2c4
+For help, see: https://nodejs.org/learn/getting-started/debugging
+
+DevTools listening on ws://127.0.0.1:56073/devtools/browser/703165a2-52f0-41f8-850c-1e8ee1b31c69
+Error occurred in handler for 'dsh-desktop:mandatory-status': Error: No handler registered for 'dsh-desktop:mandatory-status'
+    at Session.<anonymous> (node:electron/js2c/browser_init:1:120085)
+    at Session.emit (node:events:514:28)
+[14012:1109/191114.305:INFO:CONSOLE:2] "%cElectron Security Warning (Insecure Content-Security-Policy) font-weight: bold; This renderer process has either no Content Security
+  Policy set or a policy with "unsafe-eval" enabled. This exposes users of
+  this app to unnecessary security risks.
+
+For more information and help, consult
+https://electronjs.org/docs/tutorial/security.
+This warning will not show up
+once the app is packaged.", source: node:electron/js2c/sandbox_bundle (2)

@@ -1,0 +1,9 @@
+# A01 keyless smoke only; no model task is submitted.
+- id: session-log-deepseek
+  disabled: true
+- id: session-telemetry-otel
+  disabled: true
+- id: desktop-product-telemetry
+  disabled: true
+- id: product-analytics
+  disabled: true

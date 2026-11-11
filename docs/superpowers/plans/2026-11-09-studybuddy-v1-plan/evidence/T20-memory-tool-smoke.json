@@ -1,0 +1,185 @@
+{
+  "assertions": {
+    "toolCallsSucceeded": true,
+    "saveWrotePreference": true,
+    "newSessionInjectsPreference": true,
+    "recallToolFindsPreference": true,
+    "forgetSucceeded": true,
+    "deletedNotInjectedAfterRestart": true,
+    "rebuildSuppressed": true,
+    "notInjectedAfterRebuild": true
+  },
+  "passed": true,
+  "memoryId": "mem_5b47a91b7ef3",
+  "steps": [
+    {
+      "id": "remember",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 2,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        },
+        {
+          "roles": [
+            "user",
+            "assistant",
+            "user"
+          ],
+          "hasToolResult": true,
+          "hasToolUse": true
+        }
+      ],
+      "resultExcerpt": "[{\"type\":\"text\",\"text\":\"已记住（mem_5b47a91b7ef3）：偏好 我更喜欢在上午学习数学。\"}]",
+      "stderrTail": []
+    },
+    {
+      "id": "new-session",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 1,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        }
+      ],
+      "resultExcerpt": "",
+      "stderrTail": []
+    },
+    {
+      "id": "recall-tool",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 2,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        },
+        {
+          "roles": [
+            "user",
+            "assistant",
+            "user"
+          ],
+          "hasToolResult": true,
+          "hasToolUse": true
+        }
+      ],
+      "resultExcerpt": "[{\"type\":\"text\",\"text\":\"- mem_5b47a91b7ef3 [偏好] 我更喜欢在上午学习数学。\\n  来源：agent｜更新：2026-11-09\"}]",
+      "stderrTail": []
+    },
+    {
+      "id": "forget",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 2,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        },
+        {
+          "roles": [
+            "user",
+            "assistant",
+            "user"
+          ],
+          "hasToolResult": true,
+          "hasToolUse": true
+        }
+      ],
+      "resultExcerpt": "[{\"type\":\"text\",\"text\":\"已删除 1 条记忆（mem_5b47a91b7ef3）；删除标记已保留，旧内容不会被重新召回。\"}]",
+      "stderrTail": []
+    },
+    {
+      "id": "after-delete",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 1,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        }
+      ],
+      "resultExcerpt": "",
+      "stderrTail": []
+    },
+    {
+      "id": "rebuild-attempt",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 2,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        },
+        {
+          "roles": [
+            "user",
+            "assistant",
+            "user"
+          ],
+          "hasToolResult": true,
+          "hasToolUse": true
+        }
+      ],
+      "resultExcerpt": "[{\"type\":\"text\",\"text\":\"未写入：这条内容已被学生删除；旧对话不能把它重新写入记忆。只有学生本人明确要求时才能恢复。\"}]",
+      "stderrTail": []
+    },
+    {
+      "id": "after-rebuild",
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "requestCount": 1,
+      "requests": [
+        {
+          "roles": [
+            "user"
+          ],
+          "hasToolResult": false,
+          "hasToolUse": false
+        }
+      ],
+      "resultExcerpt": "",
+      "stderrTail": []
+    }
+  ]
+}

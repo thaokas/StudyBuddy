@@ -1,0 +1,41 @@
+pid=1592 executable=D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\apps\desktop\node_modules\electron\dist\electron.exe
+module 0x7ff6b2710000 \\?\D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\node_modules\.pnpm\electron@44.7.0_supports-color@9.4.0\node_modules\electron\dist\electron.exe
+module 0x7fff34f80000 \\?\C:\Windows\System32\ntdll.dll
+module 0x7fff338d0000 \\?\C:\Windows\System32\kernel32.dll
+module 0x7fff322d0000 \\?\C:\Windows\System32\KernelBase.dll
+module 0x7fff33e90000 \\?\C:\Windows\System32\ws2_32.dll
+module 0x7fff32170000 \\?\C:\Windows\System32\ucrtbase.dll
+module 0x7fff14dd0000 \\?\C:\Windows\System32\winmm.dll
+module 0x7fff24c20000 \\?\C:\Windows\System32\version.dll
+module 0x7fff33b40000 \\?\C:\Windows\System32\msvcrt.dll
+module 0x7fff33f20000 \\?\C:\Windows\System32\rpcrt4.dll
+module 0x7fff32860000 \\?\C:\Windows\System32\crypt32.dll
+module 0x7fff26a50000 \\?\C:\Windows\System32\DWrite.dll
+module 0x7fff32ab0000 \\?\C:\Windows\System32\msvcp_win.dll
+module 0x7fff31d40000 \\?\C:\Windows\System32\dpapi.dll
+exception 0x80000003 firstChance=1 at \\?\C:\Windows\System32\ntdll.dll+0x1226c9
+module 0x7fff32770000 \\?\C:\Windows\System32\bcryptprimitives.dll
+module 0x7fff31fe0000 \\?\C:\Windows\System32\powrprof.dll
+module 0x7fff31fc0000 \\?\C:\Windows\System32\umpdc.dll
+module 0x7fff336f0000 \\?\C:\Windows\System32\user32.dll
+module 0x7fff32830000 \\?\C:\Windows\System32\win32u.dll
+module 0x7fff32e70000 \\?\C:\Windows\System32\gdi32.dll
+module 0x7fff32b60000 \\?\C:\Windows\System32\gdi32full.dll
+module 0x7fff33e20000 \\?\C:\Windows\System32\imm32.dll
+module 0x7fff2ec50000 \\?\C:\Windows\System32\uxtheme.dll
+module 0x7fff32ea0000 \\?\C:\Windows\System32\combase.dll
+module 0x7fff31380000 \\?\C:\Windows\System32\mswsock.dll
+module 0x7fff34790000 \\?\C:\Windows\System32\shell32.dll
+module 0x7fff34690000 \\?\C:\Windows\System32\SHCore.dll
+module 0x7fff34050000 \\?\C:\Windows\System32\advapi32.dll
+module 0x7fff345c0000 \\?\C:\Windows\System32\sechost.dll
+module 0x7fff30f10000 \\?\C:\Windows\System32\ntmarta.dll
+exception 0x406d1388 firstChance=1 at \\?\C:\Windows\System32\KernelBase.dll+0xc408a
+exception 0x406d1388 firstChance=1 at \\?\C:\Windows\System32\KernelBase.dll+0xc408a
+module 0x7fff18030000 \\?\C:\Windows\System32\KBDUS.DLL
+module 0x7fff18030000 \\?\C:\Windows\System32\KBDUS.DLL
+exception 0x80000003 firstChance=1 at \\?\D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\node_modules\.pnpm\electron@44.7.0_supports-color@9.4.0\node_modules\electron\dist\electron.exe+0x33a29ce
+rdi text=jects
+rsi text=�I���
+exception 0x80000003 firstChance=0 at \\?\D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\node_modules\.pnpm\electron@44.7.0_supports-color@9.4.0\node_modules\electron\dist\electron.exe+0x33a29ce
+exit=0x80000003
