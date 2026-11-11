@@ -1,11 +1,11 @@
-/** Verify storage behavior using a synthetic reference in an isolated provider, never a real Key. */
+﻿/** Verify storage behavior using a synthetic reference in an isolated provider, never a real Key. */
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 const source = fileURLToPath(new URL('../../source/deepseek-harness/', import.meta.url));
-const evidence = fileURLToPath(new URL('../../docs/superpowers/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02/', import.meta.url));
+const evidence = fileURLToPath(new URL('../../docs/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02/', import.meta.url));
 const require = createRequire(join(source, 'packages/credentials/credentials-local/package.json'));
 const { Context } = require('@deepseek-ai/cordis');
 const { LocalCredentialProvider } = require(join(source, 'packages/credentials/credentials-local/lib/index.js'));

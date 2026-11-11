@@ -1,6 +1,6 @@
-# A02：DSH 主体扩展探针
+﻿# A02：DSH 主体扩展探针
 
-仅用于验证固定 DSH 提交的接线，不是正式 StudyBuddy 插件，不进入运行包。工作区根目录没有 Git；所有探针代码在本目录，上游 checkout 保持干净。结论、失败记录和交接见 [extension-map.md](../../docs/superpowers/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02/extension-map.md)。
+仅用于验证固定 DSH 提交的接线，不是正式 StudyBuddy 插件，不进入运行包。工作区根目录没有 Git；所有探针代码在本目录，上游 checkout 保持干净。结论、失败记录和交接见 [extension-map.md](../../docs/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02/extension-map.md)。
 
 以下命令从 `D:/Data/ProjectsRepo/StudyBuddy` 执行。A01 已准备完整工件；如上游工件变更，先按上游要求重建。示例使用实测 Node 路径，避免当前沙箱账号的 nvm shim 未配置问题。
 
@@ -22,7 +22,7 @@ $a02Node = 'D:/Applications/nvm/app/v26.13.0/node.exe'
 停止并复测恢复：
 
 ```powershell
-$a02Evidence = 'docs/superpowers/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02'
+$a02Evidence = 'docs/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02'
 $a02Run = Get-Content -Raw "$a02Evidence/local-running.json" | ConvertFrom-Json
 New-Item -ItemType File -Path (Join-Path $a02Run.root 'stop') -Force | Out-Null
 # 等启动终端退出，再复用这个 run；仅重命名本次 stop 文件，不移动或删除目录

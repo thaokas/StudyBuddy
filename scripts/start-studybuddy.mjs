@@ -1,4 +1,4 @@
-/** Start the project’s persistent DSH development profile; model management stays in the original DSH UI. */
+﻿/** Start the project’s persistent DSH development profile; model management stays in the original DSH UI. */
 import { spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { existsSync } from 'node:fs';
@@ -24,7 +24,7 @@ if (!existsSync(marker)) {
   await fiber.await();
   try {
     if (!(await ctx.credentials.describe(customKeyRef)).configured) {
-      const evidence = join(project, 'docs/superpowers/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02/desktop-ui-result.json');
+      const evidence = join(project, 'docs/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02/desktop-ui-result.json');
       const keySource = process.env.STUDYBUDDY_IMPORT_CREDENTIALS ?? (existsSync(evidence) ? join(JSON.parse(await readFile(evidence, 'utf8')).root, 'home/.credentials.yaml') : undefined);
       if (keySource && existsSync(keySource)) {
         const document = parseCredentialsDocument(await readFile(keySource, 'utf8'), keySource);

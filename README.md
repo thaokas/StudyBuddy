@@ -2,6 +2,8 @@
 
 基于 `source/deepseek-harness` 的开发环境。项目启动入口使用独立、持久化的 DSH 配置，保留原生模型设置与自定义提供商功能。
 
+文档入口：[`docs/README.md`](docs/README.md)——产品设计、开发计划、当前状态、决策记录与手册的索引。当前进度见 [`docs/plans/2026-11-09-studybuddy-v1-plan/STATUS.md`](docs/plans/2026-11-09-studybuddy-v1-plan/STATUS.md)。
+
 在项目目录运行：
 
 ```powershell

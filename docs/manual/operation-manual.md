@@ -1,4 +1,4 @@
-# StudyBuddy 操作手册
+﻿# StudyBuddy 操作手册
 
 > **适用版本**：StudyBuddy v1 开发版（DeepSeek Harness 0.2.2-rc.1，Windows 桌面）
 >
@@ -1284,8 +1284,8 @@ git -C source/deepseek-harness apply --check -R "$PWD/patches/0002-second-main-c
 | [docs/creator.md](../creator.md) | 创造模式与模式切换 |
 | [docs/manual/manual-start.md](manual-start.md) | 早期本地手动启动指南（A01 基线，部分命令已过时） |
 | `docs/decisions/` | 布局、记忆、目标工作区等决策记录 |
-| `docs/superpowers/plans/` | 实施计划、任务卡、验收与已知边界 |
-| `docs/superpowers/specs/` | 学习系统与学生记忆设计 |
+| `docs/plans/` | 实施计划、任务卡、验收与已知边界 |
+| `docs/specs/` | 学习系统与学生记忆设计 |
 
 ---
 
@@ -1426,4 +1426,4 @@ git -C source/deepseek-harness apply --check -R "$PWD/patches/0002-second-main-c
 
 ---
 
-*本手册以当前源码与验收记录为准。若界面文案、命令或数据位置与实际不一致，以仓库中的源码与 `docs/superpowers/plans/2026-11-09-studybuddy-v1-plan/STATUS.md` 为准，并请更新本文件。*
+*本手册以当前源码与验收记录为准。若界面文案、命令或数据位置与实际不一致，以仓库中的源码与 `docs/plans/2026-11-09-studybuddy-v1-plan/STATUS.md` 为准，并请更新本文件。*

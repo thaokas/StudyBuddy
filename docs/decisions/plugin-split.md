@@ -21,7 +21,7 @@
 5. **平台能力单独成插件，可以完全独立。** 例如 `credentials-dpapi` 不共享任何学习事实，不需要跟着事实层走。真正的“完全解耦”只适合这类能力。
 6. **目标清单**：6 个插件 + 1 个平台插件 + 1 个组合 bundle（第 6 节）。
 
-> 修订记录：上一轮按模块依赖提出 `study-execution` / `study-plan` 两个插件。核对表级读写后调整为事实层单插件，理由见第 3.2 节与第 8 节。
+> 修订记录：早期方案（按模块依赖）提出 `study-execution` / `study-plan` 两个插件。核对表级读写后调整为事实层单插件，理由见第 3.2 节与第 8 节。
 
 ---
 
@@ -211,7 +211,7 @@ C   study-bundle          组合与发布配方（patch 层，不含运行时代
 | 插件 | 层 | 角色 | 迁入的 host 模块 | 命名空间/工具 | 客户端页面 | 关键依赖 |
 | --- | --- | --- | --- | --- | --- | --- |
 | `@studybuddy/study-core` | L0 | 技术基础 | `host/index.mjs`、`db.mjs`、`kernel.mjs`、`registry.mjs`、`modules/kernel.mjs`、`modules/export.mjs` | `kernel`；`study_status`、`study_export`；`/api/study/*`、`/api/study/export.json` | 今日页；`studyClient`、`studyRefresh`、`studyNav`、`studyUi` 客户端服务 | 无 |
-| `@studybuddy/study-facts` | L1 | 业务基础 | `modules/materials.mjs`、`plans.mjs`、`planning.mjs`、`tasks.mjs`、`timer.mjs`；`host/facts.mjs` 迁入共享 model 库 | `materials`、`plans`、`planning`、`tasks`、`timer` | 首次引导、计划、工作台、番茄钟 | core |
+| `@studybuddy/study-facts` | L1 | 业务基础（学习事实与计划执行） | `modules/materials.mjs`、`plans.mjs`、`planning.mjs`、`tasks.mjs`、`timer.mjs`；`host/facts.mjs` 迁入共享 model 库 | `materials`、`plans`、`planning`、`tasks`、`timer` | 首次引导、计划、工作台、番茄钟 | core |
 | `@studybuddy/study-learning` | L2 | 功能 | `modules/tutoring.mjs`、`learning.mjs`、`review.mjs`；`host/learning/*` | `tutoring`、`learning`、`review`；问答/洞察工具 | 问答记录页 | core、facts |
 | `@studybuddy/study-memory` | L2 | 功能 | `modules/memory.mjs`；`host/memory/*` | `memory`；记忆工具 | 记忆页 | core、facts（读目标表）；learning 事件可选 |
 | `@studybuddy/study-reminders` | L2 | 功能 | `modules/followup.mjs` | `followup`；提醒工具 | 提醒页、完成提醒横幅 | core、facts |

@@ -1,4 +1,4 @@
-/** Run an isolated shipped DSH profile with an A02-only overlay. No SDK app or Agent-loop replacement. */
+﻿/** Run an isolated shipped DSH profile with an A02-only overlay. No SDK app or Agent-loop replacement. */
 import { spawn, spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { mkdir, writeFile, readFile, access } from 'node:fs/promises';
@@ -12,7 +12,7 @@ import { officialModel } from './official-model.mjs';
 
 const probe = dirname(fileURLToPath(import.meta.url));
 const source = fileURLToPath(new URL('../../source/deepseek-harness/', import.meta.url));
-const evidence = fileURLToPath(new URL('../../docs/superpowers/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02/', import.meta.url));
+const evidence = fileURLToPath(new URL('../../docs/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02/', import.meta.url));
 const require = createRequire(join(source, 'package.json'));
 const real = process.argv.includes('--real');
 const native = process.argv.includes('--native');

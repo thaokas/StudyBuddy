@@ -1,11 +1,11 @@
-/** Inspect the isolated Desktop's model setting entry and its public bridge without revealing fields. */
+﻿/** Inspect the isolated Desktop's model setting entry and its public bridge without revealing fields. */
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 const source = fileURLToPath(new URL('../../source/deepseek-harness/', import.meta.url));
-const evidence = fileURLToPath(new URL('../../docs/superpowers/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02/', import.meta.url));
+const evidence = fileURLToPath(new URL('../../docs/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02/', import.meta.url));
 const require = createRequire(join(source, 'package.json'));
 const { chromium } = require(join(source, 'node_modules/.pnpm/node_modules/playwright'));
 const info = JSON.parse(await readFile(join(evidence, 'desktop-running.json'), 'utf8'));

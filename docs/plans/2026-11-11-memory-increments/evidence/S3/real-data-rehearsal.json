@@ -1,0 +1,136 @@
+﻿{
+  "source": "docs/plans/2026-11-11-memory-increments/evidence/S3/study.pre-s3.db*",
+  "integrity": "ok",
+  "legacyState": {
+    "exists": true,
+    "items": 0,
+    "tombstones": 0
+  },
+  "tables": {
+    "items": 0,
+    "tombstones": 0,
+    "evidence": 0,
+    "kinds": []
+  },
+  "backup": {
+    "exists": true,
+    "bytes": 54
+  },
+  "profile": {
+    "goalId": "goal_cc2cb85e-a756-421a-ab30-3a197dcc65a7",
+    "traits": [
+      {
+        "key": "explain_detail",
+        "level": 3,
+        "defaultLevel": 3,
+        "min": 1,
+        "max": 5,
+        "step": 1,
+        "active": false,
+        "reason": "default",
+        "sourceKind": null,
+        "confidence": 0.7113,
+        "value": 0.5,
+        "evidenceCount": 0,
+        "unitCount": 0,
+        "text": "结论 + 推导 + 1 个例子",
+        "updatedAt": null
+      },
+      {
+        "key": "hint_preference",
+        "level": 0.5,
+        "defaultLevel": 0.5,
+        "min": 0,
+        "max": 1,
+        "step": 0.5,
+        "active": false,
+        "reason": "default",
+        "sourceKind": null,
+        "confidence": 0.7113,
+        "value": 0.5,
+        "evidenceCount": 0,
+        "unitCount": 0,
+        "text": "先给提示，再给答案",
+        "updatedAt": null
+      },
+      {
+        "key": "pace",
+        "level": 0,
+        "defaultLevel": 0,
+        "min": -1,
+        "max": 1,
+        "step": 1,
+        "active": false,
+        "reason": "default",
+        "sourceKind": null,
+        "confidence": 0.7113,
+        "value": 0.5,
+        "evidenceCount": 0,
+        "unitCount": 0,
+        "text": "推进速度正常",
+        "updatedAt": null
+      },
+      {
+        "key": "example_first",
+        "level": 0.5,
+        "defaultLevel": 0.5,
+        "min": 0,
+        "max": 1,
+        "step": 0.5,
+        "active": false,
+        "reason": "default",
+        "sourceKind": null,
+        "confidence": 0.7113,
+        "value": 0.5,
+        "evidenceCount": 0,
+        "unitCount": 0,
+        "text": "推导中穿插例子",
+        "updatedAt": null
+      },
+      {
+        "key": "step_granularity",
+        "level": 2,
+        "defaultLevel": 2,
+        "min": 1,
+        "max": 3,
+        "step": 1,
+        "active": false,
+        "reason": "default",
+        "sourceKind": null,
+        "confidence": 0.7113,
+        "value": 0.5,
+        "evidenceCount": 0,
+        "unitCount": 0,
+        "text": "关键步骤分点",
+        "updatedAt": null
+      },
+      {
+        "key": "check_frequency",
+        "level": 1,
+        "defaultLevel": 1,
+        "min": 0,
+        "max": 2,
+        "step": 1,
+        "active": false,
+        "reason": "default",
+        "sourceKind": null,
+        "confidence": 0.7113,
+        "value": 0.5,
+        "evidenceCount": 0,
+        "unitCount": 0,
+        "text": "讲完一段确认一次",
+        "updatedAt": null
+      }
+    ],
+    "memories": {
+      "preference": 0,
+      "state": 0,
+      "observation": 0
+    },
+    "at": "2026-11-11T12:00:00.000Z"
+  },
+  "contract": "",
+  "moduleSchema": {
+    "schema_version": 1
+  }
+}

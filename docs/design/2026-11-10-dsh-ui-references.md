@@ -1,9 +1,9 @@
-# StudyBuddy 前端 UI 参考与借鉴清单（DSH 生态）
+﻿# StudyBuddy 前端 UI 参考与借鉴清单（DSH 生态）
 
 - 日期：2026-11-10
 - 状态：调研完成，**待你挑选**（第 8 节是勾选表；第 6 节是 3 套组合）
 - 关联：spec §4.2 计划协商、§4.3 图书馆、§4.7 成就；任务 D03、T04/T05/T06/T07
-- 证据：截图在 [`refs/`](refs/)，原始 README 在 `refs/_raw/`；本机审计命令见第 10 节
+- 证据：截图原先在 `refs/`（2026-11-11 删除以减小仓库体积，可在首次提交 `105bbae` 中取回）；本机审计命令见第 10 节
 
 ## 0. 结论先行
 
@@ -287,14 +287,14 @@ DSH 自己的规范（`source/deepseek-harness/docs/web-styling.md`、`ui-radius
 
 | 用途 | 文件 |
 | --- | --- |
-| 卡片/列头 | [`refs/dsh-web-ui/task-board.png`](refs/dsh-web-ui/task-board.png) |
-| 原生发丝线与分组 | [`refs/DSH-better-sidebar/git-changes-commit-graph.png`](refs/DSH-better-sidebar/git-changes-commit-graph.png) |
-| 容器断点窄态 | [`refs/dsh-graph/sidebar-kanban-narrow.png`](refs/dsh-graph/sidebar-kanban-narrow.png) |
-| 两轨配色（sage 浅色） | [`refs/dsh-bloom-theme/bloom-01-ui-switcher.png`](refs/dsh-bloom-theme/bloom-01-ui-switcher.png) |
-| 暖奶油 + 珊瑚 | [`refs/dsh-claude-theme/claude-01-light.jpg`](refs/dsh-claude-theme/claude-01-light.jpg) |
-| 纸/直角/信号色 | [`refs/dsh-theme-endfield/endfield-02-light-wuling-teal.webp`](refs/dsh-theme-endfield/endfield-02-light-wuling-teal.webp) |
-| 学年轴 + 堆叠条（反面语气） | [`refs/dsh-worktime-board/worktime-04-school-year.png`](refs/dsh-worktime-board/worktime-04-school-year.png) |
-| 玻璃（仅浮层参考） | [`refs/DSH-Transparent-UI-Plugin/aqua-01-glass-main.png`](refs/DSH-Transparent-UI-Plugin/aqua-01-glass-main.png) |
+| 卡片/列头 | `refs/dsh-web-ui/task-board.png` |
+| 原生发丝线与分组 | `refs/DSH-better-sidebar/git-changes-commit-graph.png` |
+| 容器断点窄态 | `refs/dsh-graph/sidebar-kanban-narrow.png` |
+| 两轨配色（sage 浅色） | `refs/dsh-bloom-theme/bloom-01-ui-switcher.png` |
+| 暖奶油 + 珊瑚 | `refs/dsh-claude-theme/claude-01-light.jpg` |
+| 纸/直角/信号色 | `refs/dsh-theme-endfield/endfield-02-light-wuling-teal.webp` |
+| 学年轴 + 堆叠条（反面语气） | `refs/dsh-worktime-board/worktime-04-school-year.png` |
+| 玻璃（仅浮层参考） | `refs/DSH-Transparent-UI-Plugin/aqua-01-glass-main.png` |
 
 ### 本机规范与审计
 

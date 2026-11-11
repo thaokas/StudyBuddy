@@ -1,4 +1,4 @@
-/** Recompute A02 evidence checks without model calls or printing credential values. */
+﻿/** Recompute A02 evidence checks without model calls or printing credential values. */
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
@@ -10,7 +10,7 @@ import { authorizedKey } from './credentials.mjs';
 const probe = dirname(fileURLToPath(import.meta.url));
 const project = resolve(probe, '../..');
 const source = join(project, 'source/deepseek-harness');
-const evidence = join(project, 'docs/superpowers/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02');
+const evidence = join(project, 'docs/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02');
 const taskFile = resolve(evidence, '../../A02-dsh-extension-spike.md');
 const pin = JSON.parse(await readFile(join(evidence, '../A01/baseline.lock.json'), 'utf8'));
 const git = args => spawnSync('git', ['-c', `safe.directory=${source.replaceAll('\\', '/')}`, '-C', source, ...args], { encoding: 'utf8', windowsHide: true });

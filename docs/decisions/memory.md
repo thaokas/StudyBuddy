@@ -1,4 +1,4 @@
-# 决策：学习记忆（T20）
+﻿# 决策：学习记忆（T20）
 
 日期：2026-11-10  
 状态：已采纳（本地记忆模块）  
@@ -6,7 +6,7 @@
 
 ## 1. 结论
 
-不接入 `@restregular/dsh-memory`，在 study 插件内实现本地记忆模块。零代码路线在功能上大体可用，但它不能满足本项目已经冻结的写入契约，也缺少 T20 明确要求的"来源"与"删除标记"。证据见 [`T20-memory-plugin-spike.json`](../superpowers/plans/2026-11-09-studybuddy-v1-plan/evidence/T20-memory-plugin-spike.json)。
+不接入 `@restregular/dsh-memory`，在 study 插件内实现本地记忆模块。零代码路线在功能上大体可用，但它不能满足本项目已经冻结的写入契约，也缺少 T20 明确要求的"来源"与"删除标记"。证据见 [`T20-memory-plugin-spike.json`](../plans/2026-11-09-studybuddy-v1-plan/evidence/T20-memory-plugin-spike.json)。
 
 ## 2. 候选插件验证（隔离 profile）
 
