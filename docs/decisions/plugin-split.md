@@ -4,6 +4,7 @@
 - 状态：**提议（待评审）**；本文只做分析与清单，不改代码
 - 相关代码：`plugins/study/host/index.mjs`、`host/db.mjs`、`host/kernel.mjs`、`host/registry.mjs`、`host/facts.mjs`、`client/lib/refresh.js`、`client/lib/study-page.js`、`scripts/project-config.mjs`
 - 相关决策：[布局](layout.md)、[学习记忆](memory.md)、[目标与工作区](goal-workspaces.md)
+- 执行计划：[docs/plans/2026-11-11-plugin-split](../plans/2026-11-11-plugin-split/README.md)（P0–P7，agent 操作说明）
 
 ## 1. 结论
 
