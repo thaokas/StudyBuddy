@@ -1,6 +1,6 @@
 # StudyBuddy 开发指南
 
-面向从 GitHub clone 仓库、在本机跑起来并继续开发的人。读完本文应当能：准备固定版本的 DSH 源码与两枚补丁、启动应用、跑测试、构建插件客户端，并按现有结构新增一个 `study-*` 插件。
+面向从 GitHub clone 仓库、在本机跑起来并继续开发的人。读完本文应当能：准备固定版本的 DSH 源码与三枚补丁、启动应用、跑测试、构建插件客户端，并按现有结构新增一个 `study-*` 插件。
 
 只想使用看[操作手册](manual/operation-manual.md)；先了解架构与契约看 [architecture.md](architecture.md)、[contracts.md](contracts.md)；当前进度见 [roadmap.md](roadmap.md)；备份与创造模式边界见 [backup.md](backup.md)、[creator.md](creator.md)。
 
@@ -35,12 +35,13 @@ git -C source/deepseek-harness rev-parse HEAD
 
 ### 2.2 应用项目补丁
 
-先读 [`patches/README.md`](../patches/README.md)，再按顺序应用两枚补丁：
+先读 [`patches/README.md`](../patches/README.md)，再按顺序应用三枚补丁：
 
 ```powershell
 $p1 = (Resolve-Path patches/0001-desktop-account-toggle.patch).Path
 $p2 = (Resolve-Path patches/0002-second-main-column.patch).Path
-git -C source/deepseek-harness apply "$p1" "$p2"
+$p3 = (Resolve-Path patches/0003-desktop-tray-icon.patch).Path
+git -C source/deepseek-harness apply "$p1" "$p2" "$p3"
 ```
 
 **patch 路径要写解析后的绝对路径**：`git -C` 会把 Git 的工作目录切到 `source/deepseek-harness`，直接写 `patches/xxx.patch` 会相对源码树解析而找不到文件。`Resolve-Path` 得到的绝对路径不含歧义。
@@ -50,6 +51,7 @@ git -C source/deepseek-harness apply "$p1" "$p2"
 ```powershell
 git -C source/deepseek-harness apply --check -R "$p1"
 git -C source/deepseek-harness apply --check -R "$p2"
+git -C source/deepseek-harness apply --check -R "$p3"
 ```
 
 ### 2.3 安装、构建与 Electron
@@ -174,7 +176,7 @@ node plugins/study-pet/scripts/build-client.mjs
 | `packages/study-*` | 跨插件共享库：`study-client`（客户端服务/页面定义）、`study-messages`（共享文案）、`study-model`（模块定义与只读模型）、`study-contracts`（错误与公共契约） |
 | `scripts/` | `start-studybuddy.mjs` 启动器、`project-config.mjs` 部署策略/预置模型/profile、`backup-studybuddy.mjs` 备份 |
 | `platform/windows-credentials/` | DPAPI `CredentialProvider` 实现 |
-| `patches/` | 对固定 DSH 源码的两枚补丁与校验说明 |
+| `patches/` | 对固定 DSH 源码的三枚补丁与校验说明 |
 | `tests/` | `project/`（工程与桌面）、`creator/`（创造模式）、`support/`（共享测试夹具） |
 | `docs/` | 文档入口、架构、契约、路线图、开发、备份、创造模式与操作手册 |
 | `skills/study-creator/` | Creator skill 参考，启动时复制到数据根 |

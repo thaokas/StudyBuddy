@@ -16,6 +16,13 @@ StudyBuddy 对固定 DSH 源码的改动集中在这里，目的是一眼看清"
 - **基线**：`fcc0ad462172522aaf5c93a7b2e01f6b9f0b0159`（0.2.2-rc.1）。
 - **配套**：`plugins/study-core/client/lib/study-page.js` 继续记住最后打开的学习页；旧的 `studyleft.js`、宽度键 `study.layout.leftmain.width` 已于 2026-11-11 删除。方案、调整与回退见 `docs/decisions/layout.md` 路线 3 及第 8 节。
 
+## 0003-desktop-tray-icon.patch
+
+- **作用**：让桌面壳的托盘图标路径可被 `DSH_DESKTOP_TRAY_ICON` 覆盖。StudyBuddy 启动器把它指向项目自带的 `assets/tray.ico`；未设置或为空时保持上游行为（开发态读 `resources/tray-windows.ico`，打包态读 `resources/tray.ico`）。同一路径还用于退出确认对话框的主图标。
+- **范围**：`apps/desktop/src/main.ts` 1 个文件，+5/−1，只改 `trayIconPath` 的取值。
+- **基线**：`fcc0ad462172522aaf5c93a7b2e01f6b9f0b0159`（0.2.2-rc.1）。
+- **配套**：`assets/tray.ico` 由 `node scripts/render-tray-icon.mjs` 从 `assets/logo1.png` 生成（16/20/24/32/40/48/64 px 多尺寸，PNG 压缩条目）；`scripts/start-studybuddy.mjs` 设置 `DSH_DESKTOP_TRAY_ICON`。图标资产属于项目，不进补丁，避免二进制 diff。
+
 ## 校验
 
 补丁与当前源码树一致（反向应用能通过，说明工作树内容就是补丁内容）：
@@ -23,6 +30,7 @@ StudyBuddy 对固定 DSH 源码的改动集中在这里，目的是一眼看清"
 ```powershell
 git -C source/deepseek-harness apply --check -R "$PWD/patches/0001-desktop-account-toggle.patch"
 git -C source/deepseek-harness apply --check -R "$PWD/patches/0002-second-main-column.patch"
+git -C source/deepseek-harness apply --check -R "$PWD/patches/0003-desktop-tray-icon.patch"
 ```
 
 重新生成（包含新增文件）：
@@ -35,6 +43,12 @@ git -C source/deepseek-harness reset --quiet
 
 0002 的重新生成还要 `add -N` 三个新增的 Agent Note 文件（`2026-11-10-second-main-column.md`、`.zh.md`、`.i18n.yaml`），再按 `packages/client/ui-layout`、`packages/extensions/cordis-client-runner/src/client/slot-catalog.ts`、两个消费方测试桩与这三个文件列出路径生成 diff。槽目录不要手改：先改 `SlotMap`，再跑 `pnpm run gen-client-catalog`。
 
+0003 只改 `apps/desktop/src/main.ts`，改完后用 `git -C source/deepseek-harness diff -- apps/desktop/src/main.ts` 取差量；注意该文件同时带有 0001 的账号开关改动，新补丁只保留托盘图标相关 hunk。托盘图标本身不在补丁里：
+
+```powershell
+node scripts/render-tray-icon.mjs
+```
+
 重建与测试（布局客户端包从 `lib/client.js` 提供，改源码后必须先 bundle）：
 
 ```powershell
@@ -45,7 +59,7 @@ pnpm run test:gui
 ## 升级 DSH 时
 
 1. 在新提交上先还原干净树（`git -C source/deepseek-harness checkout -- .` 并删除未跟踪的本补丁新增文件）。
-2. `git -C source/deepseek-harness apply --3way patches/0001-desktop-account-toggle.patch patches/0002-second-main-column.patch`。
+2. `git -C source/deepseek-harness apply --3way patches/0001-desktop-account-toggle.patch patches/0002-second-main-column.patch patches/0003-desktop-tray-icon.patch`。
 3. 冲突时按语义重做，更新本补丁与上面的基线提交。
 4. 跑 `apps/desktop` 的相关测试、`pnpm --filter @deepseek-ai/dsh-client-ui-layout bundle`、`pnpm run test:gui` 与 `node tests/project/desktop.test.mjs`。
 

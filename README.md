@@ -2,7 +2,7 @@
 
 > 本地优先的 Windows 桌面备考助手：把「备考目标 → 学习计划 → 每天几点做 → 完成记录 → 周月复盘」串成一条闭环，并叠加答疑、学习记忆与画像、外观主题和桌面宠物。
 
-StudyBuddy 以 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）为宿主，固定 `0.2.2-rc.1` 源码（commit `fcc0ad4`）并维护两枚小补丁；学习能力来自项目自带的 8 个 `study-*` 插件。学习数据保存在本机单个 SQLite 文件里，不依赖云服务，也不需要账号。
+StudyBuddy 以 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（DSH）为宿主，固定 `0.2.2-rc.1` 源码（commit `fcc0ad4`）并维护三枚小补丁；学习能力来自项目自带的 8 个 `study-*` 插件。学习数据保存在本机单个 SQLite 文件里，不依赖云服务，也不需要账号。
 
 - 文档入口：[`docs/README.md`](docs/README.md)
 - 操作手册：[`docs/manual/operation-manual.md`](docs/manual/operation-manual.md)
@@ -29,7 +29,7 @@ StudyBuddy 以 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harnes
 
 ```text
 Electron 桌面壳
-└─ DeepSeek Harness Host（固定 fcc0ad4 + patches/0001、0002）
+└─ DeepSeek Harness Host（固定 fcc0ad4 + patches/0001–0003）
    ├─ 宿主策略
    │  ├─ workspace-controller     工作区目录
    │  └─ project-credentials      Windows DPAPI 凭据
@@ -74,6 +74,7 @@ git clone --no-checkout https://github.com/deepseek-ai/deepseek-harness.git sour
 git -C source/deepseek-harness checkout fcc0ad462172522aaf5c93a7b2e01f6b9f0b0159
 git -C source/deepseek-harness apply "$PWD/patches/0001-desktop-account-toggle.patch"
 git -C source/deepseek-harness apply "$PWD/patches/0002-second-main-column.patch"
+git -C source/deepseek-harness apply "$PWD/patches/0003-desktop-tray-icon.patch"
 
 cd source/deepseek-harness
 pnpm install --frozen-lockfile
@@ -148,7 +149,7 @@ StudyBuddy/
 ├─ plugins/                        # 8 个 study-* 插件（host + client + tests）
 ├─ packages/                       # study-model / study-contracts / study-messages / study-client
 ├─ platform/windows-credentials/   # DPAPI 凭据插件
-├─ patches/                        # 对固定 DSH 源码的两枚补丁与升级说明
+├─ patches/                        # 对固定 DSH 源码的三枚补丁与升级说明
 ├─ skills/study-creator/           # Creator 参考技能
 ├─ tests/                          # 工程测试、Creator 测试、测试支持
 ├─ assets/logo1.png                # 品牌形象源图（插件内联副本）

@@ -1,4 +1,4 @@
-﻿/** Start the project’s persistent DSH development profile; model management stays in the original DSH UI. */
+/** Start the project’s persistent DSH development profile; model management stays in the original DSH UI. */
 import { spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { existsSync } from 'node:fs';
@@ -40,12 +40,15 @@ if (process.argv.includes('--prepare-only')) process.exit(0);
 
 const env = { ...process.env };
 for (const name of Object.keys(env)) if (/^DSH_|^ELECTRON_/i.test(name)) delete env[name];
+const trayIcon = join(project, 'assets/tray.ico');
 Object.assign(env, {
   PATH: `${dirname(process.execPath)}${delimiter}${process.env.PATH}`,
   DSH_HOME: home, DSH_AGENTS_HOME: join(root, 'agents'),
   DSH_DESKTOP_USER_DATA_DIR: join(root, 'electron-user-data'),
   DSH_DESKTOP_ACCOUNT_ENABLED: '0', DSH_DESKTOP_OPEN_DEVTOOLS: '0',
   DSH_TELEMETRY_DISABLED: '1', DSH_TELEMETRY_MODE: 'DISABLED',
+  // Product branding: the desktop shell reads this instead of its bundled tray icon.
+  ...(existsSync(trayIcon) ? { DSH_DESKTOP_TRAY_ICON: trayIcon } : {}),
 });
 const debug = {};
 for (const name of ['DSH_DESKTOP_MAIN_INSPECT_PORT', 'DSH_DESKTOP_RENDERER_DEBUG_PORT', 'DSH_DESKTOP_HOST_INSPECT_PORT']) {

@@ -1,0 +1,18 @@
+diff --git a/apps/desktop/src/main.ts b/apps/desktop/src/main.ts
+index b897d796..9037699b 100644
+--- a/apps/desktop/src/main.ts
++++ b/apps/desktop/src/main.ts
+@@ -1214,7 +1214,12 @@ async function main(): Promise<void> {
+     tray?.relabel()
+   }
+   refreshApplicationMenu()
+-  const trayIconPath = development ? join(app.getAppPath(), 'resources', 'tray-windows.ico') : join(process.resourcesPath, 'tray.ico')
++  // StudyBuddy's launcher points this at the product icon; the upstream resource
++  // stays the fallback for every other deployment.
++  const trayIconOverride = process.env.DSH_DESKTOP_TRAY_ICON
++  const trayIconPath = trayIconOverride !== undefined && trayIconOverride !== ''
++    ? trayIconOverride
++    : development ? join(app.getAppPath(), 'resources', 'tray-windows.ico') : join(process.resourcesPath, 'tray.ico')
+   if (process.platform === 'win32') {
+     // The tray is the way back to a hidden window; without it, relaunching the application still focuses it.
+     try {

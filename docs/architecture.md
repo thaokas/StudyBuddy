@@ -12,7 +12,7 @@ StudyBuddy 是 **Electron 桌面壳 + 固定版本 DeepSeek Harness（DSH）宿�
 | --- | --- | --- |
 | 桌面壳 | `source/deepseek-harness/apps/desktop`（Electron） | 主进程用 Electron RunAsNode 子进程启动共享 profile runner（即 DSH Host）；渲染进程加载 `dsh-app://app/`；启动注入、就绪与关闭走 Node IPC |
 | 宿主 | DSH Host（Cordis） | Agent 循环、会话、模型调用、工具调度、插件容器、HTTP/WS 路由；固定源码 `source/deepseek-harness`，版本 **0.2.2-rc.1**，commit `fcc0ad4` |
-| 源码补丁 | `patches/0001`、`patches/0002` | `0001-desktop-account-toggle` 增加桌面账号开关，启动器设为 `0` 并禁用账号相关 bundle；`0002-second-main-column` 在中央列增加第二主栏槽，当前产品未注册使用（工作台缩略视图替代），补丁保留在固定源码树 |
+| 源码补丁 | `patches/0001`–`patches/0003` | `0001-desktop-account-toggle` 增加桌面账号开关，启动器设为 `0` 并禁用账号相关 bundle；`0002-second-main-column` 在中央列增加第二主栏槽，当前产品未注册使用（工作台缩略视图替代），补丁保留在固定源码树；`0003-desktop-tray-icon` 让托盘图标路径可由 `DSH_DESKTOP_TRAY_ICON` 覆盖，启动器指向项目 `assets/tray.ico` |
 | 模型 | 自定义提供商 `studybuddy-deepseek` | `anthropic-messages`，`https://api.deepseek.com/anthropic`，模型 `deepseek-flash`，思考档默认 `high`；模型设置由 DSH 原生设置页管理 |
 | 凭据 | `platform/windows-credentials` | Windows CurrentUser DPAPI，`.studybuddy/home/credentials.dpapi`；模型配置只存 `STUDYBUDDY_DEEPSEEK_API_KEY` 引用 |
 | 运行时 | Node ≥ 24.9（`node:sqlite` 必需）、Windows x64 | 当前文档基线 Node v26.13.0；产品先支持 Windows |
@@ -172,4 +172,4 @@ Agent 工具 ────ctx.study.call(...)────────────
 - **插件可关闭导致工具集变化**：提示词与 Creator 参考不能假设某工具一定存在；关闭可选插件后页面显示不可用而不是崩溃。
 - **表现层限制**：桌宠 8 个状态共用一张静图、没有专属摆姿；外观只能在既有 token 层内做品牌。
 - **记忆 / 提醒与设计的差距**：记忆当前 6 项教学参数（设计稿还有 `session_tolerance`），只有 `explain_detail` 自动推断；提醒没有“互动语气”设置；PDF 导入只有服务 / Agent 入口，页面无上传入口。
-- **固定源码树**：DSH 升级需要重新生成并反向校验两枚补丁，属于发行准备事项，不随业务插件改动。
+- **固定源码树**：DSH 升级需要重新生成并反向校验三枚补丁，属于发行准备事项，不随业务插件改动。

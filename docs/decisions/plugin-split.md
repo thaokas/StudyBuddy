@@ -380,6 +380,6 @@ C   study-bundle          组合与发布配方（patch 层，不含运行时代
 | `platform/windows-credentials` | `@studybuddy/platform-windows-credentials`（行 id `project-credentials`） |
 | `scripts/project-config.mjs` 的部署策略/插件行 | `study-bundle` |
 | `plugins/study/creator/skills` | 保持 skill：P6 迁到 `skills/study-creator/`，验证脚本与证据迁到 `tests/creator/`，并更新 `scripts/project-config.mjs` 的 `creatorSkillSource`（或以后用 `ctx.skills.register` 做成 skill 插件） |
-| `patches/0001`、`patches/0002` | 保持源码补丁，不属于业务插件 |
+| `patches/0001`–`patches/0003` | 保持源码补丁，不属于业务插件 |
 | `probes/A02`、`probes/layout` | 开发探针，移出产品组合 |
 | `scripts/backup-studybuddy.mjs` | 冷备份工具；需要应用内备份时再评估 `study-data` 插件 |

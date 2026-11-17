@@ -173,7 +173,8 @@ git clone --no-checkout https://github.com/deepseek-ai/deepseek-harness.git sour
 git -C source/deepseek-harness checkout fcc0ad462172522aaf5c93a7b2e01f6b9f0b0159
 $p1 = (Resolve-Path patches/0001-desktop-account-toggle.patch).Path
 $p2 = (Resolve-Path patches/0002-second-main-column.patch).Path
-git -C source/deepseek-harness apply "$p1" "$p2"
+$p3 = (Resolve-Path patches/0003-desktop-tray-icon.patch).Path
+git -C source/deepseek-harness apply "$p1" "$p2" "$p3"
 cd source/deepseek-harness
 pnpm install --frozen-lockfile --reporter append-only
 $env:DSH_GATE_CONCURRENCY='2'; $env:DSH_GATE_FAIL_FAST='1'
@@ -184,13 +185,13 @@ cd ..
 
 然后回到项目根目录，按第 4 节启动。
 
-> 两枚补丁必须按序应用，patch 路径要写成 `Resolve-Path` 解析后的绝对路径：`git -C` 会把 Git 的工作目录切到源码树，相对路径会解析到错误位置。应用或修改补丁后必须重新 `pnpm run build`，否则产物不含补丁改动。补丁内容与反向校验见 [`patches/README.md`](../../patches/README.md)，升级时重放补丁见 19.3 节。
+> 三枚补丁必须按序应用，patch 路径要写成 `Resolve-Path` 解析后的绝对路径：`git -C` 会把 Git 的工作目录切到源码树，相对路径会解析到错误位置。应用或修改补丁后必须重新 `pnpm run build`，否则产物不含补丁改动。补丁内容与反向校验见 [`patches/README.md`](../../patches/README.md)，升级时重放补丁见 19.3 节。
 
 ### 3.4 版本关系
 
 | 组件 | 版本/基线 | 说明 |
 | --- | --- | --- |
-| DeepSeek Harness | 0.2.2-rc.1，基线提交 `fcc0ad4` | 源码固定在 `source/deepseek-harness`，已应用 `patches/0001`、`0002`（未提交） |
+| DeepSeek Harness | 0.2.2-rc.1，基线提交 `fcc0ad4` | 源码固定在 `source/deepseek-harness`，已应用 `patches/0001`–`0003`（未提交） |
 | Study 插件组 | 8 个包均为 0.1.0 | 旧 `plugins/study` shell 已删除；数据根由启动器传入 `<数据根>/study` |
 | 凭据服务 | 项目内 `platform/windows-credentials` | 实现 DSH `CredentialProvider` 接口 |
 | 学习数据 schema | 核心 v1；模块各自 `schemaVersion: 1` | v1 无迁移器 |
@@ -1247,12 +1248,14 @@ pnpm run build          # 完整构建，约 2–3 分钟
 | --- | --- |
 | `0001-desktop-account-toggle.patch` | 桌面壳 `DSH_DESKTOP_ACCOUNT_ENABLED` 开关，跳过账号引导 |
 | `0002-second-main-column.patch` | `AppFrame` 第二主栏能力（当前学习页不再注册该栏，保留为未启用能力） |
+| `0003-desktop-tray-icon.patch` | 托盘图标路径可被 `DSH_DESKTOP_TRAY_ICON` 覆盖，启动器指向 StudyBuddy 的 `assets/tray.ico` |
 
 反向校验（确认当前工作树与补丁一致）：
 
 ```powershell
 git -C source/deepseek-harness apply --check -R "$PWD/patches/0001-desktop-account-toggle.patch"
 git -C source/deepseek-harness apply --check -R "$PWD/patches/0002-second-main-column.patch"
+git -C source/deepseek-harness apply --check -R "$PWD/patches/0003-desktop-tray-icon.patch"
 ```
 
 升级 DSH 或重建源码后：
