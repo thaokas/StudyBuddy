@@ -11,5 +11,5 @@ plugins/*/client/.build/
 plugins/*/tests/**/evidence/
 tests/*/evidence/
 *.log
-# 开发探针：本地保留，不入库
+# 寮�鍙戞帰閽堬細鏈湴淇濈暀锛屼笉鍏ュ簱
 /probes/
