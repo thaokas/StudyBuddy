@@ -725,7 +725,7 @@ var DICTIONARY = Object.freeze({
 // client/style.js
 var STYLE_ID = "study-appearance-styles";
 var STYLE_TEXT = `
-:root[data-study-appearance='on'] header[data-window-drag],
+:root[data-study-appearance='on'] header[data-window-drag]:has([data-conversation-header-leading]),
 :root[data-study-appearance='on'] [data-dockkit-strip] {
   background: var(--study-topbar);
   transition: background-color 160ms ease;
@@ -756,7 +756,7 @@ var STYLE_TEXT = `
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root[data-study-appearance='on'] header[data-window-drag],
+  :root[data-study-appearance='on'] header[data-window-drag]:has([data-conversation-header-leading]),
   :root[data-study-appearance='on'] [data-dockkit-strip],
   :root[data-study-appearance='on'] [data-study-brand-mark],
   :root[data-study-appearance='on'] [data-study-hero-brand-mark] {

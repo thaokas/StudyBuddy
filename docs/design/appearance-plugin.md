@@ -20,7 +20,7 @@
 | 深色家族文字/强调 | 文字 `#E6EEF9`/`#B9C8DC`/`#93A6BE`/`#8C9EB4`；强调 `#86B4FF`（hover `#A2C6FF`，dimmed `#1E3350`，selection `#223E66`） |
 | 发送钮 / 信号色 | 浅色家族 `button-info-fill #3F6B26`、hover `#35591F`；深色家族 `#4E7FD8` / `#3F6FC4`（DSH 发送箭头是固定 `#fff`，填充需 ≥3:1，故深色不用 `#86B4FF`）；`brand-primary-new-colorprimary-new-color` 同这两值 |
 | token 层 | 72 条 token，每条都是 `{ light, dark }` 成对；`light` 取 `lightPack` 表面、`dark` 取 `darkPack` 表面 |
-| 顶栏实现 | 一条插件样式：`header[data-window-drag]`、`[data-dockkit-strip]` 的 `background: var(--study-topbar)`；开关关闭时不生效 |
+| 顶栏实现 | 一条插件样式：会话头 `header[data-window-drag]:has([data-conversation-header-leading])` 与 `[data-dockkit-strip]` 的 `background: var(--study-topbar)`；入口页的 drag 头部不参与；开关关闭时不生效 |
 | 对比度结论 | 6 套 × 明暗全部通过：文字/强调/按钮/选区 ≥4.5:1，焦点/滚动条/空闲点 ≥3:1；最低正文 12.55:1，最低 caption 4.83:1（light layer2），最低非文本 3.25:1 |
 | 设置行 | 总开关 + 浅色组 3 chip + 深色组 3 chip（每 chip 带侧栏/背景/顶栏三色块预览）；行 id/order 仍为 `study.appearance` / 35 |
 | 品牌图标 | `assets/logo1.png`（451×423 RGBA 实心毛绒梨伴，抱本子、绿背带）：侧栏 24px 用同素材正方形头部裁切，hero 34px / 设置预览 44px 用完整图；两张 PNG 都内联 data URL |
@@ -170,23 +170,24 @@ StudyBuddy 保持**纸面 / 纯色**：浅色是嫩芽纸本，深色是夜航�
 
 DSH 0.2.2-rc.1 的 token 目录没有顶栏 token。真实 DOM 复核（2026-11-14，本地 0.2.2-rc.1，Playwright/Edge，1440×900）：
 
-- 主区会话头是 `<header data-window-drag>`：空白首页 40px、有会话时 76px，默认透明；
+- 主区会话头是 `<header data-window-drag>`：空白首页 40px、有会话时 76px，默认透明；会话头内部带 `[data-conversation-header-leading]` 稳定标记；
+- 插件页、账号引导页的头部**也**带 `data-window-drag`，但它们不是会话头，只按 drag 标记匹配会误染这些入口页（2026-11-17 修复）；
 - 左栏品牌行是 `div[data-window-drag]`（60px，位于侧栏填充色上）；侧栏品牌行**不参与**顶栏组合；
 - `[data-dockkit-strip]` 是右栏 / 浮动面板的 38px 页签条，默认透明。
 
-因此“顶栏”= 主区会话头 `header[data-window-drag]`，并同步右栏/浮动面板页签条以保持多栏一致。
+因此“顶栏”= 带会话头标记的 `header[data-window-drag]:has([data-conversation-header-leading])`，并同步右栏/浮动面板页签条以保持多栏一致；入口页头部保持宿主表面。
 
 ### 3.2 插件样式（`client/style.js`）
 
 ```css
-:root[data-study-appearance='on'] header[data-window-drag],
+:root[data-study-appearance='on'] header[data-window-drag]:has([data-conversation-header-leading]),
 :root[data-study-appearance='on'] [data-dockkit-strip] {
   background: var(--study-topbar);
   transition: background-color 160ms ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root[data-study-appearance='on'] header[data-window-drag],
+  :root[data-study-appearance='on'] header[data-window-drag]:has([data-conversation-header-leading]),
   :root[data-study-appearance='on'] [data-dockkit-strip] {
     transition: none;
   }
@@ -195,7 +196,7 @@ DSH 0.2.2-rc.1 的 token 目录没有顶栏 token。真实 DOM 复核（2026-11-
 
 约束：
 
-1. 只允许 `header[data-window-drag]` 与 `[data-dockkit-strip]` 两个**稳定 DOM 标记**；不得使用 DSH 哈希类名。
+1. 只允许 `header[data-window-drag]` 及其 `[data-conversation-header-leading]` 后代、`[data-dockkit-strip]` 这几个**稳定 DOM 标记**；不得使用 DSH 哈希类名，也不得只写裸 `header[data-window-drag]`（会把插件页 / 引导页一起染色）。
 2. 不得出现 `!important`；不得写全局 `body` 选择器；不得改布局属性（只画背景与过渡）。
 3. 颜色只来自 `--study-topbar`，因此开关关闭 / token 层撤回时变量缺失，规则失效并回到透明，不需要 JS 反向清理。
 4. 淡入淡出只在 `prefers-reduced-motion: no-preference` 下生效；reduce 时 `transition: none`（不是“更短”）。

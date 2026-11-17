@@ -8,10 +8,14 @@
  * no global `body` selector, so a DSH upgrade cannot silently pin stale colors.
  *
  * The top-bar rule targets the two stable DOM marks the Web shell publishes:
- * `header[data-window-drag]` is the main conversation header (40px on the blank
- * home, 76px with a conversation) and `[data-dockkit-strip]` is the right
- * rail / floating-panel tab strip. Both read the plugin-owned `--study-topbar`
- * token, so the layer stays inactive while the switch is off.
+ * the main conversation header and `[data-dockkit-strip]` (the right rail /
+ * floating-panel tab strip). The conversation header is identified by its own
+ * published `[data-conversation-header-leading]` mark instead of by
+ * `header[data-window-drag]` alone: entry pages (the Plugins page header, the
+ * account onboarding header) also carry the drag mark, and painting those with
+ * the conversation top-bar colour made an unrelated page look broken. Both
+ * selectors read the plugin-owned `--study-topbar` token, so the layer stays
+ * inactive while the switch is off.
  */
 
 /** DOM id of the injected stylesheet; one plugin instance owns it. */
@@ -19,7 +23,7 @@ export const STYLE_ID = 'study-appearance-styles';
 
 /** CSS text injected once per page. */
 export const STYLE_TEXT = `
-:root[data-study-appearance='on'] header[data-window-drag],
+:root[data-study-appearance='on'] header[data-window-drag]:has([data-conversation-header-leading]),
 :root[data-study-appearance='on'] [data-dockkit-strip] {
   background: var(--study-topbar);
   transition: background-color 160ms ease;
@@ -50,7 +54,7 @@ export const STYLE_TEXT = `
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root[data-study-appearance='on'] header[data-window-drag],
+  :root[data-study-appearance='on'] header[data-window-drag]:has([data-conversation-header-leading]),
   :root[data-study-appearance='on'] [data-dockkit-strip],
   :root[data-study-appearance='on'] [data-study-brand-mark],
   :root[data-study-appearance='on'] [data-study-hero-brand-mark] {

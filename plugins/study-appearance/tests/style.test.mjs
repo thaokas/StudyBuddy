@@ -56,7 +56,10 @@ describe('appearance stylesheet', () => {
     assert.match(STYLE_TEXT, /data-study-appearance='on'/);
     // No global body selector and no DSH hashed class names: only stable DOM marks.
     assert.equal(STYLE_TEXT.includes('body'), false);
-    assert.match(STYLE_TEXT, /:root\[data-study-appearance='on'\] header\[data-window-drag\]/);
+    // The conversation header is matched by its own published leading mark, so
+    // entry-page drag headers (the Plugins page, onboarding) keep their surface.
+    assert.match(STYLE_TEXT, /:root\[data-study-appearance='on'\] header\[data-window-drag\]:has\(\[data-conversation-header-leading\]\)/);
+    assert.equal(STYLE_TEXT.includes('header[data-window-drag],'), false, 'the bare drag-header selector would paint unrelated entry pages');
     assert.match(STYLE_TEXT, /:root\[data-study-appearance='on'\] \[data-dockkit-strip\]/);
     assert.match(STYLE_TEXT, /background:\s*var\(--study-topbar\)/);
   });

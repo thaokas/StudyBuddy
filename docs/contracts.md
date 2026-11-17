@@ -234,7 +234,7 @@ localStorage 键（归属必须登记）：`study.layout.page`（core `studyNav`
 - **locale NS**：`study-appearance`（en/zh 字典，只用于设置行文案）。
 - **页面**：不注册任何页面 / 侧栏入口；不占用 `study.layout.page` 的 key。
 - **主题**：通过 `ctx.theme.overrideTokens('@studybuddy/study-appearance', { token: { light, dark } })` 叠加 `--dsw-alias-*` / `--dsw-specific-*` / 自定义 `--study-topbar`；**不调用 `setTheme()`**，用户原生 `light/dark/system` 选择保持权威。
-- **三面**：侧边栏 = `--dsw-specific-sidebar-fill` 等；画布 = `--dsw-alias-bg-base` / `bg-layer-*`；顶栏 = 自定义 `--study-topbar`，由插件样式表挂到 `header[data-window-drag]` 与 `[data-dockkit-strip]`，关闭开关时不生效。
+- **三面**：侧边栏 = `--dsw-specific-sidebar-fill` 等；画布 = `--dsw-alias-bg-base` / `bg-layer-*`；顶栏 = 自定义 `--study-topbar`，由插件样式表挂到会话头 `header[data-window-drag]:has([data-conversation-header-leading])` 与 `[data-dockkit-strip]`；入口页（插件页 / 账号引导）的 drag 头部不参与，关闭开关时不生效。
 - **槽位**：`sidebar.brand.mark`（24px 梨伴 logo）、`sidebar.brand.name`（`StudyBuddy` 字标）、`conversation.hero.brand.mark`（空会话首页 34px 梨伴 logo）、`settings.general.item`（id `study.appearance`，order 35）。品牌槽用 `priority:-1` 覆盖 official 构建的 priority 0 占用。
 - **存储**：`study.appearance.enabled`、`study.appearance.light-pack`、`study.appearance.dark-pack`（Web Storage；每浏览器独立）。旧 MVP 的 `study.appearance.accent` 不读、不删。
 - **样式**：一条插件自有 `<style id="study-appearance-styles">`，只做顶栏表面 / 选中色 / `prefers-reduced-motion|transparency|contrast|forced-colors` 降级；零 `!important`、不碰哈希类名、无全局 body 选择器。

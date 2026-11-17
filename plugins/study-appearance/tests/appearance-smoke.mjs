@@ -7,9 +7,10 @@
  * 1. the appearance layer is on, the default sprout-paper + deep-sea packs are
  *    the computed token values, and the sidebar shows the plush buddy head crop
  *    + StudyBuddy wordmark (both brand images are inlined data URLs);
- * 2. every light pack colors the canvas, sidebar fill, and
- *    `header[data-window-drag]` from its own three-surface combination, and the
- *    composer's send circle carries the family info color;
+ * 2. every light pack colors the canvas, sidebar fill, and the conversation
+ *    `header[data-window-drag]:has([data-conversation-header-leading])` from
+ *    its own three-surface combination, and the composer's send circle carries
+ *    the family info color;
  * 3. the switch restores the native look (canvas #fff, transparent header,
  *    native send button);
  * 4. every dark pack resolves through the native dark preference, with the
