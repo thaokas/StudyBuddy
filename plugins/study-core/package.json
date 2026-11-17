@@ -1,0 +1,34 @@
+{
+  "name": "@studybuddy/study-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "StudyBuddy kernel, shared Web services, today status and export",
+  "exports": {
+    ".": "./host/index.mjs",
+    "./client": "./client/client.js"
+  },
+  "scripts": {
+    "build:client": "node scripts/build-client.mjs"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-sidebar",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  },
+  "engines": {
+    "dsh": "^0.2.2-rc.1"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0",
+    "@deepseek-ai/dsh-tools": "^0.2.2-rc.1"
+  }
+}

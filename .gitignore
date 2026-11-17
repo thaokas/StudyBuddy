@@ -1,3 +1,15 @@
 /.studybuddy/
 # 固定 DSH 源码：独立 Git 仓库，不入父仓库
 /source/
+# 客户端构建中间产物（client.js 是运行产物，仍入库）
+plugins/*/client/.build/
+# 本地交付物（截图/视频，不入库）
+/delivery/
+# 本机 Agent 配置
+/.pi/
+# 测试运行时生成的证据与日志
+plugins/*/tests/**/evidence/
+tests/*/evidence/
+*.log
+# ����̽�룺���ر����������
+/probes/

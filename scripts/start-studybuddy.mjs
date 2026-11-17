@@ -24,8 +24,7 @@ if (!existsSync(marker)) {
   await fiber.await();
   try {
     if (!(await ctx.credentials.describe(customKeyRef)).configured) {
-      const evidence = join(project, 'docs/plans/2026-11-08-studybuddy-implementation/00-discovery/evidence/A02/desktop-ui-result.json');
-      const keySource = process.env.STUDYBUDDY_IMPORT_CREDENTIALS ?? (existsSync(evidence) ? join(JSON.parse(await readFile(evidence, 'utf8')).root, 'home/.credentials.yaml') : undefined);
+      const keySource = process.env.STUDYBUDDY_IMPORT_CREDENTIALS;
       if (keySource && existsSync(keySource)) {
         const document = parseCredentialsDocument(await readFile(keySource, 'utf8'), keySource);
         seededKey = document.refs.get('DEEPSEEK_API_KEY');

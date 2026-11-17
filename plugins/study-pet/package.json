@@ -1,0 +1,34 @@
+{
+  "name": "@studybuddy/study-pet",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "StudyBuddy desktop pet: the user-selected plush buddy image in the shell overlay with status bubbles, chatter, sleep talk, zh/en voice packs, and a settings row",
+  "exports": {
+    ".": "./host/index.mjs",
+    "./client": "./client/client.js"
+  },
+  "scripts": {
+    "build:client": "node scripts/build-client.mjs"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-session",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  },
+  "engines": {
+    "dsh": "^0.2.2-rc.1"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

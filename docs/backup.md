@@ -1,14 +1,15 @@
 # StudyBuddy 备份、恢复与数据导出
 
-> 适用版本：v1（T17）。只做**冷备份**，不做热备份、自动更新或云同步。
-> 数据根默认是项目下的 `.studybuddy/`（已被 `.gitignore` 忽略）；启动器也接受 `STUDYBUDDY_DATA_DIR` 覆盖。
+> 适用版本：v1 开发版。只做**冷备份**，不做热备份、自动更新或云同步。
+> 数据根默认是 `<项目根目录>\.studybuddy`（已被 `.gitignore` 忽略）；启动器也接受 `STUDYBUDDY_DATA_DIR` 覆盖。
+> 相关文档：[操作手册](manual/operation-manual.md)（日常操作与排错）、[开发指南](development.md)（测试与源码构建）、[架构](architecture.md)、[路线图](roadmap.md)。
 
 ## 1. 数据在哪里
 
 | 位置 | 内容 | 冷备份 | JSON 导出 |
 | --- | --- | --- | --- |
-| `study/study.db`、`study.db-wal`、`study.db-shm` | 学习数据库（目标、资料、任务、计划、进度、成果、历史） | 复制 | 读表后写入 JSON |
-| `study/memory.json` | 学习记忆（偏好、短期状态、观察、删除标记） | 复制 | 写入 JSON |
+| `study/study.db`、`study.db-wal`、`study.db-shm` | 学习数据库（目标、资料、任务、计划、进度、成果、记忆、问答、提醒） | 复制 | 读表后写入 JSON |
+| `study/memory.json` | 旧版记忆文件；当前记忆已在 `study.db` 的 `study_memory_*` 表，旧数据根启动时会迁移并保留 `memory.v1.backup.json` | 复制 | 兼容读取旧文件 |
 | `study/exports/` | 应用内导出的 JSON 文件 | 复制 | — |
 | `home/` | DSH profile、模型设置、`credentials.dpapi` | 复制 | **排除** |
 | `workspace/`、`agents/` | 工作区文件与 Agent 数据 | 复制 | **排除** |
@@ -82,13 +83,13 @@ node scripts/backup-studybuddy.mjs --verify "C:\Users\<你>\StudyBuddy Backups\s
 先关闭应用，再执行：
 
 ```powershell
-node scripts/backup-studybuddy.mjs --restore "C:\Users\<你>\StudyBuddy Backups\studybuddy-backup-20261110-175324" --to "D:\Data\ProjectsRepo\StudyBuddy\.studybuddy"
+node scripts/backup-studybuddy.mjs --restore "C:\Users\<你>\StudyBuddy Backups\studybuddy-backup-20261110-175324" --to "<项目根目录>\.studybuddy"
 ```
 
 `--to` 省略时恢复到默认数据根。目标目录非空时必须显式加 `--force`：
 
 ```powershell
-node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\ProjectsRepo\StudyBuddy\.studybuddy" --force
+node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "<项目根目录>\.studybuddy" --force
 ```
 
 - 脚本**先校验备份**，校验不通过就拒绝恢复。
@@ -105,16 +106,17 @@ node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\Proj
 4. 打开记忆页：偏好、短期状态和删除标记应一致。
 5. 如果对不上，先停应用；保留 `.pre-restore-*`，不要覆盖，必要时用另一份备份重试。
 
-v1 没有升级/迁移器；备份要用**创建它的同一版本程序**恢复。数据库 schema 不兼容时插件会拒绝启动并提示先备份，见 `plugins/study/host/db.mjs` 的 `recoveryGuidance`。
+v1 没有升级/迁移器；备份要用**创建它的同一版本程序**恢复。数据库 schema 不兼容时插件会拒绝启动并提示先备份，见 `plugins/study-core/host/db.mjs` 的 `recoveryGuidance`。
 
 ## 6. 应用内导出学习数据 JSON
 
-两个入口：
+三个入口：
 
-- **Agent 工具**：在聊天里说“导出学习数据”，模型会调用 `study_export`。文件写到 `<数据根>/study/exports/studybuddy-export-YYYYMMDD-HHmmss.json`，工具结果给出路径、字节数、修订号和摘要。
-- **应用鉴权路由**：登录后的应用原点可以 `GET /api/study/export.json`，返回同一份 JSON 附件（`Content-Disposition: attachment`）。路由注册在 `plugins/study/host/modules/export.mjs`，与 `POST /api/study/<ns>/<method>` 一样只对已鉴权的 owner 开放。
+- **应用设置**：打开通用设置中的“导出学习数据”，选择今天、本周、本月或三个周期，选择是否包含原始学习事实，点击“导出到本机”。结果显示本机路径、字节数和修订号；失败显示原因。
+- **Agent 工具**：在聊天里说“导出学习数据”，模型会调用 `study_export`。可传 `periods: ['day', 'week', 'month']` 与 `includeFacts: true`。文件写到 `<数据根>/study/exports/studybuddy-export-YYYYMMDD-HHmmss.json`，工具结果给出路径、字节数、修订号和摘要。
+- **应用鉴权路由**：登录后的应用原点可以 `GET /api/study/export.json`，返回同一份 JSON 附件（`Content-Disposition: attachment`）。路由注册在 `plugins/study-core/host/modules/export.mjs`，与 `POST /api/study/<ns>/<method>` 一样只对已鉴权的 owner 开放。
 
-v1 没有单独的“导出”界面按钮；上面两个入口是真实可用的，未在界面上放假按钮。T18/T19 若要加入口，应直接复用这个 JSON。
+设置入口使用同一路由的 `POST /api/study/export.json`，请求体为 `{ periods, includeFacts }`，在本机生成文件并返回收据。`GET` 保持 JSON 附件下载。两个方法都由应用宿主执行 owner 鉴权。
 
 导出内容：
 
@@ -122,26 +124,28 @@ v1 没有单独的“导出”界面按钮；上面两个入口是真实可用�
 | --- | --- |
 | `source` | 产品名、数据库文件名、核心 schema 版本、已加载模块版本 |
 | `revision` | 导出时的全局学习数据修订号 |
+| `selection` | 选中的成果周期与 `includeFacts`；后者为 false 时 `data` 只含成果快照 |
 | `summary` | 各表行数 |
 | `data.goals` / `data.materials` / `data.materialChunks` | 目标、资料、带页码/章节定位的片段 |
 | `data.tasks` / `data.timeBlocks` | 任务与时间块（含软删除标记和固定课程） |
 | `data.plans` / `data.planRevisions` / `data.planDrafts` | 计划头、已应用修订快照、未确认草案 |
 | `data.progress` | 计划进度（只追加的历史） |
-| `data.outcomes` | 成果；当前 v1 还没有成果模块，固定为空数组 |
-| `data.otherTables` | 后续模块新增的 `study_*` 表；`study_outcome` 会自动并入 `outcomes` |
-| `data.memory` | 记忆条目与删除标记（只含 hash，不含被删正文） |
+| `data.taskProgress` | 任务进度（`study_task_progress`，只追加的历史） |
+| `data.outcomes` | 从当前启用的 `outcomes.day/week/month` 服务取得的真实快照，保留服务原有的口径、日期、证据与统计结构 |
+| `data.otherTables` | 其他 `study_*` 业务表；排除原始对话表和 FTS，不依赖表名推断成果能力 |
+| `data.memory` | 当前 SQLite 记忆条目、作用域、来源、纠错历史与删除标记；未启用表存储的旧库兼容读取 `memory.json` |
 | `data.changeLog` | 追加式变更历史 |
 | `checksum` | 对 `formatVersion + revision + data` 的 SHA-256 |
 
-排除项：`credentials`、`request_log`、`logs`、`electron-user-data`、资料 FTS 索引（可由片段重建）。导出只读 `study.db` 与 `memory.json`，不打开凭据文件；此外会检查对象键（`apiKey`、`password`、`token` 等）和高置信 token 形状（`sk-…`、`ghp_…`、`Bearer …`、私钥头），一旦命中就**拒绝导出**并指出字段路径，不会写出带凭据的包。若学习资料里确实有这类字符串，先删除或改写那段内容再导出。
+排除项：`credentials`、`request_log`、`logs`、`electron-user-data`、资料 FTS 索引（可由片段重建）、原始会话与附件。默认不导出 `study_turn`、`study_episode_problem`、`study_episode_turn`、`study_capture_gap`；不读取附件文件。导出读取学习数据库与可选的旧 `memory.json`，不打开凭据文件；此外会检查对象键（`apiKey`、`password`、`token` 等）和高置信 token 形状（`sk-…`、`ghp_…`、`Bearer …`、私钥头），一旦命中就**拒绝导出**并指出字段路径，不会写出带凭据的包。若学习资料里确实有这类字符串，先删除或改写那段内容再导出。
 
-`data.outcomes` 为空时，`availability.outcomes.reason` 是 `outcomes_module_not_available_in_this_build`，不伪造“全部完成”或空的成果统计；T13 落地后按 `study_outcome*` 表自动进入导出。
+`availability.outcomes` 反映服务调用结果。成果插件未注册时 `available: false`、`reason: 'outcomes_service_not_registered'`，并导出可重算的事实；其他调用失败记录周期和错误码。不会把数据库里残留的成果表当作已启用服务。日/周/月快照与事实修订不一致时拒绝导出并提示重试。直接调用只读构建函数而未传 `study` 服务时，也明确标注成果服务未注册。
 
-`request_log` 保留策略（T17 决定）：它是 `requestId` 幂等重放缓存，不是学生学习数据。v1 **不自动清理**，冷备份完整保留；JSON 导出排除它。理由：清理会让旧 `requestId` 在重启后被当成新请求，重复写入的风险高于这点磁盘占用。
+`request_log` 保留策略：它是 `requestId` 幂等重放缓存，不是学生学习数据。v1 **不自动清理**，冷备份完整保留；JSON 导出排除它。理由：清理会让旧 `requestId` 在重启后被当成新请求，重复写入的风险高于这点磁盘占用。
 
 ## 7. 演练记录（2026-11-10）
 
-本机上下文：Windows 10.0.26200 x64，Node v26.13.0，StudyBuddy 数据根 `D:\Data\ProjectsRepo\StudyBuddy\.studybuddy`。演练时桌面应用正在运行（`electron.exe` 11744，启动器 pid 27556/26276），所以对真实数据根的备份被脚本按设计拒绝；非空数据的完整核对在隔离演练根里完成。
+以下为一次隔离演练的历史记录，文件数与字节数只代表当时的演练数据根；命令语义与退出码以第 3–5 节为准。演练时桌面应用正在运行，所以对真实数据根的备份被脚本按设计拒绝；非空数据的完整核对在隔离演练根里完成。
 
 | # | 命令 | 结果 |
 | --- | --- | --- |
@@ -151,10 +155,9 @@ v1 没有单独的“导出”界面按钮；上面两个入口是真实可用�
 | 4 | `node scripts/backup-studybuddy.mjs --verify <备份目录>` | `ok: true`；文件哈希、校验文件、数据库计数全部一致，`errors: []` |
 | 5 | `node scripts/backup-studybuddy.mjs --restore <备份目录> --to <空目录>` | `ok: true`；恢复 17 个文件、376,538 字节；`previousRootAside: null`；恢复后数据库完整、修订号 0 |
 | 6 | 对恢复后的 `study.db` 调用 `buildStudyExport` | `format: studybuddy-export`，`revision: 0`，`summary` 各表 0（该数据根本来没有学习记录），`outcomes.available: false`，`checksum` 为 64 位 SHA-256 |
-| 7 | `node plugins/study/tests/kernel/loader-smoke.mjs` | `passed: true`；真实 web profile 载入模块 `kernel, export, materials, memory, plans, tasks, timer`；鉴权路由 200、匿名 401 |
-| 8 | `node --test --test-isolation=none plugins/study/tests` | 327/328；唯一失败是既有 T20 记忆快照用例：它用固定时钟创建 60 秒短期状态，但注入文本按真实时钟判断过期，测试在固定时间 09:00 之后运行必然失败。该用例不加载 `export` 模块，与 T17 无关 |
+| 7 | `node plugins/study-core/tests/kernel/loader-smoke.mjs` | `passed: true`；真实 web profile 载入模块 `kernel, export, materials, memory, plans, tasks, timer`；鉴权路由 200、匿名 401 |
 
-演练用的临时目录在 `%TEMP%\studybuddy-*`，可在确认不再需要后删除。
+演练用的临时目录在 `%TEMP%\studybuddy-*`，可在确认不再需要后删除。需要复跑时优先用 `node scripts/backup-studybuddy.mjs --drill`，它不触碰真实数据。
 
 ## 8. 已知限制
 
@@ -162,9 +165,9 @@ v1 没有单独的“导出”界面按钮；上面两个入口是真实可用�
 - 没有自动定时备份、云同步或升级器；备份目录不会加密，依赖磁盘/目录权限保护。
 - 备份包含 DPAPI 凭据文件；跨 Windows 用户或换机器恢复时该文件无法解密，需要重新配置模型 Key。
 - `launch.json` 有意不备份、不恢复；它只属于当前启动会话。
-- JSON 导出不是可恢复镜像；完整恢复用冷备份。导出中的 `data.otherTables` 是后续模块表的兜底，`outcomes` 在 T13 前为空。
+- JSON 导出不是可恢复镜像；完整恢复用冷备份。成果快照只覆盖所选当前周期，原始会话/附件的可选导出仍留到后续。
 - 导出会拒绝疑似凭据的文本，可能误伤确实包含 `sk-…` 一类示例的资料；这是有意的安全取舍。
 - 进程检查在 Windows 上依赖 PowerShell `Get-CimInstance`；不可用时会给出 warning，并依赖复制前后的源快照和哈希比较兜底。`launch.json` 里的 pid 若被系统复用给其它仍在运行的进程，可能误报（脚本会列出 pid；确认应用已关闭后把旧的 `launch.json` 移走即可）。
 - `request_log` 在 v1 不自动清理；如果要控制体积，应在后续版本设计迁移/清理，不要手工删表。
 - 应用内导出的 JSON 会留在 `study/exports/`，不会自动清理；需要时手动删除旧文件，它们也会进入下一次冷备份。
-- `--drill` 会动态加载 `plugins/study/host/modules/export.mjs` 并读取源码树的 `defineTool`，因此需要仓库源码依赖，只用于开发和验收；学生日常使用备份、`--verify`、`--restore` 三个模式。
+- `--drill` 会动态加载 `plugins/study-core/host/modules/export.mjs` 并读取源码树的 `defineTool`，因此需要仓库源码依赖，只用于开发和验收；学生日常使用备份、`--verify`、`--restore` 三个模式。

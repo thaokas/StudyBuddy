@@ -1,7 +1,0 @@
-{
-  "command": "electron.exe --version --disable-gpu --enable-logging=stderr",
-  "status": 2147483651,
-  "signal": null,
-  "stdout": "\r\n",
-  "stderr": ""
-}

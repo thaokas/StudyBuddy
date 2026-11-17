@@ -1,10 +1,11 @@
 # 插件拆分与依赖模型（ADR）
 
-- 日期：2026-11-11
-- 状态：**提议（待评审）**；本文只做分析与清单，不改代码
-- 相关代码：`plugins/study/host/index.mjs`、`host/db.mjs`、`host/kernel.mjs`、`host/registry.mjs`、`host/facts.mjs`、`client/lib/refresh.js`、`client/lib/study-page.js`、`scripts/project-config.mjs`
+- 日期：2026-11-11 · 更新：2026-11-13
+- 状态：**已采纳**（2026-11-13 用户确认 G0）；**P0–P6 已落地，P7 尚未开始**，剩余工作见 [docs/roadmap.md](../roadmap.md)
+- 历史决策记录：文中旧 shell 路径（`plugins/study/...`）已由 2026-11-11 插件拆分替代，现行代码路径见 [docs/architecture.md](../architecture.md)；拆分期间的一次性计划、任务卡与证据已随开发完成归档删除，可从 git 历史取回。
+- 相关代码：`plugins/study-core/host/{kernel,db,registry}.mjs`、`packages/study-model/facts.mjs`、`packages/study-contracts/index.mjs`、`scripts/project-config.mjs`
 - 相关决策：[布局](layout.md)、[学习记忆](memory.md)、[目标与工作区](goal-workspaces.md)
-- 执行计划：[docs/plans/2026-11-11-plugin-split](../plans/2026-11-11-plugin-split/README.md)（P0–P7，agent 操作说明）
+- 现行文档：[架构总览](../architecture.md)、[冻结契约](../contracts.md)、[剩余路线图](../roadmap.md)
 
 ## 1. 结论
 
@@ -19,7 +20,7 @@
    - `study-facts`：业务基础，目标、资料、任务、时间块、计划、计时、计划创建上下文，**产品内默认不可关闭**。
    其余 `learning`、`memory`、`outcomes`、`reminders` 是可选功能插件，关闭后产品降级但不崩溃。
 4. **事实层不再拆成 `tasks` 和 `plans` 两个可独立启停的插件。** 复查表级读写后发现数据环：`tasks` 读 `study_goal`（materials 拥有），`plans` 又写 `study_task` / `study_task_progress` / `study_time_block`。拆成两个自由插件只能得到“互相依赖”或“必须同启同停”两个结果，不如作为一个基础插件。若未来要拆，先满足第 8 节的前置条件。
-5. **平台能力单独成插件，可以完全独立。** 例如 `credentials-dpapi` 不共享任何学习事实，不需要跟着事实层走。真正的“完全解耦”只适合这类能力。
+5. **平台能力单独成插件，可以完全独立。** 例如 Windows DPAPI 凭据插件（包名 `@studybuddy/platform-windows-credentials`，profile 行 id `project-credentials`）不共享任何学习事实，不需要跟着事实层走。真正的“完全解耦”只适合这类能力。
 6. **目标清单**：6 个插件 + 1 个平台插件 + 1 个组合 bundle（第 6 节）。
 
 > 修订记录：早期方案（按模块依赖）提出 `study-execution` / `study-plan` 两个插件。核对表级读写后调整为事实层单插件，理由见第 3.2 节与第 8 节。
@@ -39,7 +40,7 @@
 
 如果按这个标准做，每个插件都要有自己的存储和迁移，跨域操作变成 saga/outbox，备份要协调多个存储，分析查询变成 N+1 次服务调用。对一个单用户、本地、桌面优先的产品来说，这是把分布式系统的复杂度引入到单机应用里，收益不成立。
 
-**判断标准**：只有当插件之间没有共享事实、没有跨域事务、可以独立备份/恢复时，才值得完全解耦。`credentials-dpapi` 符合；学习事实层不符合。
+**判断标准**：只有当插件之间没有共享事实、没有跨域事务、可以独立备份/恢复时，才值得完全解耦。Windows DPAPI 凭据插件符合；学习事实层不符合。
 
 ---
 
@@ -144,7 +145,7 @@ L2  study-memory          学生记忆、教学参数、系统提示契约
 L2  study-reminders       学习时段提醒、晚间复盘、回复完成提醒
 L3  study-outcomes        完成统计、里程碑、反馈提示（依赖 learning 的报告方法）
 
-P   credentials-dpapi     平台能力：Windows DPAPI 凭据提供器（独立）
+P   platform-windows-credentials  平台能力：Windows DPAPI 凭据提供器（独立；行 id `project-credentials`）
 C   study-bundle          组合与发布配方（patch 层，不含运行时代码）
 ```
 
@@ -199,7 +200,7 @@ C   study-bundle          组合与发布配方（patch 层，不含运行时代
 | `study-memory` | 是 | 记忆页与教学契约消失；其他功能正常 |
 | `study-outcomes` | 是 | 成果页与里程碑提示消失；记录本身仍在 |
 | `study-reminders` | 是 | 提醒页与完成提醒横幅消失；计时与计划正常 |
-| `credentials-dpapi` | 是 | 模型 Key 设置不可用；与学习数据无关 |
+| `project-credentials` | 是 | 模型 Key 设置不可用；与学习数据无关 |
 
 如果以后确实需要把 facts 拆成两个行（例如为了构建体积或团队归属），应把它们定义为**同启同停、同版本发布的基础插件对**，而不是两个可独立启停的插件；并在清单里声明双向的只读/写契约。详见第 8 节。
 
@@ -217,7 +218,7 @@ C   study-bundle          组合与发布配方（patch 层，不含运行时代
 | `@studybuddy/study-memory` | L2 | 功能 | `modules/memory.mjs`；`host/memory/*` | `memory`；记忆工具 | 记忆页 | core、facts（读目标表）；learning 事件可选 |
 | `@studybuddy/study-reminders` | L2 | 功能 | `modules/followup.mjs` | `followup`；提醒工具 | 提醒页、完成提醒横幅 | core、facts |
 | `@studybuddy/study-outcomes` | L3 | 功能 | `modules/outcomes.mjs`、`milestones.mjs` | `outcomes`、`milestones` | 成果页、里程碑反馈 | core、facts、learning（报告方法） |
-| `@studybuddy/credentials-dpapi` | P | 平台 | `platform/windows-credentials` | 凭据提供器 | — | 无 |
+| `@studybuddy/platform-windows-credentials`（行 id `project-credentials`） | P | 平台 | `platform/windows-credentials` | 凭据提供器 | — | 无 |
 | `@studybuddy/bundle` | C | 组合 | `scripts/project-config.mjs` 的部署策略/行 | — | — | 以上全部 |
 
 说明：
@@ -282,13 +283,15 @@ C   study-bundle          组合与发布配方（patch 层，不含运行时代
 | 阶段 | 内容 | 目的 |
 | --- | --- | --- |
 | 0 | 本文（ADR）与契约清单：插件 id、命名空间、表所有权、读契约、页面 key、locale NS、侧栏 order、事件、工具 | 先冻结契约，再动代码 |
-| 1 | 抽 `study-core` + `@studybuddy/study-contracts` / `study-model` 共享库；**仍保持一个 profile 行**，旧模块由 core 加载 | 在不改变部署的前提下验证 kernel 生命周期与客户端服务 |
+| 1 | 抽 `study-core` + `@studybuddy/study-contracts` / `study-model` 共享库；旧 shell 变第二行（`study-core` + `study`） | 验证 kernel 生命周期与客户端服务，同时保留旧 shell 回退 |
 | 2 | **memory 试点**：拆成独立行 + 独立客户端 bundle | 最小垂直切片：第二行、第二 bundle、第二字典、事件、测试 |
 | 3 | 抽 `study-facts`（materials/plans/planning/tasks/timer + 四个页面） | 业务基础成型，其余功能插件才有依赖对象 |
 | 4 | 抽 `study-learning` | 问答/证据/报告 |
 | 5 | 抽 `study-reminders` | 提醒与完成提示 |
 | 6 | 抽 `study-outcomes` | 统计与里程碑 |
 | 7 | 建 `@studybuddy/bundle`；启动器只准备数据根/环境/首次模型与凭据；移除 `a02-probe` 与绝对路径行 | 产品组合版本化 |
+
+> 阶段状态：阶段 0–6 已落地；阶段 7（`@studybuddy/bundle` 与启动器清理）**尚未开始**，见 [docs/roadmap.md](../roadmap.md)。
 
 选择 memory 先行的理由：host 模块 `deps = []`、页面 423 行、已有独立测试，且能同时验证“跨插件事件（learning → memory，可选）”和“systemPrompt 注入”这两条边。它不需要 facts 先完成，适合作为第 2 步。
 
@@ -374,9 +377,9 @@ C   study-bundle          组合与发布配方（patch 层，不含运行时代
 | `client/pages/outcomes.js`、`client/components/feedback.js` | `study-outcomes` 客户端 |
 | `client/messages/common.js`、`daily.js` | 共享库 `study-messages`（各插件合并） |
 | `client/{plugin.js,lib/definitions.js,lib/actions.js}`、`scripts/build-client.mjs` | 按插件重建；core 保留客户端公共服务 |
-| `platform/windows-credentials` | `credentials-dpapi` |
+| `platform/windows-credentials` | `@studybuddy/platform-windows-credentials`（行 id `project-credentials`） |
 | `scripts/project-config.mjs` 的部署策略/插件行 | `study-bundle` |
-| `plugins/study/creator/skills` | 保持 skill（或以后用 `ctx.skills.register` 做成 skill 插件） |
+| `plugins/study/creator/skills` | 保持 skill：P6 迁到 `skills/study-creator/`，验证脚本与证据迁到 `tests/creator/`，并更新 `scripts/project-config.mjs` 的 `creatorSkillSource`（或以后用 `ctx.skills.register` 做成 skill 插件） |
 | `patches/0001`、`patches/0002` | 保持源码补丁，不属于业务插件 |
 | `probes/A02`、`probes/layout` | 开发探针，移出产品组合 |
 | `scripts/backup-studybuddy.mjs` | 冷备份工具；需要应用内备份时再评估 `study-data` 插件 |

@@ -19,7 +19,7 @@ export const creatorBundle = '@deepseek-ai/dsh-personalized-recommendations';
 const profileBundles = ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', creatorBundle];
 
 /** Skill root discovered from the DSH user skill directory by every Agent preset. */
-const creatorSkillSource = join(project, 'plugins/study/creator/skills/study-creator');
+const creatorSkillSource = join(project, 'skills/study-creator');
 
 /** Account and storage policy contains no model-provider settings that would override native UI edits. */
 export function deploymentPolicy(root) {
@@ -30,8 +30,14 @@ export function deploymentPolicy(root) {
     { id: 'workspace-controller', config: { documentsDirectory: join(root, 'workspace') } },
     { insert: [
       { id: 'project-credentials', name: join(project, 'platform/windows-credentials/index.mjs').replaceAll('\\', '/'), config: { path: join(root, 'home/credentials.dpapi') } },
-      { id: 'study', name: join(project, 'plugins/study/host/index.mjs').replaceAll('\\', '/'), config: { dataDir: join(root, 'study') } },
-      { id: 'a02-probe', name: join(project, 'probes/A02/index.mjs').replaceAll('\\', '/') },
+      { id: 'study-core', name: join(project, 'plugins/study-core/host/index.mjs').replaceAll('\\', '/'), config: { dataDir: join(root, 'study') } },
+      { id: 'study-facts', name: join(project, 'plugins/study-facts/host/index.mjs').replaceAll('\\', '/') },
+      { id: 'study-learning', name: join(project, 'plugins/study-learning/host/index.mjs').replaceAll('\\', '/') },
+      { id: 'study-reminders', name: join(project, 'plugins/study-reminders/host/index.mjs').replaceAll('\\', '/') },
+      { id: 'study-memory', name: join(project, 'plugins/study-memory/host/index.mjs').replaceAll('\\', '/') },
+      { id: 'study-outcomes', name: join(project, 'plugins/study-outcomes/host/index.mjs').replaceAll('\\', '/') },
+      { id: 'study-appearance', name: join(project, 'plugins/study-appearance/host/index.mjs').replaceAll('\\', '/') },
+      { id: 'study-pet', name: join(project, 'plugins/study-pet/host/index.mjs').replaceAll('\\', '/') },
     ] },
   ];
 }

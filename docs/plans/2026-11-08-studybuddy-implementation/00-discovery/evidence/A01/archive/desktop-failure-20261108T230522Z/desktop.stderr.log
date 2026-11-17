@@ -1,3 +1,0 @@
-$ pnpm --filter @deepseek-ai/dsh-desktop run start
-$ tsx scripts/dev.ts --skip-build
-desktop development: --inspect=127.0.0.1:57168 --remote-debugging-port=57169 --user-data-dir=D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\apps\desktop\.desktop-build\a01\desktop-1794150143410\electron-user-data D:\Data\ProjectsRepo\StudyBuddy\source\deepseek-harness\apps\desktop exited with 2147483651

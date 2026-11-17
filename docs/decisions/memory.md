@@ -1,12 +1,13 @@
-﻿# 决策：学习记忆（T20）
+# 决策：学习记忆（T20）
 
-日期：2026-11-10  
-状态：已采纳（本地记忆模块）  
-相关：`plugins/study/host/modules/memory.mjs`、`plugins/study/client/pages/memory.js`、`plugins/study/client/messages/memory.js`、`plugins/study/tests/memory/`
+日期：2026-11-10
+状态：已采纳（本地记忆模块）
+历史决策记录：文中旧 shell 路径（`plugins/study/...`）已由 2026-11-11 插件拆分替代，现行代码路径见 [docs/architecture.md](../architecture.md)；当前记忆主存已迁移到 SQLite 三表，见 §4.1。
+相关：`plugins/study-memory/host/modules/memory.mjs`、`plugins/study-memory/client/pages/memory.js`、`plugins/study-memory/client/messages/memory.js`、`plugins/study-memory/tests/`
 
 ## 1. 结论
 
-不接入 `@restregular/dsh-memory`，在 study 插件内实现本地记忆模块。零代码路线在功能上大体可用，但它不能满足本项目已经冻结的写入契约，也缺少 T20 明确要求的"来源"与"删除标记"。证据见 [`T20-memory-plugin-spike.json`](../plans/2026-11-09-studybuddy-v1-plan/evidence/T20-memory-plugin-spike.json)。
+不接入 `@restregular/dsh-memory`，在 study 插件内实现本地记忆模块。零代码路线在功能上大体可用，但它不能满足本项目已经冻结的写入契约，也缺少 T20 明确要求的"来源"与"删除标记"。当时的一次性 spike 证据 `T20-memory-plugin-spike.json` 已随开发计划归档删除，可从 git 历史取回。
 
 ## 2. 候选插件验证（隔离 profile）
 
@@ -49,7 +50,11 @@
 
 ## 4. 本地实现
 
+> 本节记录 v1 本地记忆模块；S3–S4 之后的记忆系统（问答单元、六项教学参数、讲解契约）以 [`docs/specs/2026-11-11-student-memory-design.md`](../specs/2026-11-11-student-memory-design.md) 与 [docs/architecture.md](../architecture.md) 为准。下文 JSON 结构是 v1 设计记录。
+
 ### 4.1 存储
+
+> 现行实现（2026-11-11 S3 起）：主存已是 `study.db` 的 `study_memory_item / evidence / tombstone` 三表；`memory.json` 仅在旧数据根迁移 / 导出兼容时使用，迁移会保留 `memory.v1.backup.json`。
 
 `<dataDir>/memory.json`（与 `study.db` 同级），原子写：先写 `*.tmp`，再 rename；文件缺失视为空，JSON 损坏或版本未知时报 `unavailable` 并停止读写，绝不静默重置。
 

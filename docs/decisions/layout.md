@@ -2,6 +2,7 @@
 
 - 日期：2026-11-10
 - 状态：**已实施（T04，2026-11-10）**：路线 3 落在 `patches/0002-second-main-column.patch`，实际源码 +97/−7（≤100），0 个新 locale key；实施记录与实测见第 7 节。**2026-11-11 调整**：常驻学习栏不再注册，概览合并进工作台的“缩略”显示，见第 8 节。
+- 历史决策记录：文中旧 shell 路径（`plugins/study/...`）已由 2026-11-11 插件拆分替代，现行代码路径见 [docs/architecture.md](../architecture.md)；`probes/layout` 探针与证据已随开发完成删除，结论保留在本记录，可从 git 历史取回。
 - 结论：零补丁宽右栏能并列，但学习区在右、对话在左，且全局面板替换对话时学习区消失；第三方 dock 只是浮条 + 300px 浮层，无法承载工作台。目标"左学习、右对话"只能由最小 `AppFrame` 改动完成：在中央列内增加第二个主栏槽，源码新增约 60 行，在 PLAN 的 ≤100 行预算内。
 
 ## 1. 实测条件
@@ -13,9 +14,9 @@
 | 视口 | 1440×900（两个脚本都固定） |
 | 模型 | 上游 `packages/test-support/llm-mock-server`，无 Key、无真实模型请求 |
 | 隔离 | 临时 `DSH_HOME`，不触碰 `.studybuddy/` 和桌面 profile |
-| 探针 | `probes/layout/`（手写客户端 bundle，假学习内容） |
+| 探针 | `probes/layout/`（手写客户端 bundle，假学习内容；2026-11-14 清理删除，保留本历史记录） |
 
-证据：`probes/layout/evidence/route1/route1.json`、`probes/layout/evidence/route2/route2.json` 与同目录截图。所有结论都能用 `node probes/layout/run-route1.mjs` / `run-route2.mjs` 复跑。
+证据：原 `probes/layout/evidence/route1/route1.json`、`probes/layout/evidence/route2/route2.json` 与同目录截图。**探针目录已随开发完成删除，结论保留在本记录；需要复跑时从 git 历史取回 `probes/layout/` 后运行 `node probes/layout/run-route1.mjs` / `run-route2.mjs`。**
 
 ## 2. 路线 1：零补丁宽右栏
 
@@ -129,7 +130,7 @@ const leftmainWidth = leftmainFits ? clampWidth(layoutInfo.leftmain, LEFTMAIN_MI
 | Agent Note | 决策与回退说明 | 约 +25 |
 | 补丁产物 | `patches/0002-second-main-column.patch`（含源码/测试/文档） | 约 +210（含上下文更多） |
 
-估算由 `node probes/layout/estimate-route3.mjs` 生成 `probes/layout/evidence/route3.json`（只读读取固定源码树，不写 DSH 源码）。
+估算由已删除的 `probes/layout/estimate-route3.mjs` 生成 `probes/layout/evidence/route3.json`（只读读取固定源码树，不写 DSH 源码）；探针随开发完成删除，结论保留在本记录。
 
 `patches/0002` 与 `patches/0001` 触及的文件不重叠（0001 是桌面账号开关，0002 只碰 `ui-layout` 及其测试/README），可以独立反向应用。
 
@@ -185,9 +186,9 @@ pnpm run build:artifacts
 | 路线 2 悬浮窗 | `.../route2-floating.png` |
 | 路线 2 编辑器区被隐藏 | `.../route2-docked-editor.png` |
 | 路线 3 成本估算 | `probes/layout/evidence/route3.json` |
-| 路线 3 实施证据 | `plugins/study/tests/client/evidence/dual-pane.json` 与同目录 13 张截图 |
+| 路线 3 实施证据 | 旧 shell 的 `dual-pane.json` 与 13 张截图（2026-11-14 随 `plugins/study` 删除；清理归档保留副本） |
 
-复跑命令与沙箱注意事项见 [`probes/layout/README.md`](../../probes/layout/README.md)。
+复跑方式与沙箱注意事项原本见 `probes/layout/README.md`；**该探针目录与上述证据已随开发完成删除，结论保留在本记录，可从 git 历史取回。**
 
 ## 7. T04 实施记录（2026-11-10）
 
@@ -199,7 +200,7 @@ pnpm run build:artifacts
 | 夹取 | 渲染宽度 `clampWidth(savedWidth, 320, 中栏 − 400)`；框架 <1024px 或中栏 <720px 时整列不渲染；拖拽下限 320，拖过最窄不会隐藏 |
 | 持久化 | 框架不写 Storage；`plugins/study/client/studyleft.js` 保存 `study.layout.leftmain.width` 并在启动时恢复；`study.layout.page` 记忆最后打开的学习页，回到对话时清空（宽度键与 `studyleft.js` 已于 2026-11-11 删除，见第 8 节） |
 | 补丁 | `patches/0002-second-main-column.patch`，5 个手写源码文件 +97/−7（≤100），客户端测试 +98 行、双语 README、Agent Note 三件；生成物 `slot-catalog.ts` +35/−3（`verify-client-catalog` 通过）；另补 `ui-sidebar`/`ui-workspace` 测试桩的 `setLeftmain` 以过类型检查；补丁文件 749 行 |
-| 验证 | `node plugins/study/tests/client/dual-pane-smoke.mjs` passed=true（1440×900：280/560/600 首屏、0 条消息可用、拖拽 630/530、最窄 320、1200px 夹到 520 而保存值 630、刷新恢复页面与宽度、1023px 回退）；`pnpm run test:gui` 743/744 文件（唯一失败是 Windows symlink 环境权限）；`pnpm run typecheck` 5/5；`git apply --check -R patches/0002-second-main-column.patch` 退出 0 |
+| 验证 | 历史命令 `node plugins/study/tests/client/dual-pane-smoke.mjs`（脚本已随旧 shell 删除）当时 passed=true（1440×900：280/560/600 首屏、0 条消息可用、拖拽 630/530、最窄 320、1200px 夹到 520 而保存值 630、刷新恢复页面与宽度、1023px 回退）；`pnpm run test:gui` 743/744 文件（唯一失败是 Windows symlink 环境权限）；`pnpm run typecheck` 5/5；`git apply --check -R patches/0002-second-main-column.patch` 退出 0 |
 
 与 4.5 的差异（已知限制）：未实现“补丁缺失时退回路线 1 右栏标签页”。补丁缺失时 `installStudyLeft` 打警告且不注册 `studyleft`，学习功能仍可从侧栏「工作台/今日」页进入；没有引入 `sidebarRightTabs` 的并行入口。框架层也不提供“学习栏被隐藏”的提示条，窄窗/挤压时的可见入口是侧栏学习页。
 

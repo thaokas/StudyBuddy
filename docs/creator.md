@@ -1,7 +1,8 @@
 # StudyBuddy 创造模式与模式切换
 
-> 适用版本：v1（T16）。DSH 版本固定在 0.2.2-rc.1；创造能力来自 DSH 实验组合包
+> 适用版本：v1 开发版。DSH 版本固定在 0.2.2-rc.1；创造能力来自 DSH 实验组合包
 > `@deepseek-ai/dsh-personalized-recommendations`，不是 StudyBuddy 自己实现的生成器。
+> 相关文档：[操作手册](manual/operation-manual.md)（创造模式操作步骤）、[开发指南](development.md)（测试与插件结构）、[架构](architecture.md)、[路线图](roadmap.md)。
 
 ## 1. 日常模式和创造模式
 
@@ -66,10 +67,11 @@
 
 生成页面不得打开 `study/study.db`、`study.db-wal`、`study/memory.json`、
 `home/credentials.dpapi`、会话日志或 `request_log`，也不得把凭据写进页面/日志。
-详细示例见 `plugins/study/creator/skills/study-creator/references/data.md`。
+详细示例见 `skills/study-creator/references/data.md`。
 
 **权限说明**：安装后的插件和 Creator 现有权限相同，**不是沙箱**。本项目只承诺
-“可移除、可撤销”，不承诺受限执行、权限最小化或代码审计。
+“可移除、可撤销”，不承诺受限执行、权限最小化或代码审计。安装目标是数据根里的
+desktop profile（`<数据根>/home/profiles/desktop`），不会写进仓库的 `plugins/` 目录。
 
 ## 4. 学生可以怎么问
 
@@ -83,7 +85,7 @@
 
 | 仓库路径 | 运行时位置 |
 | --- | --- |
-| `plugins/study/creator/skills/study-creator/` | `<数据根>/home/skills/study-creator/` |
+| `skills/study-creator/` | `<数据根>/home/skills/study-creator/` |
 
 启动器（`scripts/project-config.mjs` 的 `prepareProfile`）每次启动都会把参考复制到
 DSH 的 user skill root。DSH 的 cordis 预设扫描这个目录，所以 Creator 子 Agent 能
@@ -108,35 +110,38 @@ DSH 的 user skill root。DSH 的 cordis 预设扫描这个目录，所以 Creat
 
 ```powershell
 # 配置、skill、参考与文档的一致性
-node --test --test-isolation=none plugins/study/creator/tests
+node --test --test-isolation=none tests/creator/creator.test.mjs
 
-# 启动器写出的隔离 profile 能解析三层 bundle、6 个 creator 行与 skill
-node plugins/study/creator/tests/profile-compose.mjs
+# 启动器写出的隔离 profile 能解析三层 bundle、creator 行与 skill
+node tests/creator/profile-compose.mjs
 
 # 真实 Host + 浏览器：模式切换、生成、安装、重启、撤销、恢复、失败提示
-node plugins/study/creator/tests/creation-smoke.mjs
+node tests/creator/creation-smoke.mjs
 
-# 既有回归
-node --test --test-isolation=none plugins/study/tests
-node plugins/study/scripts/build-client.mjs
+# 8 个插件的全部单元/契约测试（当前基线 955 tests / 954 pass / 1 skip）
+$cases = Get-ChildItem plugins -Recurse -Filter *.test.mjs | ForEach-Object FullName
+node --test --test-isolation=none @cases
+
+# 构建客户端 bundle（任一业务插件同理）
+node plugins/study-outcomes/scripts/build-client.mjs
 ```
 
-冒烟脚本报告与截图在 `plugins/study/creator/evidence/`。创造流程需要真实 Host、
-Edge（Playwright）与宿主进程权限，因此脚本不命名为 `*.test.*`，不进入
-`node --test`。
+创造流程冒烟需要真实 Host、Edge（Playwright）与宿主进程权限，因此脚本不命名为
+`*.test.*`，不进入 `node --test`；运行前先确认脚本路径存在。测试分层、全量基线与
+真实 Host + Edge 冒烟清单见[开发指南](development.md) §4。
 
 ## 8. 已知限制
 
 - 创建能力来自 DSH 实验特性；DSH 升级后要重跑一次本页的冒烟。
 - 创建卡片是 profile 级实验特性，标准模式的技能目录里仍能看到 `personalized-pages`；
   所以标准模式的**日常答疑**不触发卡片，但学生明确要求“做一个页面”时仍可能出现
-  卡片。T16 没有按预设禁用这个特性（那需要改 DSH preset 声明，超出本任务所有权）。
+  卡片。当前实现没有按预设禁用这个特性（那需要改 DSH preset 声明，超出本项目的插件边界）。
 - 模型是否提议创建卡片仍取决于语义判断；本页不承诺每次都能识别“需要页面”。
 - 只支持新建插件，不支持在卡片里修改已有插件；没有版本历史，Restore 只认卡片
   记录的那一份 profile 副本。
 - 撤销不删除源码：工作区的 `.dsh-created-plugins/<id>` 和 profile 的
   `created-plugins/<id>` 会保留；需要彻底清理时由学生手动删除。
 - 生成插件安装后就属于这个 profile，**没有独立的撤销历史**；数据备份与导出仍按
-  `docs/backup.md` 执行，生成插件的源码不在 `study.db` 里。
+  [docs/backup.md](backup.md) 执行，生成插件的源码不在 `study.db` 里。
 - 如果安装包不是从 DSH 源码树启动（未来打包版），官方 bundle 的解析来源可能不同，
   需要按发布流程重新验证。

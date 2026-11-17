@@ -11,7 +11,7 @@
  * checks. `--verify` repeats the checks later; `--restore` verifies first and
  * keeps the previous data root beside the target unless the target was empty.
  *
- * The JSON export in `plugins/study/host/modules/export.mjs` is the student
+ * The JSON export in `plugins/study-core/host/modules/export.mjs` is the student
  * data subset and must not contain credentials. A cold backup is a byte copy
  * of the whole data root, so it also contains `home/credentials.dpapi`; that
  * file is DPAPI-encrypted, and the backup directory must be protected like the
@@ -1035,7 +1035,7 @@ async function runDrill({ keep }) {
     expect('被篡改的备份会被拒绝', tamperedReport.ok === false
       && tamperedReport.errors.some(error => error.check === 'sha256' || error.check === 'size'), tamperedReport.errors);
 
-    const exportModule = await import('../plugins/study/host/modules/export.mjs');
+    const exportModule = await import('../plugins/study-core/host/modules/export.mjs');
     const adapter = databaseAdapter(join(restored.target, 'study', 'study.db'));
     const restoresStudyDir = join(restored.target, 'study');
     let document;
@@ -1049,7 +1049,7 @@ async function runDrill({ keep }) {
         && document.summary.progress === 2
         && document.summary.memories === 1, document.summary);
       expect('成果列表为空且标明原因', document.availability.outcomes.available === false
-        && document.availability.outcomes.reason === 'outcomes_module_not_available_in_this_build'
+        && document.availability.outcomes.reason === 'outcomes_service_not_registered'
         && Array.isArray(document.data.outcomes) && document.data.outcomes.length === 0);
       expect('导出含计划修订快照', document.data.planRevisions[0]?.snapshot?.items?.length === 2, document.data.planRevisions);
       expect('导出不含请求缓存', document.data.requestLog === undefined

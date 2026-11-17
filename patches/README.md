@@ -14,7 +14,7 @@ StudyBuddy 对固定 DSH 源码的改动集中在这里，目的是一眼看清"
 - **作用**：在 `AppFrame` 的中栏内增加第二个主栏 `studyleft`。宽度由 `ctx.layout.setLeftmain(px)` 控制，框架夹取（最低 320px、给对话留 400px）、绘制拖拽手柄，并在框架 <1024px 或中栏 <720px 时隐藏。该能力 2026-11-11 起不再被 StudyBuddy 注册（学习概览已合并进工作台的“缩略”显示），补丁保留为未启用能力。
 - **范围**：5 个手写源码文件 +97/−7（`packages/client/ui-layout/src/client/` 的 `AppFrame.tsx`、`AppFrame.module.css`、`index.ts`、`service.ts`、`stores.ts`）；同包客户端测试与两份 README；Agent Note 中英与配对记录；生成物 `packages/extensions/cordis-client-runner/src/client/slot-catalog.ts` +35/−3（`pnpm run gen-client-catalog` 输出，新增 `studyleft` 条目，`verify-client-catalog` 通过）。另补 2 个消费方测试桩（`ui-sidebar`、`ui-workspace`）的 `setLeftmain` 假实现各 1–2 行，否则类型检查失败。0 个新 locale key（槽本身不产生文案）。
 - **基线**：`fcc0ad462172522aaf5c93a7b2e01f6b9f0b0159`（0.2.2-rc.1）。
-- **配套**：`plugins/study/client/lib/study-page.js` 继续记住最后打开的学习页；旧的 `studyleft.js`、宽度键 `study.layout.leftmain.width` 已于 2026-11-11 删除。方案、调整与回退见 `docs/decisions/layout.md` 路线 3 及第 8 节。
+- **配套**：`plugins/study-core/client/lib/study-page.js` 继续记住最后打开的学习页；旧的 `studyleft.js`、宽度键 `study.layout.leftmain.width` 已于 2026-11-11 删除。方案、调整与回退见 `docs/decisions/layout.md` 路线 3 及第 8 节。
 
 ## 校验
 
@@ -49,4 +49,4 @@ pnpm run test:gui
 3. 冲突时按语义重做，更新本补丁与上面的基线提交。
 4. 跑 `apps/desktop` 的相关测试、`pnpm --filter @deepseek-ai/dsh-client-ui-layout bundle`、`pnpm run test:gui` 与 `node tests/project/desktop.test.mjs`。
 
-补丁预算：单一补丁 ≤100 行、只碰 `apps/desktop` 或通用布局；超出必须由用户批准（见 PLAN 3.4）。
+补丁预算：单一补丁 ≤100 行、只碰 `apps/desktop` 或通用布局；超出预算时需要先更新本目录的说明并取得维护者确认。

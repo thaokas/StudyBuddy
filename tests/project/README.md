@@ -31,4 +31,4 @@ node tests/project/desktop.test.mjs
 - `node --test tests/project` 会把桌面冒烟也算进去；应用没启动时会因连接被拒而失败。这是预期行为，不是回归失败。
 - `desktop.test.mjs` 直接读 `.studybuddy/launch.json` 的调试端口，所以必须用 `scripts/start-studybuddy.mjs` 启动，不能用其他 profile。
 - 测试会临时增删一个合成 provider，结束时会清理；不会改动学生的真实模型配置。
-- 旧 `probes/A02/verify.mjs` 断言"上游工作树干净"，在有 `patches/0001` 之后不再适用，仅作历史证据；新的基线校验由后续任务在 `tests/project` 中按"只允许预期改动"实现。
+- 基线校验在 `tests/project` 中按“只允许预期改动”的口径实现。

@@ -1,0 +1,29 @@
+{
+  "name": "@studybuddy/study-appearance",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "StudyBuddy appearance plugin: brand palette, buddy logo slots, and an appearance settings row for the DSH web client",
+  "exports": {
+    ".": "./host/index.mjs",
+    "./client": "./client/client.js"
+  },
+  "scripts": {
+    "build:client": "node scripts/build-client.mjs"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-sidebar",
+        "@deepseek-ai/dsh-client-ui-theme",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    }
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

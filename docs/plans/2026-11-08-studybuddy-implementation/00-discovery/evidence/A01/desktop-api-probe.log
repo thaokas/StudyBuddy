@@ -1,6 +1,0 @@
-station=WinSta0 readDacl=True error=0 bytes=456
-desktop=Default readDacl=True error=0 bytes=252
-createStation=True error=0
-setStation=True error=0
-createDesktop=True error=0
-restoreStation=True

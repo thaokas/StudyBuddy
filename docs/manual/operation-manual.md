@@ -1,14 +1,14 @@
-﻿# StudyBuddy 操作手册
+# StudyBuddy 操作手册
 
 > **适用版本**：StudyBuddy v1 开发版（DeepSeek Harness 0.2.2-rc.1，Windows 桌面）
 >
-> **文档版本**：1.0 · 2026-11-11
+> **文档版本**：1.2 · 2026-11-17（同步 docs 重构与 8 插件现状；修订摘要见 §21.5）
 >
 > **适用对象**：使用 StudyBuddy 学习的学生，以及在本机运行、维护该项目的开发者
 >
-> **数据根**：默认 `D:\Data\ProjectsRepo\StudyBuddy\.studybuddy`（已被 `.gitignore` 忽略）
+> **数据根**：默认 `<项目根目录>\.studybuddy`（已被 `.gitignore` 忽略），可用 `STUDYBUDDY_DATA_DIR` 覆盖
 
-本手册覆盖从启动、配置模型、创建计划、日常学习，到备份恢复、排错和二次开发的完整操作。命令默认在项目根目录 `D:\Data\ProjectsRepo\StudyBuddy` 执行；界面名称以简体中文为准，英文界面下页面与按钮名称按同一套文案翻译。
+本手册覆盖从启动、配置模型、创建计划、日常学习，到备份恢复、排错和二次开发的完整操作。命令默认在项目根目录执行；界面名称以简体中文为准，英文界面下页面与按钮名称按同一套文案翻译。
 
 **目录**
 
@@ -62,7 +62,7 @@
 | 让助手记住我的偏好 | 记忆，或直接在对话里说「记住……」 |
 | 让助手晚上帮我顺延没做完的任务 | 提醒 → 晚间复盘 |
 | 换一台机器继续用 | 备份与恢复 |
-| 把学习数据导出成 JSON | 在对话里说「导出学习数据」 |
+| 把学习数据导出成 JSON | 设置 → 通用设置 →「导出学习数据」，或在对话里说「导出学习数据」 |
 
 > **开始前请先看第 2.3 节「当前版本边界」**：v1 是开发版，没有安装包、没有云同步，部分功能有明确限制。这些限制不是故障。
 
@@ -72,7 +72,7 @@
 
 ### 2.1 这是什么
 
-StudyBuddy 是一个**本地优先**的学习助手：桌面外壳来自 DeepSeek Harness（DSH）源码，学习能力由项目自带的 `plugins/study` 插件提供。它把“备考目标 → 计划 → 每天几点做 → 完成记录 → 阶段成果”串成一条闭环，并在这个闭环上叠加了问答记录、学习记忆、讲解画像和规则版学习分析。
+StudyBuddy 是一个**本地优先**的学习助手：桌面外壳来自 DeepSeek Harness（DSH）源码，学习能力由项目自带的 `plugins/study-*` 插件组提供。它把“备考目标 → 计划 → 每天几点做 → 完成记录 → 阶段成果”串成一条闭环，并在这个闭环上叠加了问答记录、学习记忆、讲解画像和规则版学习分析。
 
 几个关键事实：
 
@@ -117,7 +117,9 @@ StudyBuddy 是一个**本地优先**的学习助手：桌面外壳来自 DeepSee
 | 英文界面部分中文 | 服务端生成的摘要、里程碑、错误信息目前仍是中文 |
 | 拖拽只覆盖鼠标 | 触屏拖拽未验证/未实现 |
 | 生成插件不是沙箱 | 创造模式安装的插件与普通插件同权限；只承诺“可撤销、可移除” |
-| 无“导出”界面按钮 | JSON 导出入口是对话工具与鉴权路由，见 6.6 |
+| 导出不是备份 | JSON 导出是只读快照，不是可恢复镜像；完整恢复用冷备份（6.6 / 6.7） |
+
+> **当前进度**：8 个 study 插件已落地（插件拆分 P0 契约冻结、P1–P6 实现已落地），P7 bundle 与 T18/T19 验收仍未完成，不要把它当成已发布的安装包。状态与证据入口见 [`docs/roadmap.md`](../roadmap.md)，架构与契约见 [`docs/architecture.md`](../architecture.md)、[`docs/contracts.md`](../contracts.md)。
 
 ---
 
@@ -129,7 +131,7 @@ StudyBuddy 是一个**本地优先**的学习助手：桌面外壳来自 DeepSee
 | --- | --- | --- |
 | 操作系统 | Windows 10/11 x64 | Windows 10.0.26200 x64 |
 | Node.js | ≥ 24.9.0 | v26.13.0 |
-| pnpm | 与仓库 lockfile 匹配 | 11.28.5（`D:\Applications\nvm\.nodejs\pnpm.exe`） |
+| pnpm | 11.x | 11.28.5（与仓库 lockfile 匹配） |
 | Electron | 由源码依赖安装 | 44.7.0（`source/deepseek-harness/node_modules`） |
 | 源码依赖 | 已执行 `pnpm install` 并完成构建 | `source/deepseek-harness/apps/desktop/.desktop-build` 存在 |
 
@@ -152,39 +154,44 @@ Test-Path .\source\deepseek-harness\apps\desktop\.desktop-build
 | `scripts/start-studybuddy.mjs` | 准备持久化 profile、凭据、端口并启动桌面 |
 | `scripts/project-config.mjs` | 部署策略、预置模型、profile bundle、Creator skill 安装 |
 | `scripts/backup-studybuddy.mjs` | 冷备份、校验、恢复、演练 |
-| `plugins/study/` | 学习插件：宿主模块、客户端页面、测试、Creator |
+| `plugins/study-*/` | 8 个独立插件：core（内核）、facts、learning、reminders、memory、outcomes、appearance（外观）、pet（桌宠） |
+| `skills/study-creator/` | Creator skill 参考内容（启动时复制到数据根） |
+| `tests/creator/` | Creator 配置/组合测试与真实 Host 冒烟 |
 | `platform/windows-credentials/` | DPAPI 凭据服务 |
 | `tests/project/` | 工程测试与桌面冒烟 |
 | `source/deepseek-harness/` | 固定基线的 DSH 源码（含本地补丁） |
 | `patches/` | 对 DSH 源码的核心补丁与校验说明 |
-| `docs/` | 设计、决策、计划、备份、创造模式与操作文档 |
+| `docs/` | 文档入口、架构、契约、路线图、开发、备份、创造模式与操作手册 |
 | `.studybuddy/` | 运行时数据根（不提交、不手工编辑） |
 
 ### 3.3 首次安装或从零重建
 
-新机器、源码被删、或依赖损坏时执行。耗时参考：安装约 3.5 分钟，首次构建约 2.5 分钟。
+新机器、源码被删、或依赖损坏时执行。耗时参考：安装约 3.5 分钟，首次构建约 2.5 分钟。完整步骤（含 patch 说明、测试与新增插件）见 [`docs/development.md`](../development.md)；下面是可照做的最小流程，命令都在项目根目录执行。
 
 ```powershell
-cd D:\Data\ProjectsRepo\StudyBuddy
 git clone --no-checkout https://github.com/deepseek-ai/deepseek-harness.git source/deepseek-harness
-git -C source/deepseek-harness checkout -b task/A01-source-baseline fcc0ad462172522aaf5c93a7b2e01f6b9f0b0159
+git -C source/deepseek-harness checkout fcc0ad462172522aaf5c93a7b2e01f6b9f0b0159
+$p1 = (Resolve-Path patches/0001-desktop-account-toggle.patch).Path
+$p2 = (Resolve-Path patches/0002-second-main-column.patch).Path
+git -C source/deepseek-harness apply "$p1" "$p2"
 cd source/deepseek-harness
 pnpm install --frozen-lockfile --reporter append-only
 $env:DSH_GATE_CONCURRENCY='2'; $env:DSH_GATE_FAIL_FAST='1'
 pnpm run build
 pnpm --filter @deepseek-ai/dsh-desktop exec install-electron
+cd ..
 ```
 
 然后回到项目根目录，按第 4 节启动。
 
-> 本项目对 DSH 源码有本地补丁（账号开关、第二主栏能力）。如果源码不是你本机这份工作树，需要按 `patches/README.md` 重新应用补丁，见 19.3 节。
+> 两枚补丁必须按序应用，patch 路径要写成 `Resolve-Path` 解析后的绝对路径：`git -C` 会把 Git 的工作目录切到源码树，相对路径会解析到错误位置。应用或修改补丁后必须重新 `pnpm run build`，否则产物不含补丁改动。补丁内容与反向校验见 [`patches/README.md`](../../patches/README.md)，升级时重放补丁见 19.3 节。
 
 ### 3.4 版本关系
 
 | 组件 | 版本/基线 | 说明 |
 | --- | --- | --- |
-| DeepSeek Harness | 0.2.2-rc.1，基线提交 `fcc0ad4` | 源码固定在 `source/deepseek-harness`，本地有未提交改动 |
-| Study 插件 | 0.1.0 | 数据根由启动器传入 `<数据根>/study` |
+| DeepSeek Harness | 0.2.2-rc.1，基线提交 `fcc0ad4` | 源码固定在 `source/deepseek-harness`，已应用 `patches/0001`、`0002`（未提交） |
+| Study 插件组 | 8 个包均为 0.1.0 | 旧 `plugins/study` shell 已删除；数据根由启动器传入 `<数据根>/study` |
 | 凭据服务 | 项目内 `platform/windows-credentials` | 实现 DSH `CredentialProvider` 接口 |
 | 学习数据 schema | 核心 v1；模块各自 `schemaVersion: 1` | v1 无迁移器 |
 
@@ -202,7 +209,7 @@ pnpm --filter @deepseek-ai/dsh-desktop exec install-electron
 
 推荐 `.cmd` 而不是 `.ps1`：本机 PowerShell 执行策略限制未签名脚本，`.cmd` 不需要修改策略。
 
-脚本会优先使用 `D:\Applications\nvm\app\v26.13.0\node.exe`；不存在时退回 PATH 中的 `node`。启动后终端会一直被占用，这是正常的——关闭窗口或按 `Ctrl+C` 才会退出。
+脚本使用 PATH 中的 `node`（要求 ≥ 24.9）。启动后终端会一直被占用，这是正常的——关闭窗口或按 `Ctrl+C` 才会退出。
 
 ### 4.2 启动脚本做了什么
 
@@ -213,7 +220,8 @@ pnpm --filter @deepseek-ai/dsh-desktop exec install-electron
 3. `prepareProfile()`：
    - 创建/保留 `home/profiles/desktop/`；
    - 确保 profile 加载 `@deepseek-ai/dsh-base`、`@deepseek-ai/dsh-web-app`、`@deepseek-ai/dsh-personalized-recommendations` 三个 bundle（已被你在插件页关掉的 Creator bundle 不会被强行加回）；
-   - 把 `plugins/study/creator/skills/study-creator` 复制到 `<数据根>/home/skills/`；
+   - 写入 8 个插件行（core → facts → learning → reminders → memory → outcomes，外加 appearance、pet）与 DPAPI 凭据行，只有 core 接收 `dataDir`；
+   - 把 `skills/study-creator` 复制到 `<数据根>/home/skills/`；
    - 首次创建模型默认值（自定义提供商 `studybuddy-deepseek` / 模型 `deepseek-flash` / High 档）。
 4. 首次初始化时尝试导入一次 API Key（来源见 5.5），之后不再自动导入。
 5. 清理继承的 `DSH_*` / `ELECTRON_*` 环境变量，设置隔离的 `DSH_HOME`、`DSH_AGENTS_HOME`、`DSH_DESKTOP_USER_DATA_DIR`，关闭账号与遥测。
@@ -262,13 +270,13 @@ taskkill /IM electron.exe /F
 
 | 改动位置 | 需要做什么 |
 | --- | --- |
-| `plugins/study/client/**` | `node plugins/study/scripts/build-client.mjs`，然后重启应用 |
-| `plugins/study/host/**` | 重启应用（宿主模块在启动时加载） |
+| `plugins/<插件>/client/**` | `node plugins/<插件>/scripts/build-client.mjs`，然后重启应用 |
+| `plugins/<插件>/host/**` | 重启应用（宿主模块在启动时加载） |
 | `scripts/**`、`platform/**` | 重启应用 |
 | `source/deepseek-harness/**` | 重新构建源码，见 19.1 |
 | 只改模型/Key | 不需要重启；在设置里保存后新请求生效 |
 
-客户端 bundle 有“产物新鲜度”测试：改了 `client/**` 却没重新构建，`plugins/study/tests/client/build.test.mjs` 会失败。
+客户端 bundle 有“产物新鲜度”测试：改了某个插件的 `client/**` 却没重新构建，该插件 `tests/client/` 下的构建/复制测试会失败。
 
 ### 4.7 启动失败先看哪里
 
@@ -335,10 +343,8 @@ taskkill /IM electron.exe /F
 
 - API Key 由 `platform/windows-credentials` 使用 Windows DPAPI `CurrentUser` 加密，保存在 `<数据根>/home/credentials.dpapi`。
 - 模型配置只保存**凭据引用**（`STUDYBUDDY_DEEPSEEK_API_KEY`），不保存 Key 明文。
-- 首次初始化（`home/model-bootstrap.json` 不存在时）会尝试导入一次：
-  1. 环境变量 `STUDYBUDDY_IMPORT_CREDENTIALS` 指向的 DSH 凭据文件；
-  2. 否则使用 A02 证据指向的旧 GUI 凭据文件（仅当它存在）。
-- 导入成功后写 `model-bootstrap.json`；之后**不会再次自动导入**。删除 Key 后也不会被旧文件悄悄恢复。
+- 首次初始化（`home/model-bootstrap.json` 不存在时）只会导入一次：设置 `STUDYBUDDY_IMPORT_CREDENTIALS` 指向一个 DSH 凭据文件，启动器从中读取 `DEEPSEEK_API_KEY` 写入 DPAPI；未设置时不会扫描其它历史凭据文件。
+- 旧 A02 证据路径已删除，不再作为自动导入来源。导入成功后写 `model-bootstrap.json`；之后**不会再次自动导入**，删除 Key 后也不会被旧文件悄悄恢复。
 - 加密文件只能由原 Windows 用户解密。换用户、换机器或重装系统后，需要重新填写 Key。
 
 ### 5.6 没有 Key 时能做什么
@@ -375,7 +381,7 @@ taskkill /IM electron.exe /F
 | `logs/`、`electron-user-data/` | 日志与 Electron 配置/缓存 | 排错用 |
 | `launch.json` | 本次启动的端口与 pid，每次启动重写 | **不备份** |
 
-> 记忆的当前主存是 `study.db` 中的 `study_memory_item` / `study_memory_evidence` / `study_memory_tombstone` 三张表。`docs/backup.md` 里“`study/memory.json`”的描述是 S3 迁移前的口径；如果你的旧数据根还有 `memory.json`，启动时会迁移并保留 `memory.v1.backup.json`。
+> 记忆的当前主存是 `study.db` 中的 `study_memory_item` / `study_memory_evidence` / `study_memory_tombstone` 三张表；旧数据根若还有 `memory.json`，启动时会迁移并保留 `memory.v1.backup.json`。冷备份按整份数据根复制的语义与边界见 [`docs/backup.md`](../backup.md)。
 
 ### 6.2 什么需要备份
 
@@ -428,13 +434,13 @@ node scripts/backup-studybuddy.mjs --verify "C:\Users\<你>\StudyBuddy Backups\s
 先关闭应用，再执行：
 
 ```powershell
-node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\ProjectsRepo\StudyBuddy\.studybuddy"
+node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "<项目根目录>\.studybuddy"
 ```
 
 `--to` 省略时恢复到默认数据根。目标目录非空时必须显式加 `--force`：
 
 ```powershell
-node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\ProjectsRepo\StudyBuddy\.studybuddy" --force
+node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "<项目根目录>\.studybuddy" --force
 ```
 
 行为：
@@ -457,12 +463,13 @@ node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\Proj
 
 ### 6.6 导出学习数据 JSON
 
-两个真实入口：
+三个真实入口：
 
+- **设置界面**：**设置 → 通用设置 →「导出学习数据」**（设置行 id `study.export`）。可选成果周期（当前日/周/月、今天、本周或本月）与是否包含原始学习事实，点「导出到本机」；完成后页面显示文件路径、字节数和修订号，成果服务不可用时会注明原因。
 - **对话**：说“导出学习数据”，模型调用 `study_export`，文件写到 `<数据根>/study/exports/studybuddy-export-YYYYMMDD-HHmmss.json`，结果里有路径、字节数、修订号和摘要。
-- **鉴权路由**：应用自身原点（同源 cookie）可 `GET /api/study/export.json`，返回同一份 JSON 附件。
+- **鉴权路由**：应用自身原点（同源 cookie）可 `GET /api/study/export.json` 下载同一份 JSON 附件；`POST /api/study/export.json` 接受 `{ periods, includeFacts }`，生成并写文件后返回回执。
 
-导出内容：来源、修订号、各表行数、目标/材料/片段、任务/时间块、计划/修订/草案、进度、记忆条目与删除标记（只含 hash，不含被删正文）、变更历史、校验和。排除：凭据、`request_log`、日志、Electron 数据、资料全文索引。
+导出内容：来源、修订号、各表行数、目标/材料/片段、任务/时间块、计划/修订/草案、进度、真实日/周/月成果快照、记忆条目与删除标记（只含 hash，不含被删正文）、变更历史、校验和。成果服务不可用时 `availability.outcomes` 会写明原因，不伪造数据；导出优先读取当前 SQLite 记忆，旧数据根没有记忆表时才回退 `memory.json`。排除：凭据、`request_log`、日志、Electron 数据、资料全文索引、原始会话与附件。
 
 导出会做凭据扫描：一旦命中 `apiKey`、`password`、`token` 等键或 `sk-…`、`ghp_…`、`Bearer …`、私钥头等高置信形状，就**拒绝导出**并指出字段路径。若学习资料里确实有这类字符串，先删除或改写那段内容再导出。
 
@@ -622,7 +629,9 @@ node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\Proj
 操作：
 
 - **编辑任务**：任务行「编辑任务」。
+- **换书/更换材料**：用「替换任务」新建一个任务并让旧任务退休；旧任务的历史进度保留、新任务不继承进度，其他任务里指向旧任务的前置关系会改指新任务。直接改已有任务的「材料」字段会被拒绝并提示用替换。
 - **删除任务**：确认后软删除；已排的时间块会保留，并标记“任务已删除”，历史不会消失。若仍有活动任务把它当前置，删除会被拒绝并返回冲突。
+- **快捷入口**：任务行还有「问这道题」（见 17.3）和「开始番茄」；后者带该任务直接启动番茄钟，计时不改变任务状态（见第 10 章）。
 - **任务来源**：计划确认后物化的任务会带项目、计划日期；手动新建的任务没有这些字段。
 
 ### 9.3 时间块
@@ -643,7 +652,7 @@ node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\Proj
 操作：
 
 - **编辑/删除**：时间块卡片上的按钮；删除是硬删除，历史通过追加式变更日志保留。
-- **拖动改期**：周视图把块拖到某一天的卡片；日视图拖动时显示“拖到这里改到前一天/后一天”的投放条。拖拽只改选中块的日期/时间，不改任务、标题、备注或任务 id。
+- **拖动改期**：周视图把块拖到某一天的卡片；日视图可把块拖到具体开始时间（保持原时长，同一天也能改时段），或拖到“前一天/后一天”投放条。拖拽只改选中块的日期/开始时间，不改任务、标题、备注或任务 id。
 - **重叠**：同一时间与另一个块重叠时，先提示，保存时要求「仍然保留」或「取消」；首尾相接不算重叠。固定课程也算占用，不能把学习块静默盖在课上。
 - **计划日期 vs 时间块日期**：计划分配的日期是“原定意图”，时间块是“实际执行”；拖块到另一天不会改写计划分配日期，页面可能同时显示两者。
 
@@ -660,8 +669,8 @@ node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\Proj
 规则：
 
 - 页面记录的进度默认视为**已确认**；助手的推测可能标为“待确认”，你在页面上重新记录一次即成为已确认。
-- **取消**不计入完成率，也不进入完成数；待确认不算完成；未记录不等于未学习。
-- 完成率 = 已确认完成 /（任务数 − 取消数）；全部取消时显示“没有可计入的任务”，不会伪造 100%。
+- **取消**不进入完成数，但留在计划分母里；待确认不算完成；未记录不等于未学习。
+- 完成率 = 已确认完成 / 计划任务数；取消不会抬高完成率。只有没有任何任务时显示“还没有计划任务”，不会伪造 100%。
 - 同一状态/数量/文字的重复提交返回已有记录，不重复追加。
 - 并发冲突时页面回滚乐观状态并提示“重新提交”或“放弃”，重提会用新的修订号。
 
@@ -697,6 +706,8 @@ node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\Proj
 2. 填本次时长（1–180 分钟）。
 3. 可选关联任务；不关联也能计时。
 4. 点「开始」。
+
+也可以从工作台任务行点「开始番茄」：会带该任务直接启动学习计时。
 
 计时只记录专注时间，**不会改变任务状态**。关联任务只是让计时记录能对上任务，不代替进度记录。
 
@@ -766,12 +777,12 @@ node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\Proj
 
 到复盘时间后，顶部横幅提示；也可以在提醒页点「现在复盘」手动开始。
 
-1. **读取方案**：读最新计划与进度，只处理 `date <= 今天`、有明确未完成进度（部分/进行中/未开始且已确认）且**弹性**的计划条目。
-2. **预览**：显示要移动的条目、目标日期、分钟数；保留未安排的条目会列出原因（后续日期没有容量、可用时间未知、期限前没有更晚日期）。
+1. **读取方案**：读最新计划与进度，处理 `date <= 今天` 且**弹性**的计划条目；固定安排、已完成、已取消与 `date: null` 的未安排条目不动。未记录或待确认的剩余工作量也会参与拆分，并作为暂定块写入修订（块上带 tentative/assumption 标记），不会被当成已完成；部分完成且有数量时按剩余比例折算分钟。
+2. **预览**：显示要移动的条目、目标日期、开始/结束与分钟数；保留未安排的条目会列出原因（后续日期没有容量、可用时间未知、期限前没有更晚日期）。
 3. **保存调整**：点「保存调整」才会写入一条计划修订；未确认的手动草案优先，存在未确认草案时复盘会被阻止。
 4. **完成**：显示“已保存计划修订 N”，可在计划页撤销最近一次修订。
 
-不会自动移动的情况：未记录、待确认、固定安排、已完成、已取消、`date: null` 的未安排条目。复盘不跨日拆分、不改预算、不改目标，排不下就保留未安排并说明原因。
+不会自动移动的情况：固定安排、已完成、已取消。复盘会把剩余工作量拆分到次日起 7 天（或考试期限前，取较早者）的空闲时段，可跨日拆成多个块；未记录/待确认的剩余量也会按暂定块写入（块上带 tentative/assumption 标记），不会被当成已完成。复盘不改预算、不改目标，排不下就保留未安排并说明原因。
 
 复盘常见阻断：
 
@@ -916,6 +927,7 @@ node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\Proj
 - **完成提示条**：你记录一条“完成”后出现“已记录完成：标题”，约 6 秒自动消失，也可「知道了」。
 - **阶段卡片**：周/月里程碑或阶段小结，显示本周/本月完成数、完成率、材料推进、下一步建议；约 30 秒自动消失，可「知道了」。
 - **里程碑**：本周第一条完成、完成 3 项、完成 5 项、完成计划条目、完成记录关联材料；本月第一条、10 项、20 项、3 条计划条目、2 份材料。只统计**已确认完成**，取消/待确认/部分完成不算。
+- **个人里程碑**：成果页底部「个人里程碑」可关联 1–100 个任务定义阶段成果；只有关联任务出现**已确认完成**记录才算达成，取消/待确认不计。列表显示完成数/总数与达成日期，可展开看证据（任务 id、进度记录 id、日期），也可移除定义。
 - **口径**：不计算连续打卡，不因中断扣分；不排名、不分享、不发徽章；每个周期只弹一次；每周期开始时只做基线，不会把打开页面前已有的完成记录当成“新成就”。
 - 应用关闭时不反馈、不补发；英文界面下卡片正文可能仍是中文（服务端文案限制）。
 
@@ -983,12 +995,12 @@ node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\Proj
 | 短期状态 | “这周在准备期中考试” | 默认 7 天；可设 1 分钟–90 天 |
 | 待确认观察 | 助手从对话里观察到、但还需要你确认的内容 | 可设有效期；未设则长期保留 |
 
-页面显示类型、来源、更新时间、到期时间；已过期的默认隐藏，可勾选「显示已过期」。
+页面显示类型、来源、更新时间、到期时间；已过期的默认隐藏，可勾选「显示已过期」。列表还会标出每条记忆的作用域：**学生偏好**（只存长期偏好）、**目标记忆**（绑定当前目标）、**临时会话**（只在写入它的会话召回）。作用域由服务端校验，跨目标/跨会话不会串入。
 
 ### 15.3 新增、纠正、删除
 
 - **新增**：在输入框写一句话（≤500 字），点「记住」；也可以直接对助手说“记住……”。
-- **纠正**：点「纠正」修改正文，旧版本被取代但保留历史。
+- **纠正**：点「纠正」修改正文，旧版本被取代（`superseded_by`）但保留历史；召回只用当前版本，旧证据不会重建旧结论。
 - **删除**：确认后写入删除标记（只存内容 hash，不存被删正文）；之后不会再被召回，也不会被旧对话内容重建。
 - 只有你本人（界面）可以显式恢复一条被删除的同内容记忆；助手不能绕过删除标记。
 - v1 上限：记忆 200 条、正文 500 字、删除标记 500 条。
@@ -1067,6 +1079,8 @@ node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\Proj
 | “按这个目标给我排一份计划，分成练习册和章节复习” | `study_plan`（draft） | 提交计划草案（不会自动确认） |
 | “把这份草案确认了” | `study_plan`（confirm） | 确认草案，产生正式修订 |
 | “明天做不完了，帮我把没做完的顺延” | `study_plan`（revise）或晚间复盘 | 生成/应用修订；正式重排需确认 |
+| “把明天没排完的任务细化一下” | `study_plan`（refine） | 只细化指定日期的完整条目列表，不覆盖其他日期与未确认草案 |
+| “这本练习册不做了，换成另一本” | `study_tasks`（replaceTask） | 新建任务并退休旧任务；旧进度保留，新任务不继承 |
 | “记一下：我更喜欢上午学数学” | `memory_remember` | 写入偏好记忆 |
 | “我之前说过什么偏好？” | `memory_recall` | 按关键词/类型召回 |
 | “忘掉关于晚上学数学的那条” | `memory_forget` | 删除并留删除标记 |
@@ -1179,7 +1193,7 @@ node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\Proj
 - 撤销不删除源码：工作区 `.dsh-created-plugins/<id>` 与 profile 的 `created-plugins/<id>` 保留，需要时手动删。
 - 生成插件与普通插件同权限，**不是沙箱**；不承诺受限执行或代码审计。
 - 模型是否提议卡片取决于语义判断，不保证每次都能识别。
-- DSH 升级后需要重跑创造流程冒烟（`node plugins/study/creator/tests/creation-smoke.mjs`）。
+- DSH 升级后需要重跑创造流程冒烟（`node tests/creator/creation-smoke.mjs`）。
 
 ---
 
@@ -1187,10 +1201,10 @@ node scripts/backup-studybuddy.mjs --restore "<备份目录>" --to "D:\Data\Proj
 
 ### 19.1 构建
 
-只改插件客户端时：
+只改插件客户端时（把 `study-outcomes` 换成你正在改的插件）：
 
 ```powershell
-node plugins/study/scripts/build-client.mjs
+node plugins/study-outcomes/scripts/build-client.mjs
 ```
 
 只改源码/桌面时，在 `source/deepseek-harness` 构建：
@@ -1201,18 +1215,20 @@ pnpm run build          # 完整构建，约 2–3 分钟
 
 只用上游 `pnpm run start:desktop` 调试源码时，它会复用默认 `~/.dsh` 且不加载项目策略；不要用它做日常启动。日常启动统一用项目根目录的 `.\start-studybuddy.cmd`，否则会丢失隔离数据根、DPAPI 凭据与账号策略。
 
+从零安装、测试分层与新增插件的完整开发流程见 [`docs/development.md`](../development.md)。
+
 ### 19.2 测试分层
 
 | 层级 | 命令 | 说明 |
 | --- | --- | --- |
 | 工程单元 | `node --test tests/project/config.test.mjs tests/project/credentials.test.mjs tests/project/import-errors.test.mjs` | 5 项，无需启动应用 |
-| 插件全量 | `node --test --test-isolation=none plugins/study/tests` | 沙箱内需 `--test-isolation=none`；最终以全绿为准 |
-| 客户端 | `node --test --test-isolation=none plugins/study/tests/client` | 含 bundle 新鲜度与字典键审计 |
-| 加载冒烟 | `node plugins/study/tests/kernel/loader-smoke.mjs` | 真实 web profile 加载模块、鉴权路由 |
-| 工具冒烟 | `node plugins/study/tests/materials/tool-smoke.mjs`、`plugins/study/tests/plans/tool-smoke.mjs`、`plugins/study/tests/memory/tool-smoke.mjs` | 真实 headless + mock 模型，无需 Key |
-| 创建计划页面 | `node plugins/study/tests/onboarding/ui-smoke.mjs` | 真实 Host + Edge |
+| 插件全量 | `$cases = Get-ChildItem plugins -Recurse -Filter *.test.mjs \| ForEach-Object FullName; node --test --test-isolation=none @cases` | 8 个插件的全部 `*.test.mjs`；当前基线 955 tests / 954 pass / 1 skip；受限环境必须带 `--test-isolation=none` |
+| 客户端 | 例：`node --test --test-isolation=none plugins/study-outcomes/tests/client` | 各插件 `tests/client` 含 bundle 新鲜度与字典键审计 |
+| 加载冒烟 | `node plugins/study-core/tests/kernel/loader-smoke.mjs` | 真实 web profile 加载 6 个业务插件与鉴权路由 |
+| 工具冒烟 | `plugins/study-facts/tests/materials/tool-smoke.mjs`、`plugins/study-facts/tests/plans/tool-smoke.mjs`、`plugins/study-memory/tests/memory/tool-smoke.mjs` | 真实 headless + mock 模型，无需 Key |
+| 创建计划页面 | `node plugins/study-facts/tests/onboarding/ui-smoke.mjs` | 真实 Host + Edge |
 | 桌面冒烟 | 先启动应用，再 `node tests/project/desktop.test.mjs` | 需要应用运行；`--real` 会真实调用模型 |
-| 创造模式 | `node --test --test-isolation=none plugins/study/creator/tests`、`plugins/study/creator/tests/profile-compose.mjs`、`plugins/study/creator/tests/creation-smoke.mjs` | 生成/安装/撤销/恢复 |
+| 创造模式 | `node --test --test-isolation=none tests/creator/creator.test.mjs`、`node tests/creator/profile-compose.mjs`、`node tests/creator/creation-smoke.mjs` | 生成/安装/撤销/恢复 |
 | 备份演练 | `node scripts/backup-studybuddy.mjs --drill` | 26 项检查，不触碰真实数据 |
 
 注意：
@@ -1221,6 +1237,7 @@ pnpm run build          # 完整构建，约 2–3 分钟
 - 沙箱内 esbuild `spawn EPERM` 会导致客户端构建测试失败，不是代码回归；在宿主权限下重跑。
 - `outcomes/performance.test.mjs` 的 100ms 阈值在并发负载下会抖动；单跑通过即可，不要放宽断言掩盖预算。
 - 真实浏览器点击级拖拽/提醒/复盘仍属于整体验收项，不能只靠纯渲染测试下结论。
+- 真实 Host + Edge 冒烟脚本清单与运行前提（Edge、宿主权限、不调用付费模型）见 [`docs/development.md`](../development.md) §4.3。
 
 ### 19.3 核心补丁
 
@@ -1280,12 +1297,16 @@ git -C source/deepseek-harness apply --check -R "$PWD/patches/0002-second-main-c
 | 文档 | 内容 |
 | --- | --- |
 | [README](../../README.md) | 项目入口、数据目录、验证命令 |
-| [docs/backup.md](../backup.md) | 备份、恢复、导出的详细口径（部分段落为 S3 前记忆格式） |
+| [docs/README.md](../README.md) | 文档索引：按问题找到该读哪一份 |
+| [docs/architecture.md](../architecture.md) | 总体架构、插件边界与关键数据流 |
+| [docs/contracts.md](../contracts.md) | 插件、命名空间、表、工具与路由的冻结契约 |
+| [docs/roadmap.md](../roadmap.md) | 已完成、进行中与未开始（含 P7 bundle、T18/T19） |
+| [docs/development.md](../development.md) | 从 clone 到启动、测试、构建与新增插件的开发指南 |
+| [docs/backup.md](../backup.md) | 备份、恢复、导出的详细口径 |
 | [docs/creator.md](../creator.md) | 创造模式与模式切换 |
-| [docs/manual/manual-start.md](manual-start.md) | 早期本地手动启动指南（A01 基线，部分命令已过时） |
-| `docs/decisions/` | 布局、记忆、目标工作区等决策记录 |
-| `docs/plans/` | 实施计划、任务卡、验收与已知边界 |
-| `docs/specs/` | 学习系统与学生记忆设计 |
+| [docs/design/](../design/) | 页面视觉改版与外观/桌宠设计规范 |
+| [docs/decisions/](../decisions/) | 布局、记忆、目标工作区等架构决策记录 |
+| [docs/specs/](../specs/) | 学习系统与学生记忆的产品语义 |
 
 ---
 
@@ -1295,9 +1316,9 @@ git -C source/deepseek-harness apply --check -R "$PWD/patches/0002-second-main-c
 
 | 现象 | 可能原因 | 处理 |
 | --- | --- | --- |
-| `pnpm` 找不到 | 本机只有 `pnpm.exe`，没有 `pnpm.cmd` | 用 `pnpm` 或 `D:\Applications\nvm\.nodejs\pnpm.exe` |
+| `pnpm` 找不到 | 安装的 pnpm 与 PATH 不一致 | 用 `pnpm --version` 确认 11.x；nvm 安装的可直接用其 `pnpm.exe` 完整路径 |
 | 启动即报 `source/.env` | 旧凭据文件还在 | 把 Key 移到项目模型设置，删除/移走 `source/deepseek-harness/.env` |
-| 窗口闪退，退出码 `2147483651`/`0x80000003` | 工作区目录树完整性标签被改回 Low | 管理员 PowerShell 运行 `icacls D:\Data\ProjectsRepo\StudyBuddy`，确认完整性标签为 `Medium`；修复见 A01 基线记录；或临时用 `prepare-electron-runtime.ps1` 回退 |
+| 窗口闪退，退出码 `2147483651`/`0x80000003` | 工作区目录树完整性标签被改回 Low | 管理员 PowerShell 运行 `icacls "<项目根目录>"`，确认输出中的完整性标签为 `Medium`；修复后重试启动。这是 Windows ACL 状态问题，不是应用缺陷 |
 | `electron --version` 打印 v24.21.0 | 环境里有 `ELECTRON_RUN_AS_NODE=1` | `Remove-Item Env:ELECTRON_RUN_AS_NODE` 后再判断 GUI |
 | 端口被占用 | 固定端口冲突 | 本项目启动器会自动选空闲端口；若手工用上游命令，设置 `DSH_DESKTOP_MAIN_INSPECT_PORT`、`DSH_DESKTOP_RENDERER_DEBUG_PORT`、`DSH_DESKTOP_HOST_INSPECT_PORT` |
 | 窗口关了进程还在 | Electron 残留 | `Get-Process electron`；必要时 `taskkill /IM electron.exe /F` |
@@ -1423,7 +1444,9 @@ git -C source/deepseek-harness apply --check -R "$PWD/patches/0002-second-main-c
 | 日期 | 版本 | 说明 |
 | --- | --- | --- |
 | 2026-11-11 | 1.0 | 初版：覆盖启动、模型、数据备份、创建计划、工作台、番茄钟、提醒复盘、计划、成果、问答记录、记忆画像、助手协作、创造模式、开发维护与排错 |
+| 2026-11-15 | 1.1 | 同步功能核销：导出三个入口与真实成果快照、晚间复盘跨日拆分/暂定块、同日拖放、显式任务替换、工作台「问这道题」「开始番茄」快捷入口、记忆作用域与个人里程碑；T18/T19 仍未验收 |
+| 2026-11-17 | 1.2 | 文档重构：接入 docs 新入口（README/architecture/contracts/roadmap/development）；数据根与命令改为项目根目录相对描述；8 插件现状与 P7/T18/T19 边界 |
 
 ---
 
-*本手册以当前源码与验收记录为准。若界面文案、命令或数据位置与实际不一致，以仓库中的源码与 `docs/plans/2026-11-09-studybuddy-v1-plan/STATUS.md` 为准，并请更新本文件。*
+*本手册以当前源码与验收记录为准。若界面文案、命令或数据位置与实际不一致，以仓库中的源码与 [`docs/roadmap.md`](../roadmap.md) 为准，并请更新本文件。*
